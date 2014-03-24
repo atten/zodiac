@@ -1,0 +1,269 @@
+/* =========================== QToolBar ========================================== */
+
+QToolBar {
+	/*background: rgba(0,0,0,63);*/
+	border: 0;
+	spacing: 3px; /* spacing between items in the tool bar */
+	padding: 5px;
+	border-bottom: #d9d9d9;
+	/*1px solid qlineargradient(spread:reflect, x1:0, y1:0, x2:0.5, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(217, 217, 217, 255));*/
+}
+
+QToolBar::handle:horizontal {
+	image: url("style/handle.png");
+	width: 10px;
+}
+
+QToolBar::handle:vertical {
+	image: url("style/handle_v2.png");
+	height: 10px;
+}
+
+
+/* =========================== QToolButton ========================================== */
+
+QToolButton {
+	font-size: 10px;
+	background: #4f4f4f;
+	border: 1px solid #4f4f4f;
+	border-radius: 6px;
+	padding-bottom: 5px;
+	min-width: 54px;
+	color: #EEE;
+}
+
+QToolButton:hover { 								/* кнопка при наведении */
+	background: #888;
+}
+
+QToolButton:pressed { 							/* кнопка при нажатии */
+	padding-top: 3px;
+	padding-left: 3px;
+	background: #77A;
+}
+
+QToolButton:checked {
+	padding-top: -1px;
+	background: #998;
+}
+
+
+/* =========================== AstroDatabase ========================================== */
+
+AstroDatabase {
+	background: #202020;
+}
+
+AstroDatabase QLineEdit {
+	color: #EEE;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0.0 #424242,
+								stop: 0.3 #525252,
+								stop: 0.7 #525252,
+								stop: 1.0 #424242);
+								
+	background-image: url("style/find.png");
+	background-repeat: 0;
+	border: 1px solid #585F6A;
+	border-radius: 4px;
+	padding-left: 16px;
+}
+
+AstroDatabase QLineEdit:focus {
+	color: #000;
+	background-color: #DDD;
+}
+
+AstroDatabase QPushButton {
+	border: 0;
+	background: 0;
+}
+
+AstroDatabase QPushButton:pressed {
+	padding-top: 3px;
+	padding-left: 3px;
+}
+
+QMainWindow::separator:vertical {
+	border-left: 1px solid #717b88;
+}
+
+QMainWindow::separator:horizontal {
+	border-bottom: 1px solid #717b88;
+}
+
+QListWidget {
+	color: #b5bfdf;
+	alternate-background-color: #424242;
+	background: transparent;
+	border: 0;
+	min-width: 50px;
+}
+
+QListWidget::item:hover,
+QListWidget::item:selected {
+	color: black;
+}
+
+QDockWidget {
+	font-weight: bold;
+	color: #d8e4f4;
+}
+
+QDockWidget::title {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0 #9F9F9F, stop: 1.0 #7F7F7F);
+	border: 1px solid #525252;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom: 2px solid #6C6C6C;
+	padding: 7px 10px;
+}
+
+
+/* =========================== tabs ========================================== */
+
+AstroWidget {
+	border-top: 1px solid #202020;
+}
+
+QTabBar::tab {							/* корешок вкладок */
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0 #9F9F9F, stop: 1.0 #7F7F7F);
+	border: 1px solid #525252;
+	border-bottom: 1px solid #404040;
+	padding: 4px 12px;
+	margin-top: 2px;
+}
+
+QTabBar::tab:selected {					/* (при активности)*/
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0 #f8f8f8, stop: 1.0 #dcdfe4);
+	border-right-color: #CCCCCC;
+	border-bottom-color: #dcdfe4;
+	border-top-color: #FCFCFD;
+	border-left-color: #FAFCFF;
+}
+
+
+/* =========================== others ========================================== */
+
+AstroWidget QFrame { 		/* affects all frames (QTextBrowser, QGraphicsView) on AstroWidget */
+	background: transparent;
+	border: 0;
+}
+
+AstroWidget QLabel {
+	font-weight: bold;
+	color: #a5afcf;
+}
+
+QToolTip {
+	border: 1px solid #383838;
+	border-radius: 2px;
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #363636, stop:1 #171717);
+	color: #e2e1c3;
+	font-weight: bold;
+}
+
+MainWindow {
+	background: url(style/background.jpg) no-repeat center;
+}
+
+QDialog#about QLabel {
+	background: url(style/about.jpg) no-repeat top center;
+	color: #c5d7f2;
+    padding: 81px 15px 15px 15px;
+}
+
+
+/* =========================== AstroFileInfo ========================================= */
+
+AstroFileInfo QLabel, AstroFileInfo QPushButton {
+	padding: 5px;
+	font: 12px "Segoe UI", Tahoma, Arial;
+	text-align: left;
+}
+
+AstroFileInfo QPushButton {	/* button with info */
+	color: #FFF;
+}
+
+AstroFileInfo QLabel {		/* shadow */
+	color: #000;
+	/*font-weight: bold;*/
+	margin: 1px;
+}
+
+
+/* =========================== HelpWidget ========================================= */
+
+HelpWidget {
+	background-color: qradialgradient(spread:pad, cx:0.5, cy:1, radius:1.028, fx:0.500045, fy:1, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(0, 0, 0, 5));
+}
+
+HelpWidget QLabel {
+	color: #BBB;
+	padding-bottom: 10px;
+	margin: 0 100px;
+}
+
+HelpWidget QLabel#title {
+	color: #DDD;
+	font-family: "DejaVu Sans", "Segoe UI", Tahoma;
+	font-size: 16px;
+	font-weight: bold;
+	padding: 0px;
+}
+
+
+/* =========================== STATUS BAR ========================================== */
+
+QStatusBar {
+	background: url(style/statusbar.png) repeat-X;
+	border: 0;
+	color: #ECECEC;
+	min-height: 23px;
+}
+
+QStatusBar::item {
+	border-right: 1px groove #4f4f4f;
+	/*background: url(style/statusbar_separator.png) no-repeat top right;*/
+}
+
+QStatusBar QComboBox {
+	border: 0;
+	background: transparent;
+	color: #BBB;
+	padding: 0 5px 0 7px;
+	margin: 0 2px 2px 0px;
+}
+
+QStatusBar QComboBox:hover {
+	color: #EEE;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0.0 transparent,
+								stop: 0.9 #4c525c,
+								stop: 1.0 transparent);
+}
+
+QStatusBar QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 15px;
+	border:none;
+}
+
+QStatusBar QComboBox::down-arrow {
+	image: url(style/arrow-down.png);
+}
+
+QStatusBar QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+	top: 1px;
+	left: 1px;
+}
+
+QStatusBar QComboBox QListView {
+	background-color: #383838;
+	color: #EEEEEE;
+}

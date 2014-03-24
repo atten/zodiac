@@ -1,0 +1,133 @@
+QGraphicsView {
+	margin: 60px 0 0 10px;
+}
+
+QSplitter::handle {
+	background: transparent;
+}
+
+QScrollArea {
+	background: #202020;
+	border: 0;
+	border-left: 1px solid #717b88;
+	padding: 5px;
+	/*margin-bottom: 50px;*/
+	min-width: 150px;
+}
+
+QWidget#areaWidget {
+	background: transparent;
+}
+
+
+/* =========================== ExpandWidget ========================================== */
+
+/*ExpandWidget {
+	border: 1px solid red;
+}*/
+
+ExpandWidget QLabel {
+	color: #b5bfdf;
+	margin: 5px 0 5px 0;
+	padding: 0px;
+	font: 8pt Verdana, "DejaVu Sans";
+}
+
+ExpandWidget > Title {
+	padding: 5px;
+	font-weight: bold;
+	color: #d8e4f4;
+	background: #717b88;
+	image: url(planets/arrow-right.png);
+	image-position: left;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
+ExpandWidget > Title:checked {
+	image: url(planets/arrow-down.png);
+}
+
+
+/* =========================== QComboBox ========================================== */
+
+QComboBox {
+	border: 1px solid #585F6A;
+	border-radius: 6px;
+	padding: 5px;
+	margin-bottom: 5px;
+	color: #EEEEEE;
+	background: #424242;
+	font: bold 10pt;
+}
+
+QComboBox:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0.0 #585F6A,
+								stop: 0.3 #424242,
+								stop: 0.7 #424242,
+								stop: 1.0 #585F6A);
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+	padding-top: 6px;
+	padding-left: 6px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0.0 #323232,
+								stop: 0.3 #424242,
+								stop: 0.7 #424242,
+								stop: 1.0 #323232);
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 15px;
+	border:none;
+}
+
+QComboBox::down-arrow {
+	image: url(planets/arrow-down.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+	top: 1px;
+	left: 1px;
+}
+
+QComboBox QListView {
+	background-color: #383838;
+	color: #EEEEEE;
+}
+
+
+/* =========================== QRadioButton ========================================== */
+
+QRadioButton {
+	background: #295c98;
+	border: 2px solid #2171d2;
+	border-radius: 3px;
+	font-weight: bold;
+	color: #a5afcf;
+	padding: 3px 6px 3px 1px;
+}
+
+QRadioButton:hover {
+	background: #5399CA;
+	color: #DDD;
+}
+ 
+QRadioButton:checked {
+	background: #00c0ff;
+	color: #003648;
+}
+ 
+QRadioButton:pressed {
+	background: #00A9E0;
+	padding-left: 7px;
+	padding-top: 5px;
+}
+
+QRadioButton::indicator {
+	width: 0;
+}

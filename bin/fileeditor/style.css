@@ -1,0 +1,40 @@
+QToolBar {
+	border: 0;
+	spacing: 3px;
+}
+
+QToolBar::separator {
+	border: 0;
+	width: 5px;
+}
+
+QWidget#backSite {
+	/*background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+									stop: 0 #F5F5F5, stop: 0.4 #F2F2F2,
+									stop: 0.5 #DCDCDC, stop: 1.0 #E7E7E7);*/
+	border: 1px solid #A0A0A0;
+	border-radius: 6px;
+	padding: 5px;
+}
+
+QToolButton {
+	background: 0;
+	border-radius: 6px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	padding: 2px;
+	padding-top: 4px;
+}
+
+QToolButton:hover { 								/* кнопка при наведении */
+	background: rgba(0,0,0,70);
+}
+
+QToolButton:pressed { 							/* кнопка при нажатии */
+	background: rgba(0,0,0,90);
+}
+
+QToolButton:checked {
+	background: rgba(0,0,0,80);
+	border: 1px solid #A0A0A0;
+}
