@@ -191,7 +191,7 @@ class Data
         static QMap<PlanetId, Planet> planets;
 
     public:
-        static void load();
+        static void load(QString language);
         static const Planet& getPlanet(PlanetId id);
         static QList<PlanetId> getPlanets();
 
@@ -206,7 +206,7 @@ class Data
         static QList<AspectLevel> getLevels();
 };
 
-void load();
+void load(QString language);
 const Planet& getPlanet(PlanetId id);
 QList<PlanetId> getPlanets();
 const HouseSystem& getHouseSystem(HouseSystemId id);
@@ -228,10 +228,10 @@ struct InputData
 
   InputData() { GMT.setTimeSpec(Qt::UTC);
                 GMT.setTime_t(0);
-                location = QVector3D(0,0,0);
+                location    = QVector3D(0,0,0);
                 houseSystem = Housesystem_Placidus;
-                zodiac = Zodiac_Tropical;
-                level = Level_II;}
+                zodiac      = Zodiac_Tropical;
+                level       = Level_II;}
 };
 
 struct Horoscope

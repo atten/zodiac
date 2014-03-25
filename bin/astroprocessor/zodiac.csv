@@ -1,3 +1,3 @@
-﻿zodiac id;name
-0;Тропический
-1;Сидерический
+﻿zodiac id;name;name_ru
+0;Tropical;Тропический
+1;Sidereal;Сидерический

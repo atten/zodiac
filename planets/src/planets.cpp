@@ -253,9 +253,16 @@ void Planets :: describePlanet()
     QListWidgetItem* item = new QListWidgetItem;
     item->setIcon(QIcon(asp.d->userData["icon"].toString()));
     item->setText(A::describeAspect(asp));
-    item->setToolTip(tr("%1\n(%2, orb %3)").arg(item->text())
-                                          .arg(A::degreeToString(asp.d->angle))
-                                          .arg(A::degreeToString(asp.orb)));
+
+    QString tip = QString("%1 %2-%3 (%4)\n").arg(asp.d->name)
+                                            .arg(asp.planet1->name)
+                                            .arg(asp.planet2->name)
+                                            .arg(A::degreeToString(asp.d->angle));
+    tip += tr("Acceptable orb: %1 (%2)\n")  .arg(A::degreeToString(asp.d->orb))
+                                            .arg(A::degreeToString(asp.orb));
+    tip += (asp.closer) ? tr("Convergent") : tr("Divergent");
+    item->setToolTip(tip);
+
     item->setStatusTip(QString("%1+%2+%3").arg(asp.d->name)
                                           .arg(asp.planet1->name)
                                           .arg(asp.planet2->name));

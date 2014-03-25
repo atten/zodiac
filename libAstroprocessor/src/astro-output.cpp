@@ -171,7 +171,7 @@ QString     describeHouses    ( const Houses& houses, const Zodiac& zodiac )
   return ret;
  }
 
-QString     describeAspect    ( const Aspect &aspect, bool monospace )
+QString     describeAspect    (const Aspect &aspect, bool monospace)
  {
   QString ret = aspect.d->name;
   if (monospace) ret = ret.leftJustified(14, ' ', true);
@@ -193,7 +193,7 @@ QString     describePlanet    ( const Planet& planet, const Zodiac& zodiac )
   QString ret;
 
   QString name      = planet.name.leftJustified(10,' ',true);
-  QString longitude = zodiacPosition(planet, zodiac).rightJustified(15,' ',true);
+  QString longitude = zodiacPosition(planet, zodiac).rightJustified(10,' ',true);
 
   ret = name + " " + longitude + " " + getHouseRimNum(planet.house).leftJustified(4, ' ');
 

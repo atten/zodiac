@@ -18,8 +18,11 @@ int main(int argc, char *argv[])
 
     QDir::setCurrent(a.applicationDirPath());
 
-    if (QLocale::system().name().contains("ru", Qt::CaseInsensitive))
+    QString lang = "";
+    if (!a.arguments().contains("nolocale") &&
+        QLocale::system().name().contains("ru", Qt::CaseInsensitive))
      {
+      lang = "ru";
       QDir dir("i18n");
       foreach (QString s, dir.entryList(QStringList("*.qm")))
        {
@@ -29,7 +32,7 @@ int main(int argc, char *argv[])
        }
      }
 
-    A::load();
+    A::load(lang);
     MainWindow w;
 
     QFile cssfile ( "style/style.css" );

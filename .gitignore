@@ -36,3 +36,4 @@ Makefile
 /zodiac/src/mainwindow.old.h
 /zodiac/src/help.old.cpp
 /zodiac/src/help.old.h
+*.user

@@ -73,14 +73,30 @@
         <translation>Дорифорий</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="256"/>
+        <location filename="../../planets/src/planets.cpp" line="261"/>
+        <source>Acceptable orb: %1 (%2)
+</source>
+        <translation>Допустимый орб: %1 (%2)
+</translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Convergent</source>
+        <translation>Сходящийся</translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Divergent</source>
+        <translation>Расходящийся</translation>
+    </message>
+    <message>
         <source>%1
 (%2, orb %3)</source>
-        <translation>%1
+        <translation type="vanished">%1
 (%2, орб %3)</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="266"/>
+        <location filename="../../planets/src/planets.cpp" line="273"/>
         <source>more</source>
         <translation>еще</translation>
     </message>
