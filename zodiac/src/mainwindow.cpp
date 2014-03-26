@@ -213,7 +213,7 @@ void AstroWidget :: addHoroscopeControls()
     hsystemSelector->addItem(sys.name, sys.id);             // create combo box with house systems
 
   foreach (const A::AspectLevel& l, A::getLevels())
-    levelSelector->addItem(tr("%1 initiation").arg(A::getHouseRimNum(l)), l);  // create combo box with aspect levels
+    levelSelector->addItem(tr("%1 initiation").arg(A::romanNum(l)), l);  // create combo box with aspect levels
 
   horoscopeControls << zodiacSelector << hsystemSelector << levelSelector;
 

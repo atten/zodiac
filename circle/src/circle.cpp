@@ -187,7 +187,7 @@ void Map :: createScene()
     else
       cuspides << s->addLine(-innerRadius - penCircle.width(), 0, mapRect.x() - cuspideLength, 0, penCusp);
 
-    cuspideLabels << s->addSimpleText(A::getHouseRimNum(i+1), font);
+    cuspideLabels << s->addSimpleText(A::romanNum(i+1), font);
     cuspideLabels.last()->setBrush(QColor(255,255,255,150));
     cuspideLabels.last()->setParentItem(cuspides[i]);
     cuspideLabels.last()->moveBy(mapRect.x() - cuspideLength + 5, 5);
@@ -308,12 +308,12 @@ void Map :: updateScene()
     cuspideLabels[i]->setRotation(cusp - rotate);
     signIcons[i]->setRotation(-rotate);
 
-    QString tag = tr("%1+%2").arg(A::getHouseRimNum(i+1))
+    QString tag = tr("%1+%2").arg(A::romanNum(i+1))
                              .arg(A::getSign(cusp, file()->horoscope().zodiac).name);
     circle->setHelpTag(cuspides[i], tag);
     circle->setHelpTag(cuspideLabels[i], tag);
 
-    cuspides[i]->setToolTip(tr("House %1\n%2").arg(A::getHouseRimNum(i+1))
+    cuspides[i]->setToolTip(tr("House %1\n%2").arg(A::romanNum(i+1))
                                               .arg(A::zodiacPosition(cusp, file()->horoscope().zodiac)));
     cuspideLabels[i]->setToolTip(cuspides[i]->toolTip());
    }
@@ -339,7 +339,7 @@ void Map :: updateScene()
 
     QString toolTip = QString("%1 %2, %3").arg(p.name)
                                           .arg(A::zodiacPosition(p, file()->horoscope().zodiac, A::HighPrecision))
-                                          .arg(A::getHouseRimNum(p));
+                                          .arg(A::houseNum(p));
     planet -> setToolTip(toolTip);
     marker -> setToolTip(toolTip);
     circle->setHelpTag(planet, p.name + "+" + p.sign->name);

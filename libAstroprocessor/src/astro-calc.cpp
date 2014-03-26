@@ -115,20 +115,17 @@ AspectId aspect ( float angle, AspectLevel aspectLevel )
   return Aspect_None;
  }
 
-bool    towardsMovement      ( const Planet& planet1, const Planet& planet2 )
+bool towardsMovement ( const Planet& planet1, const Planet& planet2 )
  {
-  Planet p1 = planet1, p2 = planet2;
+  const Planet *p1 = &planet1, *p2 = &planet2;
 
-  if (!isEarlier(p1, p2))
+  if (!isEarlier(planet1, planet2))       // make first planet earlier than second
    {
-    Planet temp = p1;               // make first planet earlier than second
-    p1 = p2;
-    p2 = temp;
+    p1 = &planet2;
+    p2 = &planet1;
    }
 
-  if (p1.eclipticSpeed.x() > 0 && p2.eclipticSpeed.x() < 0) return true;
-  if (p1.eclipticSpeed.x() > p2.eclipticSpeed.x()) return true;
-  return false;
+  return (p1->eclipticSpeed.x() > p2->eclipticSpeed.x());
  }
 
 PlanetPosition getPosition ( const Planet& planet, ZodiacSignId sign )
@@ -458,7 +455,7 @@ Aspect calculateAspect ( AspectLevel aspectLevel, const Planet& planet1, const P
   a.orb     = qAbs(a.d->angle - a.angle);
   a.planet1 = &planet1;
   a.planet2 = &planet2;
-  a.closer  = towardsMovement(planet1, planet2);
+  a.closer  = towardsMovement(planet1, planet2) == (a.angle > a.d->angle);
 
   return a;
  }

@@ -37,3 +37,4 @@ Makefile
 /zodiac/src/help.old.cpp
 /zodiac/src/help.old.h
 *.user
+/bin/user/Dmitry Kochetov.dat

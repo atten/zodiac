@@ -147,7 +147,7 @@ void Planets :: drawPlanets()
     item->show();                                  // ensure item visible
     item->setProperty("objectName",   QString("card_%1").arg(planet.id));
     item->setProperty("title",        planet.name.toUpper());
-    item->setProperty("house",        A::getHouseRimNum(planet));
+    item->setProperty("house",        A::houseNum(planet));
     item->setProperty("sign",         planet.sign->id);
     item->setProperty("degreeStr",    A::zodiacPosition(planet,file()->horoscope().zodiac).toLower());
     item->setProperty("isRetro",      planet.eclipticSpeed.x() < 0);
@@ -159,9 +159,9 @@ void Planets :: drawPlanets()
 
     if (planet.houseRuler > 0)
      {
-      item->setProperty("ruler",   tr("ruler of %1").arg(A::getHouseRimNum(planet.houseRuler)));
-      item->setProperty("ruleTip",    planet.name + "+" + A::getHouseRimNum(planet) + "+" +
-                                      "ruler" + A::getHouseRimNum(planet.houseRuler));
+      item->setProperty("ruler",   tr("ruler of %1").arg(A::romanNum(planet.houseRuler)));
+      item->setProperty("ruleTip",    planet.name + "+" + A::houseNum(planet) + "+" +
+                                      "ruler" + A::romanNum(planet.houseRuler));
      }
     else
      {
@@ -254,10 +254,10 @@ void Planets :: describePlanet()
     item->setIcon(QIcon(asp.d->userData["icon"].toString()));
     item->setText(A::describeAspect(asp));
 
-    QString tip = QString("%1 %2-%3 (%4)\n").arg(asp.d->name)
+    QString tip = QString("%1 (%2) %3-%4\n").arg(asp.d->name)
+                                            .arg(A::degreeToString(asp.d->angle))
                                             .arg(asp.planet1->name)
-                                            .arg(asp.planet2->name)
-                                            .arg(A::degreeToString(asp.d->angle));
+                                            .arg(asp.planet2->name);
     tip += tr("Acceptable orb: %1 (%2)\n")  .arg(A::degreeToString(asp.d->orb))
                                             .arg(A::degreeToString(asp.orb));
     tip += (asp.closer) ? tr("Convergent") : tr("Divergent");

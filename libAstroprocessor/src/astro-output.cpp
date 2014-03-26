@@ -8,7 +8,7 @@
 
 namespace A {
 
-QString getHouseRimNum       ( int num )
+QString romanNum             ( int num )
  {
   static const char* h[] = { "I", "II", "III", "IV",
                              "V", "VI", "VII", "VIII",
@@ -18,9 +18,9 @@ QString getHouseRimNum       ( int num )
   return "0";
  }
 
-QString getHouseRimNum       ( const Planet& planet )
+QString houseNum             ( const Planet& planet )
  {
-  return getHouseRimNum(planet.house);
+  return romanNum(planet.house);
  }
 
 QString getPositionName      ( PlanetPosition p )
@@ -162,7 +162,7 @@ QString     describeHouses    ( const Houses& houses, const Zodiac& zodiac )
 
   for (int i = 0; i < 12; i++)
    {
-    ret += getHouseRimNum(i + 1).rightJustified(4, ' ') + " -" +
+    ret += romanNum(i + 1).rightJustified(4, ' ') + " -" +
            zodiacPosition(houses.cusp[i], zodiac).rightJustified(10,' ');
 
     if (i < 11) ret += '\n';
@@ -195,7 +195,7 @@ QString     describePlanet    ( const Planet& planet, const Zodiac& zodiac )
   QString name      = planet.name.leftJustified(10,' ',true);
   QString longitude = zodiacPosition(planet, zodiac).rightJustified(10,' ',true);
 
-  ret = name + " " + longitude + " " + getHouseRimNum(planet.house).leftJustified(4, ' ');
+  ret = name + " " + longitude + " " + houseNum(planet).leftJustified(4, ' ');
 
   if (planet.defaultEclipticSpeed.x() != 0)
    {
@@ -217,7 +217,7 @@ QString     describePlanet    ( const Planet& planet, const Zodiac& zodiac )
    ret += QString().leftJustified(8,' ');
 
   if (planet.houseRuler > 0)
-    ret += QObject::tr(" ruler of %1").arg(getHouseRimNum(planet.houseRuler)).leftJustified(15, ' ');
+    ret += QObject::tr(" ruler of %1").arg(romanNum(planet.houseRuler)).leftJustified(15, ' ');
 
   if (planet.position != Position_Normal)
    ret += getPositionName(planet.position);
@@ -290,7 +290,7 @@ QString     describePower     ( const Planet& planet, const Horoscope& scope)
     case 8: case 6:          p = "-2"; break;
     default: break;
    }
-  if (!p.isEmpty()) ret << QObject::tr("%1: Planet is placed in %2 house").arg(p).arg(getHouseRimNum(h));
+  if (!p.isEmpty()) ret << QObject::tr("%1: Planet is placed in %2 house").arg(p).arg(romanNum(h));
 
 
   if (planet.eclipticSpeed.x() > 0 &&

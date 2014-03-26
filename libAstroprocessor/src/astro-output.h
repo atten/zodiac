@@ -25,8 +25,8 @@ Q_DECLARE_FLAGS(Articles, Article)
 
 
 
-QString getHouseRimNum       ( int num   );
-QString getHouseRimNum       ( const Planet& planet );
+QString romanNum             ( int num);
+QString houseNum             ( const Planet& planet );
 QString getPositionName      ( PlanetPosition p );
 QString degreeToString       ( float deg, AnglePrecision precision = NormalPrecision );
 QString zodiacPosition       ( float deg, const Zodiac& zodiac, AnglePrecision precision = NormalPrecision );
