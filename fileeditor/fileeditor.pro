@@ -2,7 +2,8 @@ QT += network widgets
 
 TEMPLATE = lib
 DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/fileeditor_ru.ts
+TRANSLATIONS = ../bin/i18n/fileeditor_ru.ts \
+               ../bin/i18n/fileeditor_en.ts
 
 SOURCES += \
     src/fileeditor.cpp \

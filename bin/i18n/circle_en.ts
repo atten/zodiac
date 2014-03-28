@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.0" language="en_US">
 <context>
     <name>Map</name>
     <message>
@@ -12,56 +12,48 @@
         <location filename="../../circle/src/circle.cpp" line="316"/>
         <source>House %1
 %2</source>
-        <translation>%1 Дом
-%2</translation>
+        <translation>House %1\n%2</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="507"/>
         <source>Circle</source>
-        <translation>Круг</translation>
-    </message>
-    <message>
-        <source>Ascendent</source>
-        <translation type="obsolete">Асцендент</translation>
-    </message>
-    <message>
-        <source>0 Aries</source>
-        <translation type="obsolete">0 Овна</translation>
+        <translatorcomment>Might be &quot;Chart&quot;</translatorcomment>
+        <translation>Circle</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="512"/>
         <source>Circle start:</source>
-        <translation>Начало круга:</translation>
+        <translation>Circle start:</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="514"/>
         <source>Clockwise circle</source>
-        <translation>Круг по часовой стрелке</translation>
+        <translation>Clockwise circle</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="515"/>
         <source>Zodiac circle width:</source>
-        <translation>Толщина зодиакального круга:</translation>
+        <translation>Zodiac circle width:</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="516"/>
         <source>Cuspide lines length</source>
-        <translation>Длина линий куспидов</translation>
+        <translation>Cusp line length</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="517"/>
         <source>Inner circle radius:</source>
-        <translation>Радиус внутреннего круга:</translation>
+        <translation>Inner circle:</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="519"/>
         <source>Colored circle:</source>
-        <translation>Цветной зодиак:</translation>
+        <translation>Colored circle:</translation>
     </message>
     <message>
         <location filename="../../circle/src/circle.cpp" line="520"/>
         <source>Drop shadow:</source>
-        <translation>Круг отбрасывает тень:</translation>
+        <translation>Drop shadow:</translation>
     </message>
 </context>
 </TS>

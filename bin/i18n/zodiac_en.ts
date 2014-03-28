@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.0" language="en_US">
 <context>
     <name>AstroDatabase</name>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="486"/>
         <source>Refresh</source>
-        <translation>Обновить</translation>
+        <translation>Refresh</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="489"/>
         <source>Search</source>
-        <translation>Поиск</translation>
+        <translation>Search</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="492"/>
         <source>Database</source>
-        <translation>База данных</translation>
+        <translation>Database</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="557"/>
         <source>Delete &apos;%1&apos; from list?</source>
-        <translation>Удалить файл &apos;%1&apos;?</translation>
+        <translation>Delete &apos;%1&apos; from list?</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="559"/>
         <source>Delete %1 files from list?</source>
-        <translation>Удалить %1 файла(-ов)?</translation>
+        <translation>Delete %1 files from list?</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="598"/>
         <source>Open</source>
-        <translation>Открыть</translation>
+        <translation>Open</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="599"/>
         <source>Open in new tab</source>
-        <translation>Открыть в новой вкладке</translation>
+        <translation>Open in new tab</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="601"/>
         <source>Delete</source>
-        <translation>Удалить</translation>
+        <translation>Delete</translation>
     </message>
 </context>
 <context>
@@ -49,12 +49,12 @@
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="36"/>
         <source>Input data</source>
-        <translation>Исходные данные</translation>
+        <translation>Input data</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="49"/>
         <source>No data represented.</source>
-        <translation>Нет данных для отображения.</translation>
+        <translation>No data represented.</translation>
     </message>
 </context>
 <context>
@@ -62,50 +62,49 @@
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="98"/>
         <source>Slides</source>
-        <translation>Виды</translation>
+        <translation>Slides</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="114"/>
         <source>Circle</source>
-        <translation>Круг</translation>
+        <translation>Chart</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="115"/>
         <source>Planets</source>
-        <translation>Планеты</translation>
+        <translation>Planets</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="116"/>
         <source>Text</source>
-        <translation>Текст</translation>
+        <translation>Text</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="205"/>
         <source>Zodiac</source>
-        <translation>Зодиак</translation>
+        <translatorcomment>Do you mean &quot;Sign&quot; here?</translatorcomment>
+        <translation>Zodiac</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="206"/>
         <source>House system</source>
-        <translation>Система домов</translation>
+        <translation>House system</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="207"/>
         <source>Aspects and orbs level
 (by A.Podvodny)</source>
-        <translation>Уровень космического посвящения по А.Подводному
-Настройка влияет на показываемые аспекты</translation>
+        <translation>Aspects and orb levels\n(by A.Podvodny)</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="216"/>
         <source>%1 initiation</source>
-        <translation>%1 посвящение</translation>
+        <translation>%1 initiation</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="312"/>
         <source>Default location:</source>
-        <translation>Местоположение
-по умолчанию:</translation>
+        <translation>Default location:</translation>
     </message>
 </context>
 <context>
@@ -113,7 +112,7 @@
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="405"/>
         <source>Save changes in &apos;%1&apos; before closing?</source>
-        <translation>Сохранить изменения в &apos;%1&apos; перед закрытием?</translation>
+        <translation>Save changes in &apos;%1&apos; before closing?</translation>
     </message>
 </context>
 <context>
@@ -121,84 +120,83 @@
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="629"/>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation>File</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="630"/>
         <location filename="../../zodiac/src/mainwindow.cpp" line="695"/>
         <source>Options</source>
-        <translation>Опции</translation>
+        <translation>Options</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="638"/>
         <source>Database</source>
-        <translation>База даннных</translation>
+        <translation>Database</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="678"/>
         <source>New</source>
-        <translation>Новый</translation>
+        <translation>New</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="679"/>
         <source>Save</source>
-        <translation>Сохранить</translation>
+        <translation>Save</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="680"/>
         <source>Open</source>
-        <translation>Открыть</translation>
+        <translation>Open</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="682"/>
         <source>Edit</source>
-        <translation>Данные</translation>
+        <translation>Edit</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="689"/>
         <source>New data</source>
-        <translation>Новые данные</translation>
+        <translation>New data</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="690"/>
         <source>Save data</source>
-        <translation>Сохранить данные</translation>
+        <translation>Save data</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="691"/>
         <source>Open data</source>
-        <translation>Открыть данные</translation>
+        <translation>Open data</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="693"/>
         <source>Edit data...</source>
-        <translation>Открыть данные...</translation>
+        <translation>Edit data...</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="696"/>
         <source>Info +/-</source>
-        <translation>Инфо +/-</translation>
+        <translation>Info +/-</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="698"/>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation>About</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="767"/>
         <source>Ask about unsaved files</source>
-        <translation>Спрашивать при закрытии
-несохранённых файлов</translation>
+        <translation>Ask about unsaved files</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="807"/>
         <source>Astrological software for personal use.</source>
-        <translation></translation>
+        <translation>Astrological software for personal use.</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="812"/>
         <source>This application is provided AS IS and distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
-        <translation></translation>
+        <translation>This application is provided AS IS and distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</translation>
     </message>
 </context>
 </TS>
