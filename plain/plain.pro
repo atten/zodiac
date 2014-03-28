@@ -1,7 +1,8 @@
 QT += widgets
 TEMPLATE = lib
 DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/plain_ru.ts
+TRANSLATIONS = ../bin/i18n/plain_ru.ts \
+               ../bin/i18n/plain_en.ts
 
 SOURCES += \
     src/plain.cpp

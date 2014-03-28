@@ -9,7 +9,8 @@ QT += widgets network declarative
 TARGET = zodiac
 TEMPLATE = app
 DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/zodiac_ru.ts
+TRANSLATIONS = ../bin/i18n/zodiac_ru.ts \
+               ../bin/i18n/zodiac_en.ts
 
 SOURCES += src/main.cpp \
        src/mainwindow.cpp \

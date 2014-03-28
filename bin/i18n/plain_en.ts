@@ -1,71 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.0" language="en_US">
 <context>
     <name>Plain</name>
     <message>
         <location filename="../../plain/src/plain.cpp" line="15"/>
         <source>Show:</source>
-        <translation>Показывать:</translation>
+        <translation>Show:</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="16"/>
         <source>input;</source>
-        <translation>данные;</translation>
+        <translation>input;</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="17"/>
         <source>planets;</source>
-        <translation>планеты;</translation>
+        <translation>planets;</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="18"/>
         <source>houses;</source>
-        <translation>дома;</translation>
+        <translation>houses;</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="19"/>
         <source>aspects;</source>
-        <translation>аспекты;</translation>
+        <translation>aspects;</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="20"/>
         <source>affetic</source>
-        <translation>аффетика</translation>
+        <translation>affetic</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="29"/>
         <source>Show input data</source>
-        <translation>Показывать исходные данные</translation>
+        <translation>Show input data</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="30"/>
         <source>Show planets</source>
-        <translation>Показывать планеты</translation>
+        <translation>Show planets</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="31"/>
         <source>Show houses</source>
-        <translation>Показывать дома</translation>
+        <translation>Show houses</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="32"/>
         <source>Show aspects</source>
-        <translation>Показывать аспекты</translation>
+        <translation>Show aspects</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="33"/>
         <source>Show dignity and deficient points for each planet</source>
-        <translation>Показывать очки достоинств и слабостей планет</translation>
-    </message>
-    <message>
-        <source>Show dignity and deficient for each planet</source>
-        <translation type="obsolete">Показывать очки достоинств и слабостей планет</translation>
+        <translation>Show dignity and deficient points for each planet</translation>
     </message>
     <message>
         <location filename="../../plain/src/plain.cpp" line="64"/>
         <source>(empty data)</source>
-        <translation>(нет данных)</translation>
+        <translation>(empty data)</translation>
     </message>
 </context>
 </TS>

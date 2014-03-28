@@ -9,7 +9,8 @@ QT += widgets
 TARGET = astroprocessor
 TEMPLATE = lib
 DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/astroprocessor_ru.ts
+TRANSLATIONS = ../bin/i18n/astroprocessor_ru.ts \
+               ../bin/i18n/astroprocessor_en.ts
 
 SOURCES += \
     src/appsettings.cpp \
