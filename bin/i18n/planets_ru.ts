@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>Planets</name>
     <message>
@@ -57,8 +57,28 @@
     <message>
         <location filename="../../planets/src/planets.cpp" line="203"/>
         <location filename="../../planets/src/planets.cpp" line="204"/>
-        <source>Almuthen</source>
+        <source>Almuten</source>
         <translation>Альмутен</translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="213"/>
+        <location filename="../../planets/src/planets.cpp" line="214"/>
+        <source>Doryphoros</source>
+        <translation>Дорифорий</translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Applying</source>
+        <translation>Сходящийся</translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Seperating</source>
+        <translation>Расходящийся</translation>
+    </message>
+    <message>
+        <source>Almuthen</source>
+        <translation type="vanished">Альмутен</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="208"/>
@@ -67,10 +87,8 @@
         <translation>Возничий</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="213"/>
-        <location filename="../../planets/src/planets.cpp" line="214"/>
         <source>Doriforius</source>
-        <translation>Дорифорий</translation>
+        <translation type="vanished">Дорифорий</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="261"/>
@@ -80,14 +98,12 @@
 </translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Convergent</source>
-        <translation>Сходящийся</translation>
+        <translation type="vanished">Сходящийся</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Divergent</source>
-        <translation>Расходящийся</translation>
+        <translation type="vanished">Расходящийся</translation>
     </message>
     <message>
         <source>%1

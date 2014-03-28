@@ -16,7 +16,7 @@ typedef int ZodiacId;
 typedef int AspectId;
 typedef int HouseSystemId;
 typedef int PlanetId;
-typedef quint8 AspectLevel;
+typedef int AspectLevel;
 
 
 const PlanetId      Planet_None          = -1;
@@ -47,7 +47,7 @@ const ZodiacId      Zodiac_None          = -1;
 
 const ZodiacSignId  Sign_None            = -1;
 
-const AspectLevel   Level_II             = 2;
+const AspectLevel   Level_Default        =  2;
 
 
 struct ZodiacSign {
@@ -156,7 +156,7 @@ struct AspectType {
   QMap<QString, QVariant> userData;
 
   AspectType() { id = Aspect_None;
-                 level = Level_II;
+                 level = Level_Default;
                  angle = 0;
                  orb = 0; }
 };
@@ -167,14 +167,14 @@ struct Aspect {
   const Planet* planet2;
   float         angle;
   float         orb;
-  bool          closer;
+  bool          applying;
 
   Aspect()    { planet1 = 0;
                 planet2 = 0;
                 angle   = 0;
                 orb     = 0;
                 d       = 0;
-                closer  = false; }
+                applying  = false; }
 };
 
 
@@ -189,6 +189,7 @@ class Data
         static QMap<HouseSystemId, HouseSystem> houseSystems;
         static QMap<ZodiacId, Zodiac> zodiacs;
         static QMap<PlanetId, Planet> planets;
+        static AspectLevel maxAspectLevel;
 
     public:
         static void load(QString language);
@@ -204,6 +205,7 @@ class Data
         static const AspectType& getAspect(AspectId id, AspectLevel level);
         static const QList<AspectType> getAspects(AspectLevel level);
         static QList<AspectLevel> getLevels();
+        static AspectLevel maxLevel() { return maxAspectLevel; }
 };
 
 void load(QString language);
@@ -216,6 +218,7 @@ const QList<Zodiac> getZodiacs();
 const QList<AspectType> getAspects(AspectLevel level);
 const AspectType& getAspect(AspectId id, AspectLevel level);
 QList<AspectLevel> getLevels();
+AspectLevel maxLevel();
 
 
 struct InputData
@@ -231,7 +234,7 @@ struct InputData
                 location    = QVector3D(0,0,0);
                 houseSystem = Housesystem_Placidus;
                 zodiac      = Zodiac_Tropical;
-                level       = Level_II;}
+                level       = Level_Default;}
 };
 
 struct Horoscope

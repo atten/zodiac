@@ -86,7 +86,7 @@ bool RotatingCircleItem :: sceneEventFilter(QGraphicsItem *watched, QEvent *even
   if (event->type() == QEvent::GraphicsSceneHoverEnter)   // show help when mouse over item
    {
     QString tag = watched->data(0).toString();
-    ((Map*)(scene()->views()[0]->parentWidget()))->help(tag);  // ахтунг, быдлокод!
+    ((Chart*)(scene()->views()[0]->parentWidget()))->help(tag);  // ахтунг, быдлокод!
    }
 
   return false;
@@ -102,7 +102,7 @@ void RotatingCircleItem :: setHelpTag(QGraphicsItem* item, QString tag)
 
 /* =========================== ASTRO MAP SHOW ======================================= */
 
-Map :: Map(QWidget *parent) : AstroFileHandler(parent)
+Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
  {
   emptyScene = true;
   mapRect = QRect(-250,-250, 500, 500);
@@ -121,13 +121,13 @@ Map :: Map(QWidget *parent) : AstroFileHandler(parent)
    layout->addWidget(view);
  }
 
-void Map :: fitInView()
+void Chart :: fitInView()
  {
   QRect rect(mapRect.x() / zoom, mapRect.y() / zoom, mapRect.width() / zoom, mapRect.height() / zoom);
   view->fitInView(rect, Qt::KeepAspectRatio);
  }
 
-void Map :: createScene()
+void Chart :: createScene()
  {
   qDebug() << "Create scene";
   QGraphicsScene* s = view->scene();
@@ -287,7 +287,7 @@ void Map :: createScene()
   emptyScene = false;
  }
 
-void Map :: updateScene()
+void Chart :: updateScene()
  {
   float rotate;
 
@@ -405,13 +405,13 @@ void Map :: updateScene()
 
  }
 
-int  Map :: normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker)
+int  Chart :: normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker)
  {
   int indent = 6;
   return marker->boundingRect().x() - planet->boundingRect().width() - indent;
  }
 
-const QPen& Map :: aspectPen(const A::Aspect& asp)
+const QPen& Chart :: aspectPen(const A::Aspect& asp)
  {
   static QMap<QString, QPen>pens;
   if (pens.isEmpty())
@@ -430,7 +430,7 @@ const QPen& Map :: aspectPen(const A::Aspect& asp)
   return pens["0"];
  }
 
-void Map :: clearScene()
+void Chart :: clearScene()
  {
   view->scene()->clear();
   emptyScene = true;
@@ -443,7 +443,7 @@ void Map :: clearScene()
   signIcons.clear();
  }
 
-void Map :: fileUpdated(AstroFile::Members members)
+void Chart :: fileUpdated(AstroFile::Members members)
  {
   if (file()->isEmpty()) return;
   if (members & AstroFile::Zodiac) clearScene();
@@ -454,12 +454,12 @@ void Map :: fileUpdated(AstroFile::Members members)
     updateScene();
  }
 
-void Map :: resizeEvent (QResizeEvent*)
+void Chart :: resizeEvent (QResizeEvent*)
  {
   fitInView();
  }
 
-AppSettings Map :: defaultSettings ()
+AppSettings Chart :: defaultSettings ()
  {
   AppSettings s;
   s.setValue ( "Circle/circleStart",      Start_Ascendent );
@@ -472,7 +472,7 @@ AppSettings Map :: defaultSettings ()
   return s;
  }
 
-AppSettings Map :: currentSettings ()
+AppSettings Chart :: currentSettings ()
  {
   AppSettings s;
   s.setValue ( "Circle/circleStart",      circleStart );
@@ -485,7 +485,7 @@ AppSettings Map :: currentSettings ()
   return s;
  }
 
-void Map :: applySettings      ( const AppSettings& s )
+void Chart :: applySettings      ( const AppSettings& s )
  {
   circleStart      = (CircleStart)s.value("Circle/circleStart").toInt();
   clockwise        = s.value ( "Circle/clockwise"        ).toBool();
@@ -502,9 +502,9 @@ void Map :: applySettings      ( const AppSettings& s )
    }
  }
 
-void Map :: setupSettingsEditor ( AppSettingsEditor* ed )
+void Chart :: setupSettingsEditor ( AppSettingsEditor* ed )
  {
-  ed -> addTab (tr("Circle"));
+  ed -> addTab (tr("Chart"));
 
   QMap<QString, QVariant> values;
   values[tr("Ascendent")] = Start_Ascendent;
@@ -513,8 +513,8 @@ void Map :: setupSettingsEditor ( AppSettingsEditor* ed )
 
   ed -> addCheckBox("Circle/clockwise",        tr("Clockwise circle"));
   ed -> addSpinBox ("Circle/zodiacWidth",      tr("Zodiac circle width:"), 5,  1000);
-  ed -> addSpinBox ("Circle/cuspideLength",    tr("Cuspide lines length"), 0,  1000);
-  ed -> addSpinBox ("Circle/innerRadius",      tr("Inner circle radius:"), 10, 1000);
+  ed -> addSpinBox ("Circle/cuspideLength",    tr("Cusp line length"),     0,  1000);
+  ed -> addSpinBox ("Circle/innerRadius",      tr("Inner circle:"),        10, 1000);
   ed -> addSpacing (10);
   ed -> addControl ("Circle/coloredZodiac",    tr("Colored circle:"));
   ed -> addControl ("Circle/zodiacDropShadow", tr("Drop shadow:"));

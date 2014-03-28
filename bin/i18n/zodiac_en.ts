@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en_US">
+<TS version="2.1" language="en_US">
 <context>
     <name>AstroDatabase</name>
     <message>
@@ -65,9 +65,8 @@
         <translation>Slides</translation>
     </message>
     <message>
-        <location filename="../../zodiac/src/mainwindow.cpp" line="114"/>
         <source>Circle</source>
-        <translation>Chart</translation>
+        <translation type="vanished">Chart</translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="115"/>
@@ -80,10 +79,19 @@
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../../zodiac/src/mainwindow.cpp" line="205"/>
         <source>Zodiac</source>
         <translatorcomment>Do you mean &quot;Sign&quot; here?</translatorcomment>
-        <translation>Zodiac</translation>
+        <translation type="vanished">Zodiac</translation>
+    </message>
+    <message>
+        <location filename="../../zodiac/src/mainwindow.cpp" line="114"/>
+        <source>Chart</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../zodiac/src/mainwindow.cpp" line="205"/>
+        <source>Sign</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../zodiac/src/mainwindow.cpp" line="206"/>

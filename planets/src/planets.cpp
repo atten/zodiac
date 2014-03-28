@@ -198,20 +198,20 @@ void Planets :: drawPlanets()
 
     QStringList labels;
     QString tip;
-    if (planet.id == A::almuthen(file()->horoscope())->id)
+    if (planet.id == A::almuten(file()->horoscope())->id)
      {
-      labels << tr("Almuthen");
-      tip = planet.name + "+" + tr("Almuthen");
+      labels << tr("Almuten");
+      tip = planet.name + "+" + tr("Almuten");
      }
     if (planet.id == A::auriga(file()->horoscope())->id)
      {
       labels << tr("Auriga");
       tip = planet.name + "+" + tr("Auriga");
      }
-    if (planet.id == A::doriforius(file()->horoscope())->id)
+    if (planet.id == A::doryphoros(file()->horoscope())->id)
      {
-      labels << tr("Doriforius");
-      tip = planet.name + "+" + tr("Doriforius");
+      labels << tr("Doryphoros");
+      tip = planet.name + "+" + tr("Doryphoros");
      }
     labelItems[i]->setProperty("text", labels.join(", "));
     labelItems[i]->setProperty("helpTip", tip);
@@ -260,7 +260,7 @@ void Planets :: describePlanet()
                                             .arg(asp.planet2->name);
     tip += tr("Acceptable orb: %1 (%2)\n")  .arg(A::degreeToString(asp.d->orb))
                                             .arg(A::degreeToString(asp.orb));
-    tip += (asp.closer) ? tr("Convergent") : tr("Divergent");
+    tip += (asp.applying) ? tr("Applying") : tr("Seperating");
     item->setToolTip(tip);
 
     item->setStatusTip(QString("%1+%2+%3").arg(asp.d->name)

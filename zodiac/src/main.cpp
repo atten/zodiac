@@ -5,6 +5,17 @@
 #include <QTranslator>
 #include "mainwindow.h"
 
+void loadTranslations(QApplication* a, QString lang)
+ {
+  QDir dir("i18n");
+  foreach (QString s, dir.entryList(QStringList("*" + lang + ".qm")))
+   {
+    QTranslator* t = new QTranslator;
+    qDebug() << "load translation file" << s << ":"
+             << (t->load(dir.absolutePath() + '/' + s) && a->installTranslator(t) ? "success" : "failed");
+   }
+ }
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -17,19 +28,16 @@ int main(int argc, char *argv[])
     //QTextCodec::setCodecForLocale(QTextCodec::codecForName("CP1251"));
 
     QDir::setCurrent(a.applicationDirPath());
-
     QString lang = "";
-    if (!a.arguments().contains("nolocale") &&
-        QLocale::system().name().contains("ru", Qt::CaseInsensitive))
+    if (!a.arguments().contains("nolocale"))
      {
-      lang = "ru";
-      QDir dir("i18n");
-      foreach (QString s, dir.entryList(QStringList("*.qm")))
+      if (QLocale::system().name().contains("ru", Qt::CaseInsensitive))
        {
-        QTranslator* t = new QTranslator;
-        qDebug() << "load translation file" << s << ":"
-                 << (t->load(dir.absolutePath() + '/' + s) && a.installTranslator(t) ? "success" : "failed");
+        loadTranslations(&a, "ru");
+        lang = "ru";
        }
+      else
+        loadTranslations(&a, "en");
      }
 
     A::load(lang);

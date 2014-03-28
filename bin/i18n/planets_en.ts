@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en_US">
+<TS version="2.1" language="en_US">
 <context>
     <name>Planets</name>
     <message>
@@ -57,8 +57,28 @@
     <message>
         <location filename="../../planets/src/planets.cpp" line="203"/>
         <location filename="../../planets/src/planets.cpp" line="204"/>
+        <source>Almuten</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="213"/>
+        <location filename="../../planets/src/planets.cpp" line="214"/>
+        <source>Doryphoros</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Applying</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../planets/src/planets.cpp" line="263"/>
+        <source>Seperating</source>
+        <translation></translation>
+    </message>
+    <message>
         <source>Almuthen</source>
-        <translation>Almuten</translation>
+        <translation type="vanished">Almuten</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="208"/>
@@ -67,10 +87,8 @@
         <translation>Auriga</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="213"/>
-        <location filename="../../planets/src/planets.cpp" line="214"/>
         <source>Doriforius</source>
-        <translation>Doriforius</translation>
+        <translation type="vanished">Doriforius</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="261"/>
@@ -79,14 +97,12 @@
         <translation>Acceptable orb: %1 (%2)\n</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Convergent</source>
-        <translation>Applying</translation>
+        <translation type="vanished">Applying</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Divergent</source>
-        <translation>Seperating</translation>
+        <translation type="vanished">Seperating</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="273"/>

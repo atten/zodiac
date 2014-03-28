@@ -137,7 +137,7 @@ PlanetPosition getPosition ( const Planet& planet, ZodiacSignId sign )
   return Position_Normal;
  }
 
-const Planet* almuthen ( const Horoscope& scope )
+const Planet* almuten ( const Horoscope& scope )
  {
   int max = 0;
   const Planet* ret = 0;
@@ -155,7 +155,7 @@ const Planet* almuthen ( const Horoscope& scope )
   return ret;
  }
 
-const Planet* doriforius ( const Horoscope& scope )
+const Planet* doryphoros ( const Horoscope& scope )
  {
   int minAngle = 180;
   const Planet* ret = 0;
@@ -337,7 +337,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
   if (receptionWith(planet, scope) != Planet_None)
     ret.dignity += 5;
   else if (peregrine)
-    ret.deficient -= 3;
+    ret.deficient -= 5;
 
 
   switch (planet.house)
@@ -392,7 +392,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
    }
 
 
-  switch (aspect(planet, scope.jupiter, scope.inputData.level))
+  switch (aspect(planet, scope.jupiter, maxLevel()))
    {
     case Aspect_Conjunction: ret.dignity += 5; break;
     case Aspect_Trine:       ret.dignity += 4; break;
@@ -400,7 +400,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.venus, scope.inputData.level))
+  switch (aspect(planet, scope.venus, maxLevel()))
    {
     case Aspect_Conjunction: ret.dignity += 5; break;
     case Aspect_Trine:       ret.dignity += 4; break;
@@ -408,16 +408,16 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.northNode, scope.inputData.level))
+  switch (aspect(planet, scope.northNode, maxLevel()))
    {
     case Aspect_Conjunction:
-    case Aspect_Trine:
+    /*case Aspect_Trine:
     case Aspect_Sextile:     ret.dignity   += 4; break;
-    case Aspect_Opposition:  ret.deficient -= 4; break;
+    case Aspect_Opposition:  ret.deficient -= 4; break;*/
     default: break;
    }
 
-  switch (aspect(planet, scope.mars, scope.inputData.level))
+  switch (aspect(planet, scope.mars, maxLevel()))
    {
     case Aspect_Conjunction: ret.deficient -= 5; break;
     case Aspect_Opposition:  ret.deficient -= 4; break;
@@ -425,7 +425,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.saturn, scope.inputData.level))
+  switch (aspect(planet, scope.saturn, maxLevel()))
    {
     case Aspect_Conjunction: ret.deficient -= 5; break;
     case Aspect_Opposition:  ret.deficient -= 4; break;
@@ -434,13 +434,13 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
    }
 
 
-  if (aspect(planet, QPointF(149.833, 0.45), scope.inputData.level) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(149.833, 0.45), maxLevel()) == Aspect_Conjunction)
     ret.dignity += 6;                  // Regulus coordinates at 2000year: 29LEO50, +00.27'
 
-  if (aspect(planet, QPointF(203.833, -2.05), scope.inputData.level) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(203.833, -2.05), maxLevel()) == Aspect_Conjunction)
     ret.dignity += 5;                  // Spica coordinates at 2000year: 23LIB50, -02.03'
 
-  if (aspect(planet, QPointF(56.166, 22.416), scope.inputData.level) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(56.166, 22.416), maxLevel()) == Aspect_Conjunction)
     ret.deficient -= 5;                // Algol coordinates at 2000year: 26TAU10, +22.25'
 
   return ret;
@@ -455,7 +455,7 @@ Aspect calculateAspect ( AspectLevel aspectLevel, const Planet& planet1, const P
   a.orb     = qAbs(a.d->angle - a.angle);
   a.planet1 = &planet1;
   a.planet2 = &planet2;
-  a.closer  = towardsMovement(planet1, planet2) == (a.angle > a.d->angle);
+  a.applying  = towardsMovement(planet1, planet2) == (a.angle > a.d->angle);
 
   return a;
  }

@@ -14,15 +14,17 @@ QMap<AspectLevel, QMap<AspectId, AspectType> > Data::aspects = QMap<AspectLevel,
 QMap<PlanetId, Planet> Data::planets = QMap<PlanetId, Planet>();
 QMap<HouseSystemId, HouseSystem> Data::houseSystems = QMap<HouseSystemId, HouseSystem>();
 QMap<ZodiacId, Zodiac> Data::zodiacs = QMap<ZodiacId, Zodiac>();
+AspectLevel Data::maxAspectLevel = AspectLevel();
 
 void Data :: load(QString language)
  {
   swe_set_ephe_path( "swe/" );
   CsvFile f;
-  QHash<QString, ZodiacSignId> signs;         // collect and find signs by tag
+  QHash<QString, ZodiacSignId> signs;            // collect and find signs by tag
 
   f.setFileName("astroprocessor/aspects.csv");
   if (!f.openForRead()) qDebug() << "A: Missing file" << f.fileName();
+  maxAspectLevel = 0;
   while (f.readRow())
    {
     AspectType a;
@@ -36,6 +38,7 @@ void Data :: load(QString language)
       a.userData[f.header(i)] = f.row(i);
 
     aspects[a.level][a.id] = a;
+    maxAspectLevel = qMax(maxAspectLevel, a.level);         // update max level
    }
 
   f.close();
@@ -151,6 +154,7 @@ const QList<Zodiac> Data :: getZodiacs()
 
 const QList<AspectType> Data :: getAspects(AspectLevel level)
  {
+  level = qBound(0, level, aspects.count());
   return aspects[level].values();
  }
 
@@ -159,7 +163,7 @@ const AspectType& Data :: getAspect(AspectId id, AspectLevel level)
   if (aspects.contains(level) && aspects[level].contains(id))
     return aspects[level][id];
 
-  return aspects[Level_II][Aspect_None];
+  return aspects[Level_Default][Aspect_None];
  }
 
 QList<AspectLevel> Data :: getLevels()
@@ -178,4 +182,5 @@ const QList<Zodiac> getZodiacs() { return Data::getZodiacs(); }
 const QList<AspectType> getAspects(AspectLevel level) { return Data::getAspects(level); }
 const AspectType& getAspect(AspectId id, AspectLevel level) { return Data::getAspect(id, level); }
 QList<AspectLevel> getLevels() { return Data::getLevels(); }
+AspectLevel maxLevel() { return Data::maxLevel(); }
 }

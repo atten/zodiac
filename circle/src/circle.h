@@ -33,7 +33,7 @@ class RotatingCircleItem : public QAbstractGraphicsShapeItem
 
 /* =========================== ASTRO MAP SHOW ======================================= */
 
-class Map : public AstroFileHandler
+class Chart : public AstroFileHandler
 {
     Q_OBJECT
 
@@ -82,7 +82,7 @@ class Map : public AstroFileHandler
         void resizeEvent (QResizeEvent *ev);
 
     public:
-        Map(QWidget *parent = 0);
+        Chart(QWidget *parent = 0);
 
         void help(QString tag) { requestHelp(tag); }    // called by circle item (because requestHelp() is protected)
 };

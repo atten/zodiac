@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>AppSettingsEditor</name>
     <message>
@@ -50,18 +50,30 @@
         <translation>Экзальтация</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="32"/>
         <source>Dwelling</source>
+        <translation type="vanished">Обитель</translation>
+    </message>
+    <message>
+        <source>Downfall</source>
+        <translation type="vanished">Падение</translation>
+    </message>
+    <message>
+        <source>Exile</source>
+        <translation type="vanished">Изгнание</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="32"/>
+        <source>House</source>
         <translation>Обитель</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="33"/>
-        <source>Downfall</source>
+        <source>Fall</source>
         <translation>Падение</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="34"/>
-        <source>Exile</source>
+        <source>Detriment</source>
         <translation>Изгнание</translation>
     </message>
     <message>
@@ -124,8 +136,177 @@
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="265"/>
+        <source>+5: Planet is in its own sign</source>
+        <translation>+5: Планета в своем знаке</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="267"/>
+        <source>-5: Planet is in detriment</source>
+        <translation>-5: Планета в изгнании</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="268"/>
+        <source>-4: Planet is in its fall</source>
+        <translation>-4: Планета в падении</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="277"/>
+        <source>-5: Planet is peregrine (doesn&apos;t have an essential dignity)</source>
+        <translation>-5: Планета перегрин (не имеет эссенциальных достоинств)</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="299"/>
+        <source>+4: Planet is direct</source>
+        <translation>+4: Планета в директном движении</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="302"/>
+        <source>+2: Planet is fast</source>
+        <translation>+2: Планета движется быстрее своей среднесуточной скорости</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="304"/>
+        <source>-2: Planet is slow</source>
+        <translation>-2: Планета движется медленнее своей среднесуточной скорости</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="306"/>
+        <source>-5: Planet is retrograde</source>
+        <translation>-5: Планета ретроградна</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="315"/>
+        <source>+2: %1 rises earlier than the Sun (oriental)</source>
+        <translation>+2: %1 восточнее относительно Солнца (восходит раньше)</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="317"/>
+        <source>-2: %1 rises later than the Sun (occidental)</source>
+        <translation>-2: %1 западнее относительно Солнца (восходит позднее)</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="324"/>
+        <source>+2: %1 rises later than the Sun (occidental)</source>
+        <translation>+2: %1 западнее относительно Солнца (восходит позднее)</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="326"/>
+        <source>-2: %1 rises earlier than the Sun (occidental)</source>
+        <translation>-2: %1 восточнее относительно Солнца (восходит раньше)</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="344"/>
+        <source>+5: Planet is neither combust nor under the beams</source>
+        <translation>+5: Планета не сожжена и вне солнечных лучей</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="346"/>
+        <source>+5: Planet is cazimi</source>
+        <translation>+5: Планета в точном соединении с Солнцем</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="348"/>
+        <source>-4: Planet is either combust or under the beams</source>
+        <translation>-4: Сожжённая планета</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="354"/>
+        <source>+5: Planet is in partile conjunction with Jupiter</source>
+        <translation>+5: Планета в точном соединении с Юпитером</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="355"/>
+        <source>+4: Planet is in partile trine with Jupiter</source>
+        <translation>+4: Планета в точном трине с Юпитером</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="356"/>
+        <source>+3: Planet is in partile sextile with Jupiter</source>
+        <translation>+3: Планета в точном секстиле с Юпитером</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="362"/>
+        <source>+5: Planet is in partile conjunction with Venus</source>
+        <translation>+5: Планета в точном соединении с Венерой</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="363"/>
+        <source>+4: Planet is in partile trine with Venus</source>
+        <translation>+4: Планета в точном трине с Венерой</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="364"/>
+        <source>+3: Planet is in partile sextile with Venus</source>
+        <translation>+3: Планета в точном секстиле с Венерой</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="370"/>
+        <source>+4: Planet is in partile conjunction with North Node</source>
+        <translation>+4: Планета в точном соединении с Северным Узлом</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="379"/>
+        <source>-5: Planet is in partile conjunction with Mars</source>
+        <translation>-5: Планета в точном соединении с Марсом</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="380"/>
+        <source>-4: Planet is in partile opposition with Mars</source>
+        <translation>-4: Планета в точной оппозиции с Марсом</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="381"/>
+        <source>-3: Planet is in partile quadrature with Mars</source>
+        <translation>-3: Планета в точном квадрате с Марсом</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="387"/>
+        <source>-5: Planet is in partile conjunction with Saturn</source>
+        <translation>-5: Планета в точном соединении с Сатурном</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="388"/>
+        <source>-4: Planet is in partile opposition with Saturn</source>
+        <translation>-4: Планета в точной оппозиции с Сатурном</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="389"/>
+        <source>-3: Planet is in partile quadrature with Saturn</source>
+        <translation>-3: Планета в точном квадрате с Сатурном</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="395"/>
+        <source>+6: Planet is in conjunction with Regulus</source>
+        <translation>+6: Планета в соединении со звездой Регул</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="398"/>
+        <source>+5: Planet is in conjunction with Spica</source>
+        <translation>+5: Планета в соединении со звездой Спика</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="401"/>
+        <source>-5: Planet is in conjunction with Algol</source>
+        <translation>-5: Планета в соединении со звездой Алголь</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="445"/>
+        <source>%1 sign</source>
+        <translation>%1 зодиак</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="457"/>
+        <source>Almuten:    %1</source>
+        <translation>Альмутен:  %1</translation>
+    </message>
+    <message>
+        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="458"/>
+        <source>Doryphoros: %1</source>
+        <translation>Дорифорий: %1</translation>
+    </message>
+    <message>
         <source>+5: Planet is in own sign</source>
-        <translation>+5: Планета в своём знаке</translation>
+        <translation type="vanished">+5: Планета в своём знаке</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="266"/>
@@ -133,14 +314,12 @@
         <translation>+5: Планета в экзальтации</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="267"/>
         <source>-5: Planet is in exile</source>
-        <translation>-5: Планета в изгнании</translation>
+        <translation type="vanished">-5: Планета в изгнании</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="268"/>
         <source>-4: Planet is in downfall</source>
-        <translation>-4: Планета в падении</translation>
+        <translation type="vanished">-4: Планета в падении</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="275"/>
@@ -148,9 +327,8 @@
         <translation>+5: Планета во взаимной рецепции с %1</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="277"/>
         <source>-3: Planet is peregrine (doesn&apos;t have an essential dignity)</source>
-        <translation>-3: Планета перегрин (не имеет эссенциальных достоинств)</translation>
+        <translation type="vanished">-3: Планета перегрин (не имеет эссенциальных достоинств)</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="293"/>
@@ -158,44 +336,36 @@
         <translation>%1: Планета в %2 доме</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="299"/>
         <source>+4: Planet is in direct movement</source>
-        <translation>+4: Планета в директном движении</translation>
+        <translation type="vanished">+4: Планета в директном движении</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="302"/>
         <source>+2: Planet moves faster the average speed value</source>
-        <translation>+2: Планета движется быстрее своей среднесуточной скорости</translation>
+        <translation type="vanished">+2: Планета движется быстрее своей среднесуточной скорости</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="304"/>
         <source>-2: Planet moves slower the average speed value</source>
-        <translation>-2: Планета движется медленнее своей среднесуточной скорости</translation>
+        <translation type="vanished">-2: Планета движется медленнее своей среднесуточной скорости</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="306"/>
         <source>-5: Planet is in retrograde movement</source>
-        <translation>-5: Планета ретроградна</translation>
+        <translation type="vanished">-5: Планета ретроградна</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="315"/>
         <source>+2: %1 rises earlier than Sun</source>
-        <translation>+2: %1 восточнее относительно Солнца</translation>
+        <translation type="vanished">+2: %1 восточнее относительно Солнца</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="317"/>
         <source>-2: %1 rises later than Sun</source>
-        <translation>-2: %1 западнее относительно Солнца</translation>
+        <translation type="vanished">-2: %1 западнее относительно Солнца</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="324"/>
         <source>+2: %1 rises later than Sun</source>
-        <translation>+2: %1 западнее относительно Солнца</translation>
+        <translation type="vanished">+2: %1 западнее относительно Солнца</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="326"/>
         <source>-2: %1 rises earlier than Sun</source>
-        <translation>-2: %1 восточнее относительно Солнца</translation>
+        <translation type="vanished">-2: %1 восточнее относительно Солнца</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="332"/>
@@ -208,119 +378,96 @@
         <translation>-2: Луна убывает в свете</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="344"/>
         <source>+5: Planet is not burned by Sun and outside glowing of Sun</source>
-        <translation>+5: Планета не сожжена и вне солнечных лучей</translation>
+        <translation type="vanished">+5: Планета не сожжена и вне солнечных лучей</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="346"/>
         <source>+5: Planet is directly in center of the Sun</source>
-        <translation>+5: Планета в точном соединении с Солнцем</translation>
+        <translation type="vanished">+5: Планета в точном соединении с Солнцем</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="348"/>
         <source>-4: Planet is burned by Sun or inside glowing of Sun</source>
-        <translation>-4: Сожжённая планета</translation>
+        <translation type="vanished">-4: Сожжённая планета</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="354"/>
         <source>+5: Planet is in conjunction with Jupiter</source>
-        <translation>+5: Планета в соединении с Юпитером</translation>
+        <translation type="vanished">+5: Планета в соединении с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="355"/>
         <source>+4: Planet is in trine with Jupiter</source>
-        <translation>+4: Планета в трине с Юпитером</translation>
+        <translation type="vanished">+4: Планета в трине с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="356"/>
         <source>+3: Planet is in sextile with Jupiter</source>
-        <translation>+3: Планета в секстиле с Юпитером</translation>
+        <translation type="vanished">+3: Планета в секстиле с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="362"/>
         <source>+5: Planet is in conjunction with Venus</source>
-        <translation>+5: Планета в соединении с Венерой</translation>
+        <translation type="vanished">+5: Планета в соединении с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="363"/>
         <source>+4: Planet is in trine with Venus</source>
-        <translation>+4: Планета в трине с Венерой</translation>
+        <translation type="vanished">+4: Планета в трине с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="364"/>
         <source>+3: Planet is in sextile with Venus</source>
-        <translation>+3: Планета в секстиле с Венерой</translation>
+        <translation type="vanished">+3: Планета в секстиле с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="370"/>
         <source>+4: Planet is in conjunction with North Node</source>
-        <translation>+4: Планета в соединении с Северным Узлом</translation>
+        <translation type="vanished">+4: Планета в соединении с Северным Узлом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="371"/>
         <source>+4: Planet is in trine with North Node</source>
-        <translation>+4: Планета в трине с Северным Узлом</translation>
+        <translation type="vanished">+4: Планета в трине с Северным Узлом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="372"/>
         <source>+4: Planet is in sextile with North Node</source>
-        <translation>+4: Планета в секстиле с Северным Узлом</translation>
+        <translation type="vanished">+4: Планета в секстиле с Северным Узлом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="373"/>
         <source>-4: Planet is in opposition with North Node</source>
-        <translation>-4: Планета в оппозиции с Северным Узлом</translation>
+        <translation type="vanished">-4: Планета в оппозиции с Северным Узлом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="379"/>
         <source>-5: Planet is in conjunction with Mars</source>
-        <translation>-5: Планета в соединении с Марсом</translation>
+        <translation type="vanished">-5: Планета в соединении с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="380"/>
         <source>-4: Planet is in opposition with Mars</source>
-        <translation>-4: Планета в оппозиции с Марсом</translation>
+        <translation type="vanished">-4: Планета в оппозиции с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="381"/>
         <source>-3: Planet is in quadrature with Mars</source>
-        <translation>Планета в квадрате с Марсом</translation>
+        <translation type="vanished">Планета в квадрате с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="387"/>
         <source>-5: Planet is in conjunction with Saturn</source>
-        <translation>-5: Планета в соединении с Сатурном</translation>
+        <translation type="vanished">-5: Планета в соединении с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="388"/>
         <source>-4: Planet is in opposition with Saturn</source>
-        <translation>-4: Планета в оппозиции с Сатурном</translation>
+        <translation type="vanished">-4: Планета в оппозиции с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="389"/>
         <source>-3: Planet is in quadrature with Saturn</source>
-        <translation>-3: Планета в квадрате с Сатурном</translation>
+        <translation type="vanished">-3: Планета в квадрате с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="395"/>
         <source>+6: Planet is in conjunction with Regulus star</source>
-        <translation>+6: Планета в соединении со звездой Регул</translation>
+        <translation type="vanished">+6: Планета в соединении со звездой Регул</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="398"/>
         <source>+5: Planet is in conjunction with Spica star</source>
-        <translation>+5: Планета в соединении со звездой Спика</translation>
+        <translation type="vanished">+5: Планета в соединении со звездой Спика</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="401"/>
         <source>-5: Planet is in conjunction with Algol star</source>
-        <translation>-5: Планета в соединении со звездой Алголь</translation>
+        <translation type="vanished">-5: Планета в соединении со звездой Алголь</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="445"/>
         <source>%1 zodiac</source>
-        <translation>%1 зодиак</translation>
+        <translation type="vanished">%1 зодиак</translation>
     </message>
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="456"/>
@@ -328,14 +475,12 @@
         <translation>Возничий:  %1</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="457"/>
         <source>Almuthen:   %1</source>
-        <translation>Альмутен:  %1</translation>
+        <translation type="vanished">Альмутен:  %1</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="458"/>
         <source>Doriforius: %1</source>
-        <translation>Дорифорий: %1</translation>
+        <translation type="vanished">Дорифорий: %1</translation>
     </message>
 </context>
 </TS>

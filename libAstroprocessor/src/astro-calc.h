@@ -22,9 +22,9 @@ AspectId aspect                  ( const Planet& planet1, float degree, AspectLe
 AspectId aspect                  ( float angle, AspectLevel aspectLevel );
 bool    towardsMovement          ( const Planet& planet1, const Planet& planet2 );
 PlanetPosition getPosition       ( const Planet& planet, ZodiacSignId sign );
-const Planet* doriforius         ( const Horoscope& scope );
+const Planet* doryphoros         ( const Horoscope& scope );
 const Planet* auriga             ( const Horoscope& scope );
-const Planet* almuthen           ( const Horoscope& scope );
+const Planet* almuten            ( const Horoscope& scope );
 bool    rulerDisposition         ( int house, int houseAuthority, const Horoscope& scope );
 bool    isEarlier                ( const Planet& planet, const Planet& sun );
 //const Planet& ruler          ( int house, const Horoscope& scope );

@@ -111,7 +111,7 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
    layout->addWidget(slides,   0,0, 1,1);
    layout->addWidget(fileView, 0,0, 1,1, Qt::AlignLeft|Qt::AlignTop);
 
-  addSlide(new Map,     QIcon("style/natal.png"),   tr("Circle"));
+  addSlide(new Chart,   QIcon("style/natal.png"),   tr("Chart"));
   addSlide(new Planets, QIcon("style/planets.png"), tr("Planets"));
   addSlide(new Plain,   QIcon("style/plain.png"),   tr("Text"));
 
@@ -202,7 +202,7 @@ void AstroWidget :: addHoroscopeControls()
   hsystemSelector = new QComboBox;
   levelSelector   = new QComboBox;
 
-  zodiacSelector  -> setToolTip(tr("Zodiac"));
+  zodiacSelector  -> setToolTip(tr("Sign"));
   hsystemSelector -> setToolTip(tr("House system"));
   levelSelector   -> setToolTip(tr("Aspects and orbs level\n(by A.Podvodny)"));
 
