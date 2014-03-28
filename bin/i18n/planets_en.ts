@@ -64,7 +64,7 @@
         <location filename="../../planets/src/planets.cpp" line="213"/>
         <location filename="../../planets/src/planets.cpp" line="214"/>
         <source>Doryphoros</source>
-        <translation></translation>
+        <translation>Oriental</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="263"/>
@@ -84,7 +84,7 @@
         <location filename="../../planets/src/planets.cpp" line="208"/>
         <location filename="../../planets/src/planets.cpp" line="209"/>
         <source>Auriga</source>
-        <translation>Auriga</translation>
+        <translation>Occidental</translation>
     </message>
     <message>
         <source>Doriforius</source>

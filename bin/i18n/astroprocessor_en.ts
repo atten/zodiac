@@ -296,7 +296,7 @@
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="458"/>
         <source>Doryphoros: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Oriental:   %1</translation>
     </message>
     <message>
         <source>+5: Planet is in own sign</source>
@@ -481,7 +481,7 @@
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="456"/>
         <source>Auriga:     %1</source>
         <translatorcomment>Again, I&apos;m not sure how this is being used. Are you talking about the constellation called Auriga, or about Capella, the fixed star located within Auriga.</translatorcomment>
-        <translation type="unfinished">Auriga: %1</translation>
+        <translation>Occidental: %1</translation>
     </message>
     <message>
         <source>Almuthen:   %1</source>
