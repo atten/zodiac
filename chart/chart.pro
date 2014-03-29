@@ -1,11 +1,11 @@
 QT += widgets
 TEMPLATE = lib
 DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/circle_ru.ts \
-               ../bin/i18n/circle_en.ts
+TRANSLATIONS = ../bin/i18n/chart_ru.ts \
+               ../bin/i18n/chart_en.ts
 
-SOURCES += src/circle.cpp
-HEADERS += src/circle.h
+SOURCES += src/chart.cpp
+HEADERS += src/chart.h
 
 # library dependencies
 INCLUDEPATH += ../libAstroprocessor/include/

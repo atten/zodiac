@@ -28,4 +28,4 @@ win32: RC_FILE = app.rc
 INCLUDEPATH += ../libAstroprocessor/include/
 
 LIBS += -L../../bin
-LIBS += -lastroprocessor -lfileeditor -lplain -lcircle -lplanets
+LIBS += -lastroprocessor -lfileeditor -lplain -lchart -lplanets

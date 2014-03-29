@@ -296,7 +296,7 @@
     <message>
         <location filename="../../libAstroprocessor/src/astro-output.cpp" line="458"/>
         <source>Doryphoros: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Doryphory:  %1</translation>
     </message>
     <message>
         <source>+5: Planet is in own sign</source>

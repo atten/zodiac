@@ -12,7 +12,7 @@
 #include <QGraphicsBlurEffect>
 #include <QDebug>
 #include "../plain/src/plain.h"
-#include "../circle/src/circle.h"
+#include "../chart/src/chart.h"
 #include "../fileeditor/src/fileeditor.h"
 #include "../fileeditor/src/geosearch.h"
 #include "../planets/src/planets.h"

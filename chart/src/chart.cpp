@@ -7,7 +7,7 @@
 #include <math.h>
 #include <Astroprocessor/Output>
 #include <Astroprocessor/Calc>
-#include "circle.h"
+#include "chart.h"
 
 
 RotatingCircleItem :: RotatingCircleItem(QRect rect, const QPen& pen) : QAbstractGraphicsShapeItem()
@@ -204,7 +204,7 @@ void Chart :: createScene()
   s->addEllipse(mapRect.adjusted(2,2,-2,-2), penBorder, background);        // fill background (with margin)
 
   circle = new RotatingCircleItem(mapRect, penZodiac);                      // zodiac circle
-  circle->setCursor(QPixmap("circle/rotate.png"));
+  circle->setCursor(QPixmap("chart/rotate.png"));
   s->addItem(circle);
   s->addEllipse(mapRect, penBorder)->setParentItem(circle);                 // zodiac outer border
   s->addEllipse(mapRect.adjusted(zodiacWidth, zodiacWidth,                  // zodiac inner border
