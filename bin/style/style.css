@@ -22,7 +22,7 @@ QToolBar::handle:vertical {
 
 /* =========================== QToolButton ========================================== */
 
-QToolButton {
+QToolButton, QDialog#about QPushButton {
 	font-size: 10px;
 	background: #4f4f4f;
 	border: 1px solid #4f4f4f;
@@ -32,17 +32,17 @@ QToolButton {
 	color: #EEE;
 }
 
-QToolButton:hover { 								/* кнопка при наведении */
+QToolButton:hover, QDialog#about QPushButton:hover { 								/* кнопка при наведении */
 	background: #888;
 }
 
-QToolButton:pressed { 							/* кнопка при нажатии */
+QToolButton:pressed, QDialog#about QPushButton:pressed { 							/* кнопка при нажатии */
 	padding-top: 3px;
 	padding-left: 3px;
 	background: #77A;
 }
 
-QToolButton:checked {
+QToolButton:checked, QDialog#about QPushButton:checked {
 	padding-top: -1px;
 	background: #998;
 }
@@ -170,10 +170,14 @@ MainWindow {
 	background: url(style/background.jpg) no-repeat center;
 }
 
-QDialog#about QLabel {
+QDialog#about  {
 	background: url(style/about.jpg) no-repeat top center;
+}
+
+QDialog#about QLabel {
+	font: 11px Verdana;
 	color: #c5d7f2;
-    padding: 81px 15px 15px 15px;
+    padding: 100px 15px 15px 15px;
 }
 
 

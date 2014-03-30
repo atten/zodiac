@@ -26,6 +26,9 @@ class SlideWidget : public QWidget
         int currentSlideIndex()                       { return currentIndex; }
         int count()                                   { return slides.count(); }
 
+    public slots:
+        void nextSlide();
+
     private slots:
         void transitionDone();
 

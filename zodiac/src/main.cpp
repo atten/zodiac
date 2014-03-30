@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("build 2014-03-24 alpha");
+    a.setApplicationVersion("v0.6.2 (build 2014-03-24)");
 
     //QTextCodec* codec = QTextCodec::codecForName ( "CP1251" );
     //QTextCodec::setCodecForCStrings ( codec );

@@ -793,15 +793,26 @@ void MainWindow        :: showAbout           ( )
  {
   QDialog* d = new QDialog(this);
   QLabel* l = new QLabel;
+  QLabel* l2 = new QLabel;
+  SlideWidget* s = new SlideWidget;
+  QPushButton* b = new QPushButton(tr("Credits"));
 
+  b->setCheckable(true);
   d->setObjectName("about");
   l->setWordWrap(true);
   l->setTextInteractionFlags(Qt::LinksAccessibleByMouse|
                              Qt::TextSelectableByMouse);
+  l2->setWordWrap(true);
+  l2->setTextInteractionFlags(Qt::LinksAccessibleByMouse|
+                             Qt::TextSelectableByMouse);
+  s->addSlide(l);
+  s->addSlide(l2);
+  s->setTransitionEffect(SlideWidget::Transition_Overlay);
 
   QVBoxLayout* v = new QVBoxLayout(d);
    v->setMargin(0);
-   v->addWidget(l);
+   v->addWidget(s);
+   v->addWidget(b);
 
   l->setText("<center><b><big>" + QApplication::applicationVersion() + "</big></b>"
           "<p>" + tr("Astrological software for personal use.") + "</p>"
@@ -813,6 +824,18 @@ void MainWindow        :: showAbout           ( )
                      " but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY"
                      " or FITNESS FOR A PARTICULAR PURPOSE.") + "</center>");
 
-  connect(l, SIGNAL(linkActivated(QString)), this, SLOT(gotoUrl(QString)));
+
+  l2->setText("<p><b>Swiss Ephemerides library</b><br>"
+              "Copyright (C) 1997 - 2008 Astrodienst AG, Switzerland.  All rights reserved.<br>"
+              "<a style='color:white' href=\"ftp://www.astro.ch/pub/swisseph/LICENSE\">ftp://www.astro.ch/pub/swisseph/LICENSE</a></p>"
+              "<p><b>Primo Icon Set</b> by Webdesigner Depot<br>"
+              "<a style='color:white' href=\"https://www.iconfinder.com/iconsets/Primo_Icons#readme\">www.iconfinder.com/iconsets/Primo_Icons#readme</a></p>"
+              "<p><b>Almagest True Type Font</b></p>"
+              "<p>Additional thanks to authors of <b>\"SymSolon\"</b> project<br>"
+              "<a style='color:white' href=\"http://sf.net/projects/symsolon\">sf.net/projects/symsolon</a></p>");
+
+  connect(l,  &QLabel::linkActivated, this, &MainWindow::gotoUrl);
+  connect(l2, &QLabel::linkActivated, this, &MainWindow::gotoUrl);
+  connect(b,  &QPushButton::clicked, s, &SlideWidget::nextSlide);
   d->exec();
  }

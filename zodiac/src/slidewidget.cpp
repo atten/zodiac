@@ -67,6 +67,12 @@ void SlideWidget :: setSlide(int number)
   currentIndex = number;
  }
 
+void SlideWidget :: nextSlide()
+ {
+  int i = (currentSlideIndex() + 1) % count();
+  setSlide(i);
+ }
+
 QWidget* SlideWidget :: currentSlide()
  {
   if (slides.count() < currentIndex || currentIndex < 0)
