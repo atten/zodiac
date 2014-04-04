@@ -1,19 +1,10 @@
 QT += widgets
 TEMPLATE = lib
-DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/plain_ru.ts \
-               ../bin/i18n/plain_en.ts
-
-SOURCES += \
-    src/plain.cpp
-HEADERS += \
-    src/plain.h
-
+DESTDIR = $$_PRO_FILE_PWD_/../bin
+include(plain.pri)
 
 # library dependencies
-INCLUDEPATH += ../libAstroprocessor/include/
-
-LIBS += -L../../bin
+LIBS += -L$$_PRO_FILE_PWD_/../bin
 LIBS += -lastroprocessor
 
 

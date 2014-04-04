@@ -1,17 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-03-27T01:47:20
-#
-#-------------------------------------------------
-
-QT += widgets
-
-TARGET = astroprocessor
-TEMPLATE = lib
-DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/astroprocessor_ru.ts \
-               ../bin/i18n/astroprocessor_en.ts
-
 SOURCES += \
     src/appsettings.cpp \
     src/astro-gui.cpp \
@@ -32,11 +18,7 @@ HEADERS +=\
     include/Astroprocessor/Calc \
     src/csvreader.h
 
+INCLUDEPATH += ../swe
 
-## library dependencies
-INCLUDEPATH += ../libSwisseph
-
-LIBS += -L../../bin
-LIBS += -lswe
-
-
+TRANSLATIONS = ../bin/i18n/astroprocessor_ru.ts \
+               ../bin/i18n/astroprocessor_en.ts

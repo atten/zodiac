@@ -1,24 +1,12 @@
 QT += network widgets
 
 TEMPLATE = lib
-DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/fileeditor_ru.ts \
-               ../bin/i18n/fileeditor_en.ts
+DESTDIR = $$_PRO_FILE_PWD_/../bin
 
-SOURCES += \
-    src/fileeditor.cpp \
-    src/geosearch.cpp
-HEADERS += \
-    src/fileeditor.h \
-    ../libAstroprocessor/src/astro-gui.h \
-    src/geosearch.h
-
-
+include(fileeditor.pri)
 
 # library dependencies
-INCLUDEPATH += ../libAstroprocessor/include/
-
-LIBS += -L../../bin
+LIBS += -L$$_PRO_FILE_PWD_/../bin
 LIBS += -lastroprocessor
 
 

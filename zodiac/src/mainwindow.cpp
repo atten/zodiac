@@ -1,4 +1,4 @@
-ï»¿#include <QToolBar>
+#include <QToolBar>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStatusBar>
@@ -140,9 +140,9 @@ void AstroWidget :: setupFile (AstroFile* file)
     file->setLocationName(geoWdg->locationName());
    }
 
-  file->setZodiac      (zodiacSelector->currentData().toInt());  // set zodiac
-  file->setHouseSystem (hsystemSelector->currentData().toInt()); // set house system
-  file->setAspectLevel (levelSelector->currentData().toInt());   // set aspect level
+  file->setZodiac      (zodiacSelector->itemData(zodiacSelector->currentIndex()).toInt());  // set zodiac
+  file->setHouseSystem (hsystemSelector->itemData(hsystemSelector->currentIndex()).toInt()); // set house system
+  file->setAspectLevel (levelSelector->itemData(levelSelector->currentIndex()).toInt());   // set aspect level
 
 
   if (!hasChanges) file->clearUnsavedState();
@@ -268,7 +268,7 @@ AppSettings AstroWidget :: defaultSettings ()
   s.setValue("Scope/zodiac",              0);          // indexes of ComboBox items, not values itself
   s.setValue("Scope/houseSystem",         0);
   s.setValue("Scope/level",               0);
-  s.setValue("slide", slides->currentSlideIndex());    // Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°Ð»Ð°ÑÑŒ Ðº Ð¿ÐµÑ€Ð²Ð¾Ð¼Ñƒ ÑÐ»Ð°Ð¹Ð´Ñƒ Ð¿Ð¾ÑÐ»Ðµ ÑÐ±Ñ€Ð¾ÑÐ° Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº
+  s.setValue("slide", slides->currentSlideIndex());    // ÷òîáû íå âîçâðàùàëàñü ê ïåðâîìó ñëàéäó ïîñëå ñáðîñà íàñòðîåê
   return s;
  }
 
@@ -678,7 +678,7 @@ void MainWindow        :: addToolBarActions   ( )
   toolBar     -> addAction(QIcon("style/file.png"),  tr("New"),      this, SLOT(addNewFile()));
   toolBar     -> addAction(QIcon("style/save.png"),  tr("Save"),  this, SLOT(saveFile()));
   toolBar     -> addAction(QIcon("style/database.png"), tr("Open"));
-  //toolBar     -> addAction(QIcon("style/print.png"), tr("Ð­ÐºÑÐ¿Ð¾Ñ€Ñ‚"));
+  //toolBar     -> addAction(QIcon("style/print.png"), tr("Ýêñïîðò"));
   toolBar     -> addAction(QIcon("style/edit.png"),  tr("Edit"), astroWidget, SLOT(editCurrentFile()));
 
   toolBar     -> actions()[0]->setShortcut(QKeySequence("CTRL+N"));
@@ -689,12 +689,12 @@ void MainWindow        :: addToolBarActions   ( )
   toolBar     -> actions()[0]->setStatusTip(tr("New data") + "\n Ctrl+N");
   toolBar     -> actions()[1]->setStatusTip(tr("Save data") + "\n Ctrl+S");
   toolBar     -> actions()[2]->setStatusTip(tr("Open data") + "\n Ctrl+O");
-  //toolBar     -> actions()[3]->setStatusTip(tr("ÐŸÐµÑ‡Ð°Ñ‚ÑŒ Ð¸Ð»Ð¸ ÑÐºÑÐ¿Ð¾Ñ€Ñ‚ \n Ctrl+P"));
+  //toolBar     -> actions()[3]->setStatusTip(tr("Ïå÷àòü èëè ýêñïîðò \n Ctrl+P"));
   toolBar     -> actions()[3]->setStatusTip(tr("Edit data...") + "\n F2");
 
   toolBar2    -> addAction(QIcon("style/tools.png"),  tr("Options"),       this, SLOT(showSettingsEditor()));
   toolBar2    -> addAction(QIcon("style/help.png"),   tr("Info +/-"));
-  //toolBar2    -> addAction(QIcon("style/coffee.png"), tr("Ð¡Ð¿Ñ€Ð°Ð²ÐºÐ°"));
+  //toolBar2    -> addAction(QIcon("style/coffee.png"), tr("Ñïðàâêà"));
   toolBar2    -> addAction(QIcon("style/info.png"),   tr("About"), this, SLOT(showAbout()));
 
   databaseToggle = toolBar->actions()[2];
@@ -834,8 +834,8 @@ void MainWindow        :: showAbout           ( )
               "<p>Additional thanks to authors of <b>\"SymSolon\"</b> project<br>"
               "<a style='color:white' href=\"http://sf.net/projects/symsolon\">sf.net/projects/symsolon</a></p>");
 
-  connect(l,  &QLabel::linkActivated, this, &MainWindow::gotoUrl);
-  connect(l2, &QLabel::linkActivated, this, &MainWindow::gotoUrl);
-  connect(b,  &QPushButton::clicked, s, &SlideWidget::nextSlide);
+  connect(l,  SIGNAL(linkActivated(QString)), this, SLOT(gotoUrl(QString)));
+  connect(l2, SIGNAL(linkActivated(QString)), this, SLOT(gotoUrl(QString)));
+  connect(b,  SIGNAL(clicked()), s, SLOT(nextSlide()));
   d->exec();
  }

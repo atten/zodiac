@@ -1,4 +1,4 @@
-``Zodiac`` is an Astrological software for personal use.
+**Zodiac** is an Astrological software for personal use.
 
 [**Download the latest version**](http://sourceforge.net/projects/zodiac-app/files/latest/download)
 
@@ -16,7 +16,7 @@ Features:
 
 
 Subprojects:
-============
+------------
 
 ``Zodiac` project consists of following parts:
 
@@ -30,51 +30,73 @@ Subprojects:
 
 
 Directories:
-============
+------------
 
-* ***/bin/*** - application build&run directory.
-* ***/bin/i18n/*** - localization files for all projects;
-* ***/bin/images/*** - various astrological images used in application
-* ***/bin/style/*** - CSS and icons for application
-* ***/bin/text/*** - interpretations of astrological items
-* ***/bin/user/*** - collection of user files (File->Open & File->Save)
-* ***/bin/astroprocessor/***,
-* ***/bin/chart/***,
-* ***/bin/fileeditor/***,
-* ***/bin/plain/***,
-* ***/bin/planets/***,
-* ***/bin/swe/*** - files used by appropriate library;
-* ***/chart/***,
-* ***/fileeditor/***,
-* ***/plain/***,
-* ***/planets/***,
-* ***/libAstroprocessor/***,
-* ***/libSwisseph/***,
-* ***/zodiac/*** - sources of QT projects
-* ***/nsis/*** - files for Nullsoft Scriptable Install System
+* ***bin/*** - application build&run directory.
+* ***bin/i18n/*** - localization files for all projects;
+* ***bin/images/*** - various astrological images used in application
+* ***bin/style/*** - CSS and icons for application
+* ***bin/text/*** - interpretations of astrological items
+* ***bin/user/*** - collection of user files (File->Open & File->Save)
+* ***bin/astroprocessor/***,
+* ***bin/chart/***,
+* ***bin/fileeditor/***,
+* ***bin/plain/***,
+* ***bin/planets/***,
+* ***bin/swe/*** - files used by appropriate library;
+* ***chart/***,
+* ***fileeditor/***,
+* ***plain/***,
+* ***planets/***,
+* ***astroprocessor/***,
+* ***swe/***,
+* ***zodiac/*** - subprojects
+* ***nsis/*** - files for Nullsoft Scriptable Install System
 
 
-Build order:
-============
+Build instructions:
+===================
 
-Run QT, open and build projects in the following order:
+Requirement: Qt > 4.8 (works in Qt 4.8.2 and in Qt 5.2 as well).
 
-    1. /libSwisseph/swe.pro -> /bin/swe.dll;
-    2. /libAstroprocessor/astroprocessor.pro -> /bin/astroprocessor.dll;
-    3. /chart/chart.pro -> /bin/chart.dll,
-    /fileeditor/fileeditor.pro -> /bin/fileeditor.dll,
-    /plain/plain.pro -> /bin/plain.dll,
-    /planets/planets.pro -> /bin/planets.dll;
-    4. /zodiac/zodiac.pro -> /bin/zodiac.exe.
+Method 1: automatic bundle build
+---------------------------------
 
-To run application on Windows, make sure you put following QT libraries into app directory:
+This method will produce a single executable file with integrated project libraries. It is useful, then qmake can't link that libraries to executable for some reason.
 
-	/bin/imageformats/qgif.dll
-	/bin/imageformats/qico.dll
-	/bin/imageformats/qjpeg.dll
-	/bin/platforms/qwindows.dll
+Open **zodiac/zodiac.bundle.pro** in Qt Creator, select a build configuration (Debug or Release) then build (Ctrl+B).
 
-In QT 5.2, they located in ***C:\Qt\5.2.1\mingw48_32\plugins***.
+Method 2: automatic separate build
+-----------------------------------
+
+This method is tested in Windows only. It will produce a main executable (zodiac) with a few dynamic libraries. Open **all.pro** in Qt Creator, and build it as usual.
+
+Method 3: manual build
+-----------------------
+
+This is a variation of 'method 2' that supposes manual building of all subprojects.
+Open projects in QtCreator and build them manually in the following order:
+
+    1. swe/swe.pro -> bin/swe.dll;
+    2. astroprocessor/astroprocessor.pro -> bin/astroprocessor.dll;
+    3. chart/chart.pro -> bin/chart.dll,
+    fileeditor/fileeditor.pro -> bin/fileeditor.dll,
+    plain/plain.pro -> bin/plain.dll,
+    planets/planets.pro -> bin/planets.dll;
+    4. zodiac/zodiac.pro -> bin/zodiac.exe.
+	
+	
+Run on Windows:
+===============
+	
+To run application on Windows after build, put following Qt libraries into app directory:
+
+	imageformats/qgif.dll
+	imageformats/qico.dll
+	imageformats/qjpeg.dll
+	platforms/qwindows.dll
+
+In Qt 5.2, they are located in ***C:\Qt\5.2.1\mingw48_32\plugins***.
 
 
 External links:

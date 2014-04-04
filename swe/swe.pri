@@ -1,5 +1,3 @@
-TEMPLATE = lib
-
 SOURCES += swecl.c \
 swedate.c \
 swehouse.c \
@@ -21,13 +19,3 @@ swepcalc.h \
 swephexp.h \
 sweph.h \
 swephlib.h
-
-
-DESTDIR = ../../bin
-
-!debug_and_release|build_pass {
-        CONFIG(debug, debug|release) {
-                #TARGET = $$member(TARGET, 0)_d
-        }
-}
-

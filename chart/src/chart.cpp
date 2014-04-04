@@ -2,8 +2,9 @@
 #include <QVBoxLayout>
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QWheelEvent>
 #include <QGraphicsDropShadowEffect>
-#include <QDebug>
+//#include <QDebug>
 #include <math.h>
 #include <Astroprocessor/Output>
 #include <Astroprocessor/Calc>
@@ -50,6 +51,11 @@ float RotatingCircleItem :: angle(const QPointF& pos)
   return ret;
  }
 
+Chart* RotatingCircleItem :: chart()
+ {
+  return (Chart*)(scene()->views()[0]->parentWidget());   // ахтунг, быдлокод!
+ }
+
 bool RotatingCircleItem :: sceneEvent(QEvent *event)
  {
   if (!file) return false;
@@ -58,6 +64,7 @@ bool RotatingCircleItem :: sceneEvent(QEvent *event)
    {
     dragAngle = angle(((QGraphicsSceneMouseEvent*)event)->scenePos());
     dragDT = file->getGMT();
+    return true;
    }
   else if (event->type() == QEvent::GraphicsSceneMouseMove)
    {
@@ -68,17 +75,22 @@ bool RotatingCircleItem :: sceneEvent(QEvent *event)
     float lastAngle = angle(lastPos);
     float newAngle  = angle(newPos);
 
-    if ((lastAngle < 10 && newAngle  > 350) ||         // new angle turns 0/360
+    if ((lastAngle < 10 && newAngle  > 350) ||            // new angle turns 0/360
         (newAngle  < 10 && lastAngle > 350))
      {
       dragAngle = newAngle;
       dragDT = file->getGMT();
      }
 
-    file->setGMT(dragDT.addSecs((newAngle - dragAngle) * 180));
+    float k = newAngle - dragAngle;
+    if (chart()->isClockwise() == (chart()->startPoint() == Start_Ascendent))  // fix rotate in wrong direction
+      k = -k;
+
+    file->setGMT(dragDT.addSecs(k * 180));
+    return true;
    }
 
-  return true;
+  return false;                                           // pass event through
  }
 
 bool RotatingCircleItem :: sceneEventFilter(QGraphicsItem *watched, QEvent *event)
@@ -86,7 +98,8 @@ bool RotatingCircleItem :: sceneEventFilter(QGraphicsItem *watched, QEvent *even
   if (event->type() == QEvent::GraphicsSceneHoverEnter)   // show help when mouse over item
    {
     QString tag = watched->data(0).toString();
-    ((Chart*)(scene()->views()[0]->parentWidget()))->help(tag);  // ахтунг, быдлокод!
+    chart()->help(tag);
+    return true;
    }
 
   return false;
@@ -107,12 +120,14 @@ Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
   emptyScene = true;
   mapRect = QRect(-250,-250, 500, 500);
   zoom = 0.8;
+  defaultZoom = 0.8;
 
   view = new QGraphicsView(this);
 
   view->setScene(new QGraphicsScene());
   view->setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
-  view->installEventFilter(this);
+  //view->installEventFilter(this);
+  view->scene()->installEventFilter(this);
   view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -123,7 +138,7 @@ Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
 
 void Chart :: fitInView()
  {
-  QRect rect(mapRect.x() / zoom, mapRect.y() / zoom, mapRect.width() / zoom, mapRect.height() / zoom);
+  QRect rect((mapRect.x() + pan.x()) / zoom, (mapRect.y() + pan.y()) / zoom, mapRect.width() / zoom, mapRect.height() / zoom);
   view->fitInView(rect, Qt::KeepAspectRatio);
  }
 
@@ -363,16 +378,6 @@ void Chart :: updateScene()
 
 
     QString toolTip = A::describeAspect(asp);
-    //int penWidth = 2;
-    //QColor color;
-
-    //if (qAbs(A::getAspect(asp.id).angle - asp.angle) > asp.orbise / 2) // inaccuracy aspect
-    //  penWidth = 1;
-
-    //color.setNamedColor(asp.d->userData["color"].toString());
-    //if (!color.isValid()) color = Qt::blue;
-
-
     if (aspects[i]->toolTip() != toolTip)     // assign messages
      {
       aspects[i]->setToolTip(toolTip);
@@ -380,19 +385,6 @@ void Chart :: updateScene()
                                                         .arg(asp.planet1->name)
                                                         .arg(asp.planet2->name));
      }
-
-    /*if (aspects[i]->pen().color() != color ||
-        aspects[i]->pen().width() != penWidth)   // assign paint parameters
-     {
-      aspects[i]->setPen(QPen(color, penWidth));
-     }*/
-
-    //aspects[i]->setOpacity(1);
-    /*if (!file()->horoscope().planets[asp.planet1].isReal)
-      aspects[i]->setOpacity(aspects[i]->opacity() / 2);
-
-    if (!file()->horoscope().planets[asp.planet2].isReal)
-      aspects[i]->setOpacity(aspects[i]->opacity() / 2);*/
 
     i++;
    }
@@ -439,7 +431,7 @@ void Chart :: clearScene()
   planets.clear();
   planetMarkers.clear();
   aspects.clear();
-  aspectMarkers.clear();
+  //aspectMarkers.clear();
   signIcons.clear();
  }
 
@@ -452,6 +444,29 @@ void Chart :: fileUpdated(AstroFile::Members members)
   if (members & (AstroFile::GMT | AstroFile::Timezone | AstroFile::Location |
                  AstroFile::HouseSystem | AstroFile::AspectLevel | AstroFile::Zodiac))
     updateScene();
+ }
+
+bool Chart :: eventFilter(QObject* obj, QEvent* ev)
+ {
+  if (ev->type() == QEvent::GraphicsSceneWheel)
+   {
+    ev->accept();
+    QGraphicsSceneWheelEvent* e = (QGraphicsSceneWheelEvent*)ev;
+    if (e->delta() > 0)
+      zoom += 0.2;
+    else if (zoom <= defaultZoom)
+      return true;
+    else
+      zoom -= 0.2;
+
+    //zoom = qMax(zoom, defaultZoom);
+    pan = e->scenePos();
+    fitInView();
+    //updateScene();
+    return true;
+   }
+
+  return QObject::eventFilter(obj, ev);
  }
 
 void Chart :: resizeEvent (QResizeEvent*)
@@ -485,7 +500,7 @@ AppSettings Chart :: currentSettings ()
   return s;
  }
 
-void Chart :: applySettings      ( const AppSettings& s )
+void Chart :: applySettings       ( const AppSettings& s )
  {
   circleStart      = (CircleStart)s.value("Circle/circleStart").toInt();
   clockwise        = s.value ( "Circle/clockwise"        ).toBool();

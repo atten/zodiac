@@ -1,9 +1,13 @@
-#ifndef MAP_H
-#define MAP_H
+#ifndef CHART_H
+#define CHART_H
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <Astroprocessor/Gui>
+
+enum CircleStart { Start_ZeroDegree = 0, Start_Ascendent = 1 };
+
+class Chart;
 
 
 class RotatingCircleItem : public QAbstractGraphicsShapeItem
@@ -15,6 +19,7 @@ class RotatingCircleItem : public QAbstractGraphicsShapeItem
         AstroFile* file;
 
         float angle(const QPointF& pos);                   // converts coordinate into angle
+        Chart* chart();
 
     protected:
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
@@ -38,28 +43,28 @@ class Chart : public AstroFileHandler
     Q_OBJECT
 
     private:
-        enum CircleStart { Start_ZeroDegree = 0, Start_Ascendent = 1 };
-
         bool emptyScene;
         QRect mapRect;
+        float zoom, defaultZoom;
+        QPointF pan;
+        QGraphicsView* view;
+        RotatingCircleItem* circle;
+
         CircleStart circleStart;
         bool clockwise;
         int zodiacWidth;
         int innerRadius;
         int cuspideLength;
-        float zoom;
         bool coloredZodiac;
         bool zodiacDropShadow;
-        QGraphicsView* view;
 
-        QList<QGraphicsLineItem*> cuspides;
-        QList<QGraphicsSimpleTextItem*> cuspideLabels;
+        QList<QGraphicsLineItem*>         cuspides;
+        QList<QGraphicsSimpleTextItem*>   cuspideLabels;
         QMap<A::PlanetId, QGraphicsItem*> planetMarkers;
         QMap<A::PlanetId, QGraphicsItem*> planets;
-        QList<QGraphicsSimpleTextItem*> aspectMarkers;
-        QList<QGraphicsLineItem*>       aspects;
-        QList<QGraphicsItem*>           signIcons;
-        RotatingCircleItem* circle;
+        //QList<QGraphicsSimpleTextItem*> aspectMarkers;
+        QList<QGraphicsLineItem*>         aspects;
+        QList<QGraphicsItem*>             signIcons;
 
         int normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker);
         const QPen& aspectPen(const A::Aspect& asp);
@@ -79,12 +84,15 @@ class Chart : public AstroFileHandler
         void applySettings       ( const AppSettings& );
         void setupSettingsEditor ( AppSettingsEditor* );
 
+        bool eventFilter(QObject *, QEvent *);
         void resizeEvent (QResizeEvent *ev);
 
     public:
         Chart(QWidget *parent = 0);
 
-        void help(QString tag) { requestHelp(tag); }    // called by circle item (because requestHelp() is protected)
+        void help(QString tag)    { requestHelp(tag); }    // called by circle item (because requestHelp() is protected)
+        bool isClockwise()        { return clockwise; }
+        CircleStart startPoint()  { return circleStart; }
 };
 
-#endif // MAP_H
+#endif // CHART_H

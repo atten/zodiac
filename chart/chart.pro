@@ -1,16 +1,11 @@
 QT += widgets
 TEMPLATE = lib
-DESTDIR = ../../bin
-TRANSLATIONS = ../bin/i18n/chart_ru.ts \
-               ../bin/i18n/chart_en.ts
+DESTDIR = $$_PRO_FILE_PWD_/../bin
 
-SOURCES += src/chart.cpp
-HEADERS += src/chart.h
+include(chart.pri)
 
 # library dependencies
-INCLUDEPATH += ../libAstroprocessor/include/
-
-LIBS += -L../../bin
+LIBS += -L$$_PRO_FILE_PWD_/../bin
 LIBS += -lastroprocessor
 
 
