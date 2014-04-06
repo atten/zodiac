@@ -38,3 +38,5 @@ Makefile
 /zodiac/src/help.old.h
 *.user
 /bin/user/Dmitry Kochetov.dat
+/build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Release
+/build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Debug

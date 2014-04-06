@@ -1,8 +1,9 @@
 #include <QApplication>
 #include <QFile>
 #include <QDir>
-//#include <QTextCodec>
+#include <QTextCodec>
 #include <QTranslator>
+#include <QFontDatabase>
 #include "mainwindow.h"
 
 void loadTranslations(QApplication* a, QString lang)
@@ -12,7 +13,8 @@ void loadTranslations(QApplication* a, QString lang)
    {
     QTranslator* t = new QTranslator;
     qDebug() << "load translation file" << s << ":"
-             << (t->load(dir.absolutePath() + '/' + s) && a->installTranslator(t) ? "success" : "failed");
+                 << (t->load(dir.absolutePath() + '/' + s) ? "success" : "failed");
+    a->installTranslator(t);
    }
  }
 
@@ -20,12 +22,13 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("v0.6.2 (build 2014-03-24)");
+    a.setApplicationVersion("v0.6.3 (build 2014-04-06)");
 
-    //QTextCodec* codec = QTextCodec::codecForName ( "CP1251" );
-    //QTextCodec::setCodecForCStrings ( codec );
-    //QTextCodec::setCodecForTr ( codec );
-    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("CP1251"));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+    QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );
+    QTextCodec::setCodecForCStrings ( codec );
+    QTextCodec::setCodecForTr ( codec );
+#endif
 
     QDir::setCurrent(a.applicationDirPath());
     QString lang = "";
@@ -40,6 +43,7 @@ int main(int argc, char *argv[])
         loadTranslations(&a, "en");
      }
 
+    QFontDatabase::addApplicationFont("fonts1/Almagest.ttf");
     A::load(lang);
     MainWindow w;
 

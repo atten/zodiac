@@ -479,9 +479,9 @@ AppSettings Chart :: defaultSettings ()
   AppSettings s;
   s.setValue ( "Circle/circleStart",      Start_Ascendent );
   s.setValue ( "Circle/clockwise",        false );
-  s.setValue ( "Circle/zodiacWidth",      37 );
-  s.setValue ( "Circle/cuspideLength",    33 );
-  s.setValue ( "Circle/innerRadius",      100 );
+  s.setValue ( "Circle/zodiacWidth",      36 );
+  s.setValue ( "Circle/cuspideLength",    36 );
+  s.setValue ( "Circle/innerRadius",      130 );
   s.setValue ( "Circle/coloredZodiac",    true );
   s.setValue ( "Circle/zodiacDropShadow", true );
   return s;

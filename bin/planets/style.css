@@ -130,4 +130,5 @@ QRadioButton:pressed {
 
 QRadioButton::indicator {
 	width: 0;
+	image: none;
 }

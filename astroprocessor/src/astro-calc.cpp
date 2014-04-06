@@ -283,8 +283,7 @@ Planet calculatePlanet ( PlanetId planet, const InputData& input, const Houses& 
    }
   else
    {
-    qDebug( "A: can't calculate position of planet %d at julian day:%f", ret.sweNum, jd );
-    qDebug( errStr );
+    qDebug( "A: can't calculate position of '%s' at julian day %f: %s", qPrintable(ret.name), jd, errStr );
    }
 
 

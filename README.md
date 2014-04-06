@@ -1,6 +1,7 @@
 **Zodiac** is an Astrological software for personal use.
 
-[**Download the latest version**](http://sourceforge.net/projects/zodiac-app/files/latest/download)
+**Download the latest version**: [**Windows**](http://sourceforge.net/projects/zodiac-app/files/Zodiac-0.6.2-installer.exe/download) | [**Linux64**](http://sourceforge.net/projects/zodiac-app/files/zodiac-0.6.2.tar.gz/download)
+
 
 
 Features:
@@ -64,7 +65,7 @@ Method 1: automatic bundle build
 
 This method will produce a single executable file with integrated project libraries. It is useful, then qmake can't link that libraries to executable for some reason.
 
-Open **zodiac/zodiac.bundle.pro** in Qt Creator, select a build configuration (Debug or Release) then build (Ctrl+B).
+Open **zodiac/zodiac_bundle.pro** in Qt Creator, select a build configuration (Debug or Release) then build (Ctrl+B).
 
 Method 2: automatic separate build
 -----------------------------------

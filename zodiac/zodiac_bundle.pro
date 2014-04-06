@@ -1,6 +1,6 @@
 QT += widgets network declarative
 DESTDIR = $$_PRO_FILE_PWD_/../bin
-TARGET = zodiac_bundle
+TARGET = zodiac
 TEMPLATE = app
 
 #DEPENDPATH += swe zodiac
