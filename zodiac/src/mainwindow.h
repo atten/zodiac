@@ -117,6 +117,7 @@ class FilesBar : public QTabBar
         void deleteFile(QString name);
         void openFile(QString name);
         void openFileInNewTab(QString name);
+        void nextTab()            { setCurrentIndex((currentIndex() + 1) % count()); }
         bool closeTab(int);
 
     public:

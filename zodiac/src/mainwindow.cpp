@@ -4,6 +4,7 @@
 #include <QStatusBar>
 #include <QListWidget>
 #include <QKeyEvent>
+#include <QShortcut>
 #include <QMenu>
 #include <QDir>
 #include <QApplication>
@@ -667,7 +668,7 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
   connect(statusBar(),   SIGNAL(messageChanged(QString)),      help,     SLOT(searchFor(QString)));
-  //connect(databaseDockWidget, SIGNAL(visibilityChanged(bool)), this,     SLOT(dockVisibilityChanged(bool)));
+  connect(new QShortcut(QKeySequence("CTRL+TAB"), this), SIGNAL(activated()), filesBar, SLOT(nextTab()));
 
   loadSettings();
   filesBar->addEmptyFile();
@@ -714,23 +715,6 @@ void MainWindow        :: addNewFile          ( )
   //astroWidget->editCurrentFile();
  }
 
-/*void MainWindow        :: dockVisibilityChanged ( bool b )
- {
-  QDockWidget* dock = (QDockWidget*)sender();
-
-  if (b && dock->isFloating())
-   {
-    dock->move(geometry().left() +
-               centralWidget()->geometry().left() +
-               (centralWidget()->width() - dock->width()) / 2,
-
-               geometry().top() +
-               centralWidget()->geometry().top() +
-               (centralWidget()->height() - dock->height()) / 2);
-   }
-
- }*/
-
 AppSettings MainWindow :: defaultSettings     ( )
  {
   AppSettings s;
@@ -768,11 +752,6 @@ void MainWindow        :: setupSettingsEditor ( AppSettingsEditor* ed )
   //ed->addTab(tr("Other"));
   astroWidget->setupSettingsEditor(ed);
  }
-
-/*void MainWindow        :: mouseDoubleClickEvent ( QMouseEvent* )
- {
-  openSettingsEditor();
- }*/
 
 void MainWindow        :: closeEvent          ( QCloseEvent* ev )
  { 

@@ -25,7 +25,6 @@ Makefile
 /bin/i18n/*.cmd
 /bin/style/style.unused.css
 /bin/user/aaa.dat
-/bin/user/lilo.panic.dat
 /bin/user/nya1.dat
 /bin/user/ol1.dat
 /bin/user/test.dat
@@ -37,6 +36,5 @@ Makefile
 /zodiac/src/help.old.cpp
 /zodiac/src/help.old.h
 *.user
-/bin/user/Dmitry Kochetov.dat
 /build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Release
 /build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Debug
