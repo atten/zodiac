@@ -52,9 +52,21 @@ void AstroFileInfo :: resetToDefault()
 
 void AstroFileInfo :: fileUpdated(AstroFile::Members)
  {
-  QString date      = file()->getLocalTime().date().toString(Qt::DefaultLocaleShortDate);
-  QString dayOfWeek = file()->getLocalTime().date().toString("ddd");
-  QString time      = file()->getLocalTime().time().toString();
+  if (!file()) return;
+  QDateTime dt = file()->getLocalTime();
+
+  QString date      = dt.date().toString(Qt::DefaultLocaleShortDate);
+  QString dayOfWeek = dt.date().toString("ddd");
+  QString time      = dt.time().toString();
+
+  QString age;
+  if (showAge)
+   {
+    float a1 = dt.daysTo(QDateTime::currentDateTime()) / 365.25;
+    char a[7];
+    sprintf(a, "%5.2f", a1);
+    age = tr(", %1 years old").arg(a);
+   }
 
   QString timezone;
   if (file()->getTimezone() > 0)
@@ -77,8 +89,8 @@ void AstroFileInfo :: fileUpdated(AstroFile::Members)
    }
 
 
-  setText( QString("%1\n")          .arg(file()->getName()) +
-           QString("%1 %2 %3 (%4)\n").arg(date, dayOfWeek, time, timezone) +
+  setText( QString("%1\n").arg(file()->getName()) +
+           tr("%1 %2 %3 (%4)%5\n").arg(date, dayOfWeek, time, timezone, age) +
            place );
  }
 
@@ -87,6 +99,32 @@ void AstroFileInfo :: setText(const QString& str)
   edit->setText(str);
   shadow->setText(str);
  }
+
+AppSettings AstroFileInfo :: defaultSettings ()
+ {
+  AppSettings s;
+  s.setValue ( "age", true );
+  return s;
+ }
+
+AppSettings AstroFileInfo :: currentSettings ()
+ {
+  AppSettings s;
+  s.setValue ( "age", showAge );
+  return s;
+ }
+
+void AstroFileInfo :: applySettings       ( const AppSettings& s )
+ {
+  showAge = s.value ( "age" ).toBool();
+  fileUpdated(AstroFile::All);
+ }
+
+void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
+ {
+  ed -> addCheckBox("age", tr("Show age:"));
+ }
+
 
 
 /* =========================== ASTRO WIDGET ========================================= */
@@ -261,6 +299,8 @@ AppSettings AstroWidget :: defaultSettings ()
  {  
   AppSettings s;
 
+  s << fileView->defaultSettings();
+
   foreach (AstroFileHandler* h, handlers)
     s << h->defaultSettings();
 
@@ -276,6 +316,8 @@ AppSettings AstroWidget :: defaultSettings ()
 AppSettings AstroWidget :: currentSettings ()
  { 
   AppSettings s;
+
+  s << fileView->currentSettings();
 
   foreach (AstroFileHandler* h, handlers)
     s << h->currentSettings();
@@ -300,6 +342,8 @@ void AstroWidget :: applySettings      ( const AppSettings& s )
   slides          -> setSlide        (s.value("slide").toInt() );
   toolBar         -> actions()[slides->currentSlideIndex()]->setChecked(true);
 
+  fileView->applySettings(s);
+
   setupFile(file());
 
   foreach (AstroFileHandler* h, handlers)
@@ -310,6 +354,7 @@ void AstroWidget :: setupSettingsEditor ( AppSettingsEditor* ed )
  {
   //ed->addTab(tr("Data"));
 
+  fileView->setupSettingsEditor(ed);
   ed->addCustomWidget(geoWdg, tr("Default location:"), SIGNAL(locationChanged()));
 
   foreach (AstroFileHandler* h, handlers)
@@ -481,12 +526,13 @@ AstroDatabase :: AstroDatabase (QWidget *parent) : QFrame(parent)
   QPushButton* refresh = new QPushButton;
 
   fileList   = new QListWidget;
-  search = new QLineEdit;
+  search     = new QLineEdit;
 
   refresh->setIcon(QIcon("style/update.png"));
   refresh->setToolTip(tr("Refresh"));
   refresh->setCursor(Qt::PointingHandCursor);
   fileList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  fileList->viewport()->installEventFilter(this);       // for handling middle mouse button clicks
   search->setPlaceholderText(tr("Search"));
   setMinimumWidth(200);
   setContextMenuPolicy(Qt::CustomContextMenu);
@@ -611,10 +657,15 @@ void AstroDatabase :: keyPressEvent(QKeyEvent* e)
     deleteSelected();
  }
 
-void AstroDatabase :: mousePressEvent(QMouseEvent* e)
+bool AstroDatabase :: eventFilter(QObject *o, QEvent *e)
  {
-  if (e->button() == Qt::MiddleButton)
+  if (e->type() == QEvent::MouseButtonRelease &&
+      ((QMouseEvent*)e)->button() == Qt::MiddleButton)
+   {
     openSelectedInNewTab();
+    return true;
+   }
+  return QObject::eventFilter(o, e);
  }
 
 

@@ -24,6 +24,7 @@ class AstroFileInfo : public AstroFileHandler
     private:
         QPushButton* edit;
         QLabel* shadow;
+        bool showAge;
 
         void setText(const QString& str);
 
@@ -37,6 +38,11 @@ class AstroFileInfo : public AstroFileHandler
 
     public:
         AstroFileInfo (QWidget *parent = 0);
+
+        AppSettings defaultSettings ();
+        AppSettings currentSettings ();
+        void applySettings       ( const AppSettings& );
+        void setupSettingsEditor ( AppSettingsEditor* );
 };
 
 
@@ -144,7 +150,7 @@ class AstroDatabase : public QFrame
 
     protected:
         virtual void keyPressEvent(QKeyEvent*);
-        virtual void mousePressEvent(QMouseEvent*);
+        virtual bool eventFilter(QObject *, QEvent *);
 
     private slots:
         void showContextMenu(QPoint);
