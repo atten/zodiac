@@ -22,7 +22,7 @@ QToolBar::handle:vertical {
 
 /* =========================== QToolButton ========================================== */
 
-QToolButton, QDialog#about QPushButton {
+QToolButton {
 	font-size: 10px;
 	background: #4f4f4f;
 	border: 1px solid #4f4f4f;
@@ -32,17 +32,17 @@ QToolButton, QDialog#about QPushButton {
 	color: #EEE;
 }
 
-QToolButton:hover, QDialog#about QPushButton:hover { 								/* кнопка при наведении */
+QToolButton:hover { 								/* кнопка при наведении */
 	background: #888;
 }
 
-QToolButton:pressed, QDialog#about QPushButton:pressed { 							/* кнопка при нажатии */
+QToolButton:pressed { 							/* кнопка при нажатии */
 	padding-top: 3px;
 	padding-left: 3px;
 	background: #77A;
 }
 
-QToolButton:checked, QDialog#about QPushButton:checked {
+QToolButton:checked {
 	padding-top: -1px;
 	background: #998;
 }
@@ -178,6 +178,26 @@ QDialog#about QLabel {
 	font: 11px Verdana;
 	color: #c5d7f2;
     padding: 100px 15px 15px 15px;
+}
+
+QDialog#about QPushButton {
+	background-color: qlineargradient(spread:pad,
+						x1:0, y1:0.551, x2:0, y2:0.107591,
+						stop:0 rgba(0, 43, 63, 255),
+						stop:1 rgba(0, 89, 109, 255));
+	border-width: 0px;
+	border-radius: 6px;
+	padding: 5px;
+	min-height: 36px;
+	color: #EEECE1;
+}
+
+
+QDialog#about QPushButton:pressed {
+	background-color: qlineargradient(spread:pad,
+									x1:0, y1:0.551, x2:0, y2:0.107591,
+									stop:0 rgba(63, 63, 63, 255),
+									stop:1 rgba(40, 40, 40, 255));
 }
 
 

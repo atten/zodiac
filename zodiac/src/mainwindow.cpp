@@ -816,18 +816,34 @@ void MainWindow        :: closeEvent          ( QCloseEvent* ev )
 
 void MainWindow        :: gotoUrl             ( QString url )
  {
+  if (url.isEmpty()) url = ((QWidget*)sender())->toolTip();
   QDesktopServices::openUrl(QUrl(url));
  }
 
 void MainWindow        :: showAbout           ( )
  {
-  QDialog* d = new QDialog(this);
-  QLabel* l = new QLabel;
-  QLabel* l2 = new QLabel;
+  QDialog* d     = new QDialog(this);
+  QLabel* l      = new QLabel;
+  QLabel* l2     = new QLabel;
   SlideWidget* s = new SlideWidget;
   QPushButton* b = new QPushButton(tr("Credits"));
+  QPushButton* b1 = new QPushButton(tr("Developer's\nblog"));
+  QPushButton* b2 = new QPushButton;
+  QPushButton* b3 = new QPushButton;
 
   b->setCheckable(true);
+  b1->setIconSize(QSize(32,32));
+  b2->setIconSize(QSize(32,32));
+  b3->setIconSize(QSize(32,32));
+  b1->setIcon(QIcon("style/wp.png"));
+  b2->setIcon(QIcon("style/github.png"));
+  b3->setIcon(QIcon("style/sourceforge.png"));
+  b1->setToolTip("http://www.syslog.pro/tag/zodiac");
+  b2->setToolTip("http://github.com/atten/zodiac");
+  b3->setToolTip("http://sourceforge.net/projects/zodiac-app/");
+  b1->setCursor(Qt::PointingHandCursor);
+  b2->setCursor(Qt::PointingHandCursor);
+  b3->setCursor(Qt::PointingHandCursor);
   d->setObjectName("about");
   l->setWordWrap(true);
   l->setTextInteractionFlags(Qt::LinksAccessibleByMouse|
@@ -839,15 +855,23 @@ void MainWindow        :: showAbout           ( )
   s->addSlide(l2);
   s->setTransitionEffect(SlideWidget::Transition_Overlay);
 
+  QHBoxLayout* h = new QHBoxLayout;
+   h->setMargin(10);
+   h->addWidget(b);
+   h->addStretch();
+   h->addWidget(b1);
+   h->addWidget(b2);
+   h->addWidget(b3);
+
   QVBoxLayout* v = new QVBoxLayout(d);
    v->setMargin(0);
    v->addWidget(s);
-   v->addWidget(b);
+   v->addLayout(h);
 
   l->setText("<center><b><big>" + QApplication::applicationVersion() + "</big></b>"
           "<p>" + tr("Astrological software for personal use.") + "</p>"
-          "<p>Latest news will be available at:<br>"
-          "<a style='color:white' href=\"http://www.syslog.pro/tag/zodiac\">syslog.pro/tag/zodiac</a></p>"
+          //"<p><a style='color:yellow' href=\"http://www.syslog.pro/tag/zodiac\">Watch developer's blog</a>"
+          //" | <a style='color:yellow' href=\"https://github.com/atten/zodiac\"><img src=\"style/github.png\">Follow on GitHub</a></p>"
           "<p>Copyright (C) 2012-2014 Artem Vasilev<br>"
           "<a style='color:white' href=\"mailto:atten@syslog.pro\">atten@syslog.pro</a></p><br>" +
           tr("This application is provided AS IS and distributed in the hope that it will be useful,"
@@ -866,6 +890,9 @@ void MainWindow        :: showAbout           ( )
 
   connect(l,  SIGNAL(linkActivated(QString)), this, SLOT(gotoUrl(QString)));
   connect(l2, SIGNAL(linkActivated(QString)), this, SLOT(gotoUrl(QString)));
+  connect(b1, SIGNAL(clicked()),              this, SLOT(gotoUrl()));
+  connect(b2, SIGNAL(clicked()),              this, SLOT(gotoUrl()));
+  connect(b3, SIGNAL(clicked()),              this, SLOT(gotoUrl()));
   connect(b,  SIGNAL(clicked()), s, SLOT(nextSlide()));
   d->exec();
  }

@@ -33,7 +33,7 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
   timeZone -> setRange(-12, 12);
   timeZone -> setDecimals(1);
   dateTime -> setCalendarPopup(true);
-  comment->setMaximumHeight(70);
+  comment  -> setMaximumHeight(70);
   this     -> setWindowTitle(tr("Edit entry"));
   this     -> setWindowFlags(Qt::Dialog |
                              Qt::MSWindowsFixedSizeDialogHint |
@@ -75,6 +75,7 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
 
   resetToDefault();
   timezoneChanged();
+  dateTime -> setFocus();
  }
 
 void AstroFileEditor :: timezoneChanged()

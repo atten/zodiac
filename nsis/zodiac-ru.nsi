@@ -1,5 +1,5 @@
 !define PRODUCT 'Zodiac'
-!define VERSION '0.6.3'
+!define VERSION '0.6'
 
 !include FontReg.nsh
 !include FontName.nsh
@@ -22,14 +22,14 @@ RequestExecutionLevel admin
 !define MUI_HEADERIMAGE_BITMAP "top.bmp"
 ;!insertmacro MUI_LANGUAGE "Russian"
 
-!define MUI_WELCOMEPAGE_TITLE "Welcome to ${PRODUCT} ${VERSION} setup wizard"
-;!define MUI_WELCOMEPAGE_TEXT "Установщик проведет вас через все этапы установки программы ${PRODUCT} ${VERSION} на ваш компьютер."
+!define MUI_WELCOMEPAGE_TITLE "Установка программы ${PRODUCT} ${VERSION}"
+!define MUI_WELCOMEPAGE_TEXT "Установщик проведет вас через все этапы установки программы ${PRODUCT} ${VERSION} на ваш компьютер."
 
 # These indented statements modify settings for MUI_PAGE_FINISH
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN "$INSTDIR\zodiac.exe"
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
-!define MUI_FINISHPAGE_RUN_TEXT "Run application"
+!define MUI_FINISHPAGE_RUN_TEXT "Запустить приложение"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "license.txt"
@@ -48,16 +48,14 @@ RequestExecutionLevel admin
 ;--------------------------------
 
 ; The stuff to install
-Section "Essential files" SecMain
+Section "Файлы программы" SecMain
 
   SectionIn RO
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-  File ..\bin\Qt*.dll
-  File ..\bin\icu*.dll
-  File ..\bin\lib*.dll
-  File ..\bin\zodiac.exe
+  File ..\bin\*.dll
+  File ..\bin\*.exe
   
   SetOutPath "$INSTDIR\astroprocessor"
   File ..\bin\astroprocessor\*.csv
@@ -83,8 +81,8 @@ Section "Essential files" SecMain
   SetOutPath "$INSTDIR\images\signs"
   File ..\bin\images\signs\*
   
-  SetOutPath "$INSTDIR\chart"
-  File ..\bin\chart\*
+  SetOutPath "$INSTDIR\circle"
+  File ..\bin\circle\*
   
   SetOutPath "$INSTDIR\plain"
   File ..\bin\plain\*
@@ -124,7 +122,7 @@ Section "Essential files" SecMain
   
 SectionEnd
 
-Section "Fonts" SecFonts
+Section "Шрифты" SecFonts
 	SetOutPath "$FONTS"
 	StrCpy $FONT_DIR $FONTS
 	!insertmacro InstallTTFFont 'fonts\Almagest.ttf'
@@ -135,13 +133,13 @@ Section "Fonts" SecFonts
 SectionEnd
 
 ; Optional section (can be disabled by the user)
-Section "Start menu shortcut" SecFolder
+Section "Ярлыки в меню Пуск" SecFolder
   CreateDirectory "$SMPROGRAMS\Zodiac"
   CreateShortCut "$SMPROGRAMS\Zodiac\Удалить.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Zodiac\Запуск.lnk" "$INSTDIR\zodiac.exe" "" "$INSTDIR\zodiac.exe" 0
 SectionEnd
 
-Section "Desktop shortcut" SecIco
+Section "Ярлык на рабочий стол" SecIco
   SetOutPath "$DESKTOP"
   CreateShortCut "$DESKTOP\Zodiac.lnk" "$INSTDIR\zodiac.exe"
 SectionEnd
@@ -166,8 +164,8 @@ SectionEnd
 ;Descriptions
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecMain} "Essential files for running application."
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecFonts} "Font files for correct demonstration of glyphs and symbols."
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecFolder} "Folder contains application shortcuts in Start menu."
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecIco} "Desktop shortcut."
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecMain} "Файлы программы, обязательные для установки."
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecFonts} "Шрифты, необходимые для корректного отображения текста и значков."
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecFolder} "Папка с ярлыками для запуска или удаления программы."
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecIco} "Ярлык на рабочий стол."
   !insertmacro MUI_FUNCTION_DESCRIPTION_END

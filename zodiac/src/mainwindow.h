@@ -199,7 +199,7 @@ class MainWindow : public QMainWindow, public Customizable
         //void dockVisibilityChanged(bool);
         void showSettingsEditor()   { openSettingsEditor(); }
         void showAbout();
-        void gotoUrl(QString url);
+        void gotoUrl(QString url = "");
 
     protected:
         AppSettings defaultSettings ();      // 'Customizable' class implementations

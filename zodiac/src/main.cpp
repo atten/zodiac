@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("v0.6.3 (build 2014-04-06)");
+    a.setApplicationVersion("v0.6.3 (build 2014-04-16)");
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
     QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );
