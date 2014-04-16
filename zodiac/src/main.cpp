@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         loadTranslations(&a, "en");
      }
 
-    QFontDatabase::addApplicationFont("fonts1/Almagest.ttf");
+    QFontDatabase::addApplicationFont("fonts/Almagest.ttf");
     A::load(lang);
     MainWindow w;
 
