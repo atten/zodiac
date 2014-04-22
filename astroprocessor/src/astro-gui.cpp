@@ -31,7 +31,7 @@ QString AstroFile :: fileName() const
   return "user/" + getName() + ".dat";
  }
 
-QString AstroFile :: typeToString (FileType type)
+QString AstroFile :: typeToString (FileType type) const
  {
   switch(type)
    {
@@ -42,11 +42,30 @@ QString AstroFile :: typeToString (FileType type)
   return "";
  }
 
-AstroFile::FileType AstroFile :: typeFromString (QString str)
+AstroFile::FileType AstroFile :: typeFromString (QString str) const
  {
   if (str == "Male")   return TypeMale;
   if (str == "Female") return TypeFemale;
   return TypeOther;
+ }
+
+AstroFile::Members AstroFile :: diffFlags(AstroFile* other) const
+ {
+  if (!other) return AstroFile::All;
+
+  AstroFile::Members flags;
+  if (getName()           != other->getName())           flags |= Name;
+  if (getType()           != other->getType())           flags |= Type;
+  if (getGMT()            != other->getGMT())            flags |= GMT;
+  if (getTimezone()       != other->getTimezone())       flags |= Timezone;
+  if (getLocation()       != other->getLocation())       flags |= Location;
+  if (getLocationName()   != other->getLocationName())   flags |= LocationName;
+  if (getComment()        != other->getComment())        flags |= Comment;
+  if (getHouseSystem()    != other->getHouseSystem())    flags |= HouseSystem;
+  if (getZodiac()         != other->getZodiac())         flags |= Zodiac;
+  if (getAspetLevel()     != other->getAspetLevel())     flags |= AspectLevel;
+  if (hasUnsavedChanges() != other->hasUnsavedChanges()) flags |= ChangedState;
+  return flags;
  }
 
 void AstroFile :: save()
@@ -69,7 +88,7 @@ void AstroFile :: save()
   clearUnsavedState();
  }
 
-void AstroFile :: load(QString name)
+void AstroFile :: load(QString name/*, bool recalculate*/)
  {
   qDebug() << "Loading file" << getName() << "from" << name;
 
@@ -89,7 +108,8 @@ void AstroFile :: load(QString name)
   setComment  ( file.value("comment").toString() );
 
   clearUnsavedState();
-  resumeUpdate();
+  if (/*!recalculate*/!isEmpty()) resumeUpdate()/*holdUpdateMembers = None*/;  // if empty file is just loaded, it will not be recalculated
+  //resumeUpdate();
  }
 
 void AstroFile :: resumeUpdate()
@@ -112,7 +132,7 @@ void AstroFile :: change(AstroFile::Members members)
     if (members & (GMT|Location|HouseSystem|Zodiac|AspectLevel))
       recalculate();
 
-    changed(members|ChangedState);
+    emit changed(members|ChangedState);
    }
   else
    {
@@ -236,11 +256,13 @@ void AstroFile :: destroy()
  }
 
 
+
 /* =========================== ABSTRACT FILE HANDLER ================================ */
 
 AstroFileHandler :: AstroFileHandler(QWidget *parent) : QWidget(parent), Customizable()
  {
   f = 0;
+  f2 = 0;
   delayUpdate = false;
   delayMembers = AstroFile::None;
  }
@@ -255,17 +277,59 @@ void AstroFileHandler :: setFile (AstroFile* file)
     f->disconnect(this, SLOT(fileDestroyedSlot()));
    }
 
-  f = file;
-
   if (file)
    {
     connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
     connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
-    fileUpdatedSlot(AstroFile::All);
+
+    if (f)
+     {
+      AstroFile::Members flags = f->diffFlags(file);
+      f = file;
+      fileUpdatedSlot(flags);
+     }
+    else
+     {
+      f = file;
+      fileUpdatedSlot(AstroFile::All);
+     }
    }
   else
    {
-    resetToDefault();
+    fileDestroyedSlot();
+   }
+ }
+
+void AstroFileHandler :: set2ndFile(AstroFile* file)
+ {
+  if (file == f2) return;
+
+  if (f2)
+   {
+    f2->disconnect(this, SLOT(secondFileUpdatedSlot(AstroFile::Members)));
+    f2->disconnect(this, SLOT(secondFileDestroyedSlot()));
+   }
+
+  if (file)
+   {
+    connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(secondFileUpdatedSlot(AstroFile::Members)));
+    connect (file, SIGNAL(destroyed()), this, SLOT(secondFileDestroyedSlot()));
+
+    if (f2)
+     {
+      AstroFile::Members flags = f2->diffFlags(file);
+      f2 = file;
+      secondFileUpdatedSlot(flags);
+     }
+    else
+     {
+      f2 = file;
+      secondFileUpdatedSlot(AstroFile::All);
+     }
+   }
+  else
+   {
+    secondFileDestroyedSlot();
    }
  }
 
@@ -282,15 +346,30 @@ void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
    }
  }
 
+void AstroFileHandler :: secondFileUpdatedSlot(AstroFile::Members m)
+ {
+  if (isVisible())
+   {
+    secondFileUpdated(m);
+   }
+  else
+   {
+    delayUpdate = true;
+    delayMembers2nd |= m;
+   }
+ }
+
 void AstroFileHandler :: showEvent(QShowEvent* e)
  {
   QWidget::showEvent(e);
 
   if (delayUpdate)
    {
-    fileUpdatedSlot(delayMembers);
+    if (delayMembers)    fileUpdatedSlot(delayMembers);
+    if (delayMembers2nd) secondFileUpdatedSlot(delayMembers2nd);
+    delayMembers    = AstroFile::None;
+    delayMembers2nd = AstroFile::None;
     delayUpdate = false;
-    delayMembers = AstroFile::None;
    }
  }
 

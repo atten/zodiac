@@ -253,16 +253,7 @@ void Planets :: describePlanet()
     QListWidgetItem* item = new QListWidgetItem;
     item->setIcon(QIcon(asp.d->userData["icon"].toString()));
     item->setText(A::describeAspect(asp));
-
-    QString tip = QString("%1 (%2) %3-%4\n").arg(asp.d->name)
-                                            .arg(A::degreeToString(asp.d->angle))
-                                            .arg(asp.planet1->name)
-                                            .arg(asp.planet2->name);
-    tip += tr("Acceptable orb: %1 (%2)\n")  .arg(A::degreeToString(asp.d->orb))
-                                            .arg(A::degreeToString(asp.orb));
-    tip += (asp.applying) ? tr("Applying") : tr("Seperating");
-    item->setToolTip(tip);
-
+    item->setToolTip(A::describeAspectFull(asp));
     item->setStatusTip(QString("%1+%2+%3").arg(asp.d->name)
                                           .arg(asp.planet1->name)
                                           .arg(asp.planet2->name));
@@ -406,7 +397,7 @@ void Planets :: updateListHeight(QListWidget* w)
   w->setFixedHeight(w->sizeHintForRow(0) * w->count());
  }
 
-void Planets :: resetToDefault()
+void Planets :: resetFile()
  {
   view->setSource(QUrl());
   selectedPlanet = A::Planet_None;

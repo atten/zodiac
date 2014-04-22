@@ -43,17 +43,19 @@ class Chart : public AstroFileHandler
     Q_OBJECT
 
     private:
+        static const int defaultChartRadius = 500;
         bool emptyScene;
-        QRect mapRect;
-        float zoom, defaultZoom;
-        QPointF pan;
+        bool dualChart;
+        QRectF viewport;
+        float zoom;
+        bool justUpdated;
         QGraphicsView* view;
         RotatingCircleItem* circle;
 
         CircleStart circleStart;
         bool clockwise;
-        int zodiacWidth;
-        int innerRadius;
+        int l_zodiacWidth;
+        int l_innerRadius;
         int cuspideLength;
         bool coloredZodiac;
         bool zodiacDropShadow;
@@ -69,15 +71,22 @@ class Chart : public AstroFileHandler
         int normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker);
         const QPen& aspectPen(const A::Aspect& asp);
 
+        float zodiacWidth()  { return l_zodiacWidth * zoom; }
+        float innerRadius()  { return l_innerRadius * zoom; }
+        float middleRadius() { return (l_innerRadius + l_zodiacWidth) * zoom; }
+        QRect chartRect();
+
         void fitInView();
         void createScene();
         void updateScene();
+        void updateSecondChart();
         void clearScene();
 
     protected:                            // AstroFileHandler && other implementations
-        void resetToDefault()                    { clearScene(); }
+        void resetFile()                    { /*clearScene();*/ }
+        void reset2ndFile()                 { clearScene(); createScene(); updateScene(); }
         void fileUpdated(AstroFile::Members);
-        void fileDestroyed()  { }
+        void secondFileUpdated(AstroFile::Members);
 
         AppSettings defaultSettings ();
         AppSettings currentSettings ();

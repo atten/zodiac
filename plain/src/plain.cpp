@@ -59,9 +59,9 @@ Plain              :: Plain               ( QWidget* parent ) : AstroFileHandler
   setStyleSheet  ( cssfile.readAll() );
  }
 
-void Plain         :: resetToDefault()
+void Plain         :: resetFile()
  {
-  view->setText(tr("(empty data)"));
+  view->clear();
  }
 
 void Plain         :: fileUpdated (AstroFile::Members)

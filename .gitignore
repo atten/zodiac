@@ -24,17 +24,9 @@ Makefile
 /bin/*.ini
 /bin/i18n/*.cmd
 /bin/style/style.unused.css
-/bin/user/aaa.dat
-/bin/user/nya1.dat
-/bin/user/ol1.dat
-/bin/user/test.dat
 /etc
 /nsis/*.psd
 /nsis/*.exe
-/zodiac/src/mainwindow.old.cpp
-/zodiac/src/mainwindow.old.h
-/zodiac/src/help.old.cpp
-/zodiac/src/help.old.h
 *.user
 /build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Release
 /build-zodiac_bundle-Desktop_Qt_5_2_1_MinGW_32bit-Release/*.Debug

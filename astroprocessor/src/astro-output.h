@@ -38,6 +38,7 @@ void    sortPlanets          ( PlanetList &planets, PlanetsOrder order );
 QString     describeInput       ( const InputData& data );
 QString     describeHouses      ( const Houses& houses, const Zodiac& zodiac );
 QString     describeAspect      (const Aspect &aspect, bool monospace = false);
+QString     describeAspectFull  (const Aspect &asp);
 QString     describePlanet      ( const Planet& planet, const Zodiac& zodiac );
 QString     describePlanetCoord  ( const Planet& planet );
 QString     describePlanetCoordInHtml ( const Planet& planet );

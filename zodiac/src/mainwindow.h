@@ -29,9 +29,10 @@ class AstroFileInfo : public AstroFileHandler
         void setText(const QString& str);
 
     protected:                            // AstroFileHandler implementations
-        void resetToDefault();
+        void resetFile();
+        void reset2ndFile() { }
         void fileUpdated(AstroFile::Members);
-        void fileDestroyed()  { }
+        void secondFileUpdated(AstroFile::Members) { }
 
     signals:
         void clicked();
@@ -53,14 +54,14 @@ class AstroWidget : public QWidget
     Q_OBJECT
 
     private:
-        AstroFile* f;
+        AstroFile* f, *f2;
 
         AstroFileEditor*  editor;
         GeoSearchWidget*  geoWdg;
         QToolBar*         toolBar;
         QActionGroup*     actionGroup;
         SlideWidget*      slides;
-        AstroFileInfo*    fileView;
+        AstroFileInfo*    fileView, *fileView2nd;
         QList<AstroFileHandler*> handlers;
 
         QComboBox* zodiacSelector;
@@ -78,11 +79,12 @@ class AstroWidget : public QWidget
     private slots:
         void applyGeoSettings(AppSettings&);
         void toolBarActionClicked();
+        void currentSlideChanged();
         void horoscopeControlChanged();
         void destroyEditor();
 
     public slots:
-        void editCurrentFile();
+        void openEditor();
 
     signals:
         void helpRequested(QString tag);
@@ -92,8 +94,10 @@ class AstroWidget : public QWidget
         QToolBar* getToolBar()      { return toolBar; }
         const QList<QComboBox*>& getHoroscopeControls() { return horoscopeControls; }
 
-        void setFile (AstroFile* file);
+        void setFiles (AstroFile* file1, AstroFile* file2);
+        //void set2ndFile (AstroFile* file);
         AstroFile* file()                     { return f; }
+        AstroFile* secondFile()               { return f2; }
 
         AppSettings defaultSettings ();
         AppSettings currentSettings ();
@@ -111,18 +115,22 @@ class FilesBar : public QTabBar
     private:
         bool askToSave;
         QList<AstroFile*> files;
+        QList<AstroFile*> secondFiles;
 
         void updateTab(int index);
 
     private slots:
         void swapFiles(int,int);
         void updateTab();
-        void removeTab();
+        void secondFileDestroyed();
+        //void removeTab();
 
     public slots:
+        void addNewFile() { addFile(new AstroFile); }
         void deleteFile(QString name);
         void openFile(QString name);
         void openFileInNewTab(QString name);
+        void openFileAsSecond(QString name);
         void nextTab()            { setCurrentIndex((currentIndex() + 1) % count()); }
         bool closeTab(int);
 
@@ -130,10 +138,10 @@ class FilesBar : public QTabBar
         FilesBar(QWidget *parent = 0);
 
         void addFile(AstroFile* file);
-        void addEmptyFile();
         void setAskToSave(bool b) { askToSave = b; }
         AstroFile* fileAt(int index);
-        AstroFile* currentFile()  { if (!count()) return 0; return files[currentIndex()]; }
+        AstroFile* currentFile()       { if (!count()) return 0; return files[currentIndex()]; }
+        AstroFile* current2ndFile() { if (!count()) return 0; return secondFiles[currentIndex()]; }
         int count()               { return files.count(); }
 };
 
@@ -156,6 +164,7 @@ class AstroDatabase : public QFrame
         void showContextMenu(QPoint);
         void openSelected();
         void openSelectedInNewTab();
+        void openSelectedAsSecond();
         void deleteSelected();
         void searchFilter(QString);
 
@@ -166,6 +175,7 @@ class AstroDatabase : public QFrame
         void fileRemoved(QString);
         void openFile(QString);
         void openFileInNewTab(QString);
+        void openFileAsSecond(QString);
 
     public:
         AstroDatabase(QWidget *parent = 0);
@@ -193,10 +203,8 @@ class MainWindow : public QMainWindow, public Customizable
         void addToolBarActions();
 
     private slots:
-        void addNewFile();
         void saveFile()             { astroWidget->file()->save(); astroDatabase->updateList(); }
-        void currentFileChanged()   { astroWidget->setFile(filesBar->currentFile()); }
-        //void dockVisibilityChanged(bool);
+        void currentTabChanged();
         void showSettingsEditor()   { openSettingsEditor(); }
         void showAbout();
         void gotoUrl(QString url = "");
@@ -207,7 +215,6 @@ class MainWindow : public QMainWindow, public Customizable
         void applySettings        ( const AppSettings& );
         void setupSettingsEditor  ( AppSettingsEditor* );
 
-        //void mouseDoubleClickEvent ( QMouseEvent* );
         void closeEvent ( QCloseEvent* );
 
     public:

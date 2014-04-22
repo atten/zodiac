@@ -25,9 +25,10 @@ class Plain : public AstroFileHandler
         void redraw();
 
     protected:                            // AstroFileHandler implementations
-        void resetToDefault();
+        void resetFile();
+        void reset2ndFile() { }
         void fileUpdated(AstroFile::Members);
-        void fileDestroyed()  { }
+        void secondFileUpdated(AstroFile::Members) { }
 
     public:
         Plain  ( QWidget* parent = 0 );

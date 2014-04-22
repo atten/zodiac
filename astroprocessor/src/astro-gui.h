@@ -35,13 +35,13 @@ class AstroFile : public QObject
 
         AstroFile(QObject* parent = 0);
 
-        void save();
-        void load(QString name);
         QString fileName() const;
+        QString typeToString(FileType type) const;
+        FileType typeFromString(QString str) const;
+        AstroFile::Members diffFlags(AstroFile* other) const;
 
-        QString typeToString(FileType type);
-        FileType typeFromString(QString str);
-
+        void save();
+        void load(QString name/*, bool recalculate = true*/);
         void suspendUpdate()                     { holdUpdate = true; }
         bool isSuspendedUpdate()           const { return holdUpdate; }
         void resumeUpdate();
@@ -62,15 +62,15 @@ class AstroFile : public QObject
 
         const QString&   getName()         const { return name; }
         const QString&   getComment()      const { return comment; }
-        FileType         getType()               { return type; }
+        FileType         getType()         const { return type; }
         const QVector3D& getLocation()     const { return scope.inputData.location; }
         const QString&   getLocationName() const { return locationName; }
         const QDateTime& getGMT()          const { return scope.inputData.GMT; }
         const short&     getTimezone()     const { return timezone; }
-        const A::Horoscope& horoscope()   const { return scope; }
-        A::HouseSystemId getHouseSystem() const { return scope.inputData.houseSystem; }
-        A::ZodiacId      getZodiac()      const { return scope.inputData.zodiac; }
-        A::AspectLevel   getAspetLevel() const { return scope.inputData.level; }
+        const A::Horoscope& horoscope()    const { return scope; }
+        A::HouseSystemId getHouseSystem()  const { return scope.inputData.houseSystem; }
+        A::ZodiacId      getZodiac()       const { return scope.inputData.zodiac; }
+        A::AspectLevel   getAspetLevel()   const { return scope.inputData.level; }
         QDateTime        getLocalTime()    const { return scope.inputData.GMT.addSecs(timezone * 3600); }
 
     signals:
@@ -92,8 +92,8 @@ class AstroFile : public QObject
         FileType type;
         A::Horoscope scope;
 
-        void change(AstroFile::Members);
         void recalculate();
+        void change(AstroFile::Members);
 
 };
 
@@ -108,17 +108,22 @@ class AstroFileHandler : public QWidget, public Customizable
 
     private:
         AstroFile* f;
+        AstroFile* f2;
         bool delayUpdate;
         AstroFile::Members delayMembers;
+        AstroFile::Members delayMembers2nd;
 
     private slots:
         void fileUpdatedSlot(AstroFile::Members m);
-        void fileDestroyedSlot()                      { f = 0; resetToDefault(); fileDestroyed(); }
+        void secondFileUpdatedSlot(AstroFile::Members m);
+        void fileDestroyedSlot()                      { f = 0;  resetFile(); }
+        void secondFileDestroyedSlot()                { f2 = 0; reset2ndFile(); }
 
     protected:
-        virtual void resetToDefault() = 0;                  // reset GUI values
+        virtual void resetFile() = 0;                       // reset GUI values
+        virtual void reset2ndFile() = 0;
         virtual void fileUpdated(AstroFile::Members) = 0;   // display file changes
-        virtual void fileDestroyed()  = 0;
+        virtual void secondFileUpdated(AstroFile::Members) = 0;
 
         virtual void showEvent(QShowEvent*);
 
@@ -129,7 +134,9 @@ class AstroFileHandler : public QWidget, public Customizable
         AstroFileHandler(QWidget *parent = 0);
 
         void setFile (AstroFile* file);
+        void set2ndFile(AstroFile* file);
         AstroFile* file()                             { return f; }
+        AstroFile* secondFile()                       { return f2; }
 };
 
 

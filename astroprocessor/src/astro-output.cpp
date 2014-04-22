@@ -188,6 +188,17 @@ QString     describeAspect    (const Aspect &aspect, bool monospace)
   return ret;
  }
 
+QString     describeAspectFull  (const Aspect &asp)
+ {
+  return QString("%1 (%2) %3-%4\n").arg(asp.d->name)
+                                   .arg(degreeToString(asp.d->angle))
+                                   .arg(asp.planet1->name)
+                                   .arg(asp.planet2->name) +
+         QObject::tr("Orb: %1 (max: %2)\n").arg(degreeToString(asp.orb))
+                                           .arg(degreeToString(asp.d->orb)) +
+         (asp.applying ? QObject::tr("Applying") : QObject::tr("Separating"));
+ }
+
 QString     describePlanet    ( const Planet& planet, const Zodiac& zodiac )
  {
   QString ret;

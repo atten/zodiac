@@ -4,7 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QWheelEvent>
 #include <QGraphicsDropShadowEffect>
-//#include <QDebug>
+#include <QDebug>
 #include <math.h>
 #include <Astroprocessor/Output>
 #include <Astroprocessor/Calc>
@@ -118,9 +118,12 @@ void RotatingCircleItem :: setHelpTag(QGraphicsItem* item, QString tag)
 Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
  {
   emptyScene = true;
-  mapRect = QRect(-250,-250, 500, 500);
-  zoom = 0.8;
-  defaultZoom = 0.8;
+  dualChart = false;
+  justUpdated = false;
+  zoom = 1;
+
+  float scale = 0.8;
+  viewport = QRect(chartRect().x() / scale, chartRect().y() / scale, chartRect().width() / scale, chartRect().height() / scale);
 
   view = new QGraphicsView(this);
 
@@ -138,8 +141,14 @@ Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
 
 void Chart :: fitInView()
  {
-  QRect rect((mapRect.x() + pan.x()) / zoom, (mapRect.y() + pan.y()) / zoom, mapRect.width() / zoom, mapRect.height() / zoom);
-  view->fitInView(rect, Qt::KeepAspectRatio);
+  //QRect rect(chartRect.x() / zoom, chartRect.y() / zoom, chartRect.width() / zoom, chartRect.height() / zoom);
+  view->fitInView(viewport, Qt::KeepAspectRatio);
+ }
+
+QRect Chart :: chartRect()
+ {
+  return QRect(-defaultChartRadius * zoom / 2, -defaultChartRadius * zoom / 2,
+               defaultChartRadius * zoom, defaultChartRadius * zoom);
  }
 
 void Chart :: createScene()
@@ -148,15 +157,15 @@ void Chart :: createScene()
   QGraphicsScene* s = view->scene();
 
   QBrush background(QColor(8, 103, 192, 50));
-  QPen penZodiac(QColor(31,52,93), zodiacWidth);
+  QPen penZodiac(QColor(31,52,93), zodiacWidth());
   QPen penBorder(QColor(50,145,240));
   QPen penCusp(QColor(227,214,202), 2);
   QPen penCusp0(QColor(250,90,58), 3);
   QPen penCusp10(QColor(210,195,150), 3);
   QPen penCircle(QColor(227,214,202), 1);
   QPen penPlanetMarkers(QColor(255,255,255), 1);
-  QFont font("Times", 13, QFont::Bold);
-  QFont zodiacFont("Almagest", 16, QFont::Bold);
+  QFont font("Times New Roman", 13, QFont::Bold);
+  QFont zodiacFont("Almagest", 16 * zoom, QFont::Bold);
   QFont planetFont("Almagest", 19, QFont::Bold);
   QFont planetFontSmall("Almagest", 16);
   QColor planetColor = "#cee1f2";
@@ -166,7 +175,7 @@ void Chart :: createScene()
 
   if (coloredZodiac)
    {
-    QConicalGradient grad1(mapRect.center(), 180);
+    QConicalGradient grad1(chartRect().center(), 180);
     QColor color;
 
     foreach (const A::ZodiacSign& sign, file()->horoscope().zodiac.signs)
@@ -194,18 +203,18 @@ void Chart :: createScene()
   for (int i = 0; i < 12; i++)        // cuspides
    {
     if (i == 0)
-      cuspides << s->addLine(-innerRadius - penCircle.width(), 0,
-                             mapRect.x() - cuspideLength * 1.4, 0, penCusp0);
+      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0,
+                             chartRect().x() - cuspideLength * 1.4, 0, penCusp0);
     else if (i == 9)
-      cuspides << s->addLine(-innerRadius - penCircle.width(), 0,
-                             mapRect.x() - cuspideLength * 1.4, 0, penCusp10);
+      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0,
+                             chartRect().x() - cuspideLength * 1.4, 0, penCusp10);
     else
-      cuspides << s->addLine(-innerRadius - penCircle.width(), 0, mapRect.x() - cuspideLength, 0, penCusp);
+      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0, chartRect().x() - cuspideLength, 0, penCusp);
 
     cuspideLabels << s->addSimpleText(A::romanNum(i+1), font);
     cuspideLabels.last()->setBrush(QColor(255,255,255,150));
     cuspideLabels.last()->setParentItem(cuspides[i]);
-    cuspideLabels.last()->moveBy(mapRect.x() - cuspideLength + 5, 5);
+    cuspideLabels.last()->moveBy(chartRect().x() - cuspideLength + 5, 5);
     cuspideLabels.last()->setTransformOriginPoint(cuspideLabels.last()->boundingRect().center());
    }
 
@@ -213,22 +222,24 @@ void Chart :: createScene()
   s->addLine(p.x(), p.y(), p.x() + 14, p.y() + 7, penCusp0)->setParentItem(cuspides[0]);  // arrow for first cuspide
   s->addLine(p.x(), p.y(), p.x() + 14, p.y() - 7, penCusp0)->setParentItem(cuspides[0]);
 
+  s->addEllipse(-innerRadius(), -innerRadius(),
+                2 * innerRadius(), 2 * innerRadius(), penCircle);               // inner circle
+  if (secondFile())                                                             // middle circle (if second file)
+    s->addEllipse(-middleRadius(), -middleRadius(), 2 * middleRadius(), 2 * middleRadius(), penCircle);
 
-  s->addEllipse(-innerRadius, -innerRadius, 2 * innerRadius,
-                2 * innerRadius, penCircle);                                // inner circle
-  s->addEllipse(mapRect.adjusted(2,2,-2,-2), penBorder, background);        // fill background (with margin)
+  s->addEllipse(chartRect().adjusted(2,2,-2,-2), penBorder, background);        // fill background (with margin)
 
-  circle = new RotatingCircleItem(mapRect, penZodiac);                      // zodiac circle
+  circle = new RotatingCircleItem(chartRect(), penZodiac);                      // zodiac circle
   circle->setCursor(QPixmap("chart/rotate.png"));
   s->addItem(circle);
-  s->addEllipse(mapRect, penBorder)->setParentItem(circle);                 // zodiac outer border
-  s->addEllipse(mapRect.adjusted(zodiacWidth, zodiacWidth,                  // zodiac inner border
-                                 -zodiacWidth, -zodiacWidth), penBorder)->setParentItem(circle);
+  s->addEllipse(chartRect(), penBorder)->setParentItem(circle);                 // zodiac outer border
+  s->addEllipse(chartRect().adjusted(zodiacWidth(), zodiacWidth(),                  // zodiac inner border
+                                 -zodiacWidth(), -zodiacWidth()), penBorder)->setParentItem(circle);
 
   if (zodiacDropShadow)
    {
     QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect;
-    effect->setBlurRadius(zodiacWidth);
+    effect->setBlurRadius(zodiacWidth());
     effect->setOffset(0);
     effect->setColor(QColor(0,0,0,150));
     circle->setGraphicsEffect(effect);
@@ -247,10 +258,10 @@ void Chart :: createScene()
       rad_mid = 3.1416 - rad_mid;
      }
 
-    s->addLine( mapRect.x() * cos(rad),                               // zodiac sign borders
-                mapRect.y() * sin(rad),
-               (mapRect.x() + zodiacWidth) * cos(rad),
-               (mapRect.y() + zodiacWidth) * sin(rad), penBorder)->setParentItem(circle);
+    s->addLine( chartRect().x() * cos(rad),                               // zodiac sign borders
+                chartRect().y() * sin(rad),
+               (chartRect().x() + zodiacWidth()) * cos(rad),
+               (chartRect().y() + zodiacWidth()) * sin(rad), penBorder)->setParentItem(circle);
 
     QString ch = QString(sign.userData["fontChar"].toInt());
     QGraphicsSimpleTextItem* text = s->addSimpleText(ch, zodiacFont); // zodiac sign icon
@@ -258,8 +269,8 @@ void Chart :: createScene()
     text->setBrush(coloredZodiac ? signFillColor  : sign.userData["fillColor"].toString());
     text->setPen  (coloredZodiac ? signShapeColor : sign.userData["shapeColor"].toString());
     text->setOpacity(0.9);
-    text->moveBy((mapRect.x() + zodiacWidth / 2) * cos(rad_mid) - text->boundingRect().width() / 2,
-                 (mapRect.y() + zodiacWidth / 2) * sin(rad_mid) - text->boundingRect().height() / 2);
+    text->moveBy((chartRect().x() + zodiacWidth() / 2) * cos(rad_mid) - text->boundingRect().width() / 2,
+                 (chartRect().y() + zodiacWidth() / 2) * sin(rad_mid) - text->boundingRect().height() / 2);
     text->setTransformOriginPoint(text->boundingRect().center());
     circle->setHelpTag(text, sign.name);
     signIcons << text;
@@ -281,7 +292,7 @@ void Chart :: createScene()
     QGraphicsSimpleTextItem* text = s->addSimpleText(QString(charIndex),
                                                      planet.isReal ? planetFont : planetFontSmall);
 
-    QGraphicsEllipseItem* marker = s->addEllipse(-innerRadius - radius / 2, -radius / 2,
+    QGraphicsEllipseItem* marker = s->addEllipse(-innerRadius() - radius / 2, -radius / 2,
                                                radius, radius, penPlanetMarkers);
 
     text   -> setPos(normalPlanetPosX(text, marker), -text->boundingRect().height() / 2);
@@ -300,10 +311,16 @@ void Chart :: createScene()
 
   fitInView();
   emptyScene = false;
+  dualChart  = secondFile();         // if not empty, sets to true
  }
 
 void Chart :: updateScene()
  {
+  if (justUpdated) return;
+  justUpdated = true;
+  qDebug() << "Update scene";
+
+  circle->setFile(file());
   float rotate;
 
   if (circleStart == Start_Ascendent)
@@ -377,7 +394,7 @@ void Chart :: updateScene()
      }
 
 
-    QString toolTip = A::describeAspect(asp);
+    QString toolTip = A::describeAspectFull(asp);
     if (aspects[i]->toolTip() != toolTip)     // assign messages
      {
       aspects[i]->setToolTip(toolTip);
@@ -395,6 +412,11 @@ void Chart :: updateScene()
     //aspectMarkers.removeLast();
    }
 
+ }
+
+void Chart :: updateSecondChart()
+ {
+  qDebug() << "Update second chart";
  }
 
 int  Chart :: normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker)
@@ -425,7 +447,9 @@ const QPen& Chart :: aspectPen(const A::Aspect& asp)
 void Chart :: clearScene()
  {
   view->scene()->clear();
+  justUpdated = false;
   emptyScene = true;
+  dualChart = false;
   cuspides.clear();
   cuspideLabels.clear();
   planets.clear();
@@ -437,13 +461,23 @@ void Chart :: clearScene()
 
 void Chart :: fileUpdated(AstroFile::Members members)
  {
-  if (file()->isEmpty()) return;
-  if (members & AstroFile::Zodiac) clearScene();
+  //if (file()->isEmpty()) qDebug() << "wow, empty file!";//return;
+  justUpdated = false;
+  if (!emptyScene && members & AstroFile::Zodiac) clearScene();
   if (emptyScene) createScene();
-  circle->setFile(file());
   if (members & (AstroFile::GMT | AstroFile::Timezone | AstroFile::Location |
                  AstroFile::HouseSystem | AstroFile::AspectLevel | AstroFile::Zodiac))
     updateScene();
+ }
+
+void Chart :: secondFileUpdated(AstroFile::Members members)
+ {
+  //if (secondFile()->isEmpty()) qDebug() << "wow, empty second file!";//return;
+  if (!emptyScene && !dualChart) clearScene();
+  if (emptyScene) { createScene(); updateScene(); }
+  if (members & (AstroFile::GMT | AstroFile::Timezone | AstroFile::Location |
+                 AstroFile::HouseSystem))
+    updateSecondChart();
  }
 
 bool Chart :: eventFilter(QObject* obj, QEvent* ev)
@@ -452,17 +486,23 @@ bool Chart :: eventFilter(QObject* obj, QEvent* ev)
    {
     ev->accept();
     QGraphicsSceneWheelEvent* e = (QGraphicsSceneWheelEvent*)ev;
-    if (e->delta() > 0)
-      zoom += 0.2;
-    else if (zoom <= defaultZoom)
-      return true;
-    else
-      zoom -= 0.2;
 
-    //zoom = qMax(zoom, defaultZoom);
-    pan = e->scenePos();
-    fitInView();
-    //updateScene();
+    float z = 1;
+    if (e->delta() < 0)
+     {
+      if (zoom == 1) return true;
+      viewport.moveCenter(QPoint(0,0));
+      zoom = 1;
+     }
+    else
+     {
+      zoom += z;
+      viewport.moveCenter(e->scenePos());
+     }
+
+    clearScene();
+    createScene();
+    updateScene();
     return true;
    }
 
@@ -492,9 +532,9 @@ AppSettings Chart :: currentSettings ()
   AppSettings s;
   s.setValue ( "Circle/circleStart",      circleStart );
   s.setValue ( "Circle/clockwise",        clockwise );
-  s.setValue ( "Circle/zodiacWidth",      zodiacWidth );
+  s.setValue ( "Circle/zodiacWidth",      l_zodiacWidth );
   s.setValue ( "Circle/cuspideLength",    cuspideLength );
-  s.setValue ( "Circle/innerRadius",      innerRadius );
+  s.setValue ( "Circle/innerRadius",      l_innerRadius );
   s.setValue ( "Circle/coloredZodiac",    coloredZodiac );
   s.setValue ( "Circle/zodiacDropShadow", zodiacDropShadow );
   return s;
@@ -504,16 +544,18 @@ void Chart :: applySettings       ( const AppSettings& s )
  {
   circleStart      = (CircleStart)s.value("Circle/circleStart").toInt();
   clockwise        = s.value ( "Circle/clockwise"        ).toBool();
-  zodiacWidth      = s.value ( "Circle/zodiacWidth"      ).toInt();
+  l_zodiacWidth    = s.value ( "Circle/zodiacWidth"      ).toInt();
   cuspideLength    = s.value ( "Circle/cuspideLength"    ).toInt();
-  innerRadius      = s.value ( "Circle/innerRadius"      ).toInt();
+  l_innerRadius    = s.value ( "Circle/innerRadius"      ).toInt();
   coloredZodiac    = s.value ( "Circle/coloredZodiac"    ).toBool();
   zodiacDropShadow = s.value ( "Circle/zodiacDropShadow" ).toBool();
 
   if (!emptyScene)
    {
     clearScene();
-    fileUpdated(AstroFile::All);    // redraw all
+    createScene();
+    updateScene();
+    updateSecondChart();
    }
  }
 
