@@ -1,5 +1,10 @@
 ﻿level;id;name;name_ru;angle;orb;good;icon
 
+0;0;Conjunction;Соединение;0;5;0;images/aspects/conjunction.png
+0;4;Quadrature;Квадрат;90;5;-;images/aspects/quadrature.png
+0;1;Trine;Трин;120;5;+;images/aspects/trine.png
+0;3;Opposition;Оппозиция;180;5;--;images/aspects/opposition.png
+
 1;0;Conjunction;Соединение;0;27.683;0;images/aspects/conjunction.png
 1;4;Quadrature;Квадрат;90;6.466;-;images/aspects/quadrature.png
 1;1;Trine;Трин;120;8.9;+;images/aspects/trine.png

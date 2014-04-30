@@ -3,8 +3,6 @@
 
 #include "astro-data.h"
 #include "appsettings.h"
-#include <QDebug>
-
 
 /* =========================== ASTRO FILE =========================================== */
 
@@ -38,12 +36,12 @@ class AstroFile : public QObject
         QString fileName() const;
         QString typeToString(FileType type) const;
         FileType typeFromString(QString str) const;
-        AstroFile::Members diffFlags(AstroFile* other) const;
+        AstroFile::Members diff(AstroFile* other) const;
 
         void save();
-        void load(QString name/*, bool recalculate = true*/);
+        void load(QString name);
         void suspendUpdate()                     { holdUpdate = true; }
-        bool isSuspendedUpdate()           const { return holdUpdate; }
+        //bool isSuspendedUpdate()           const { return holdUpdate; }
         void resumeUpdate();
         void clearUnsavedState();
         bool hasUnsavedChanges()           const { return unsavedChanges; }
@@ -93,11 +91,13 @@ class AstroFile : public QObject
         A::Horoscope scope;
 
         void recalculate();
-        void change(AstroFile::Members);
+        void change(AstroFile::Members, bool affectChangedState = true);
 
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(AstroFile::Members)
+typedef QList<AstroFile*> AstroFileList;
+typedef QList<AstroFile::Members> MembersList;
 
 
 /* =========================== ABSTRACT FILE HANDLER ================================ */
@@ -107,23 +107,18 @@ class AstroFileHandler : public QWidget, public Customizable
     Q_OBJECT
 
     private:
-        AstroFile* f;
-        AstroFile* f2;
+        AstroFileList f;
         bool delayUpdate;
-        AstroFile::Members delayMembers;
-        AstroFile::Members delayMembers2nd;
+        MembersList delayMembers;
+
+        MembersList blankMembers();
 
     private slots:
-        void fileUpdatedSlot(AstroFile::Members m);
-        void secondFileUpdatedSlot(AstroFile::Members m);
-        void fileDestroyedSlot()                      { f = 0;  resetFile(); }
-        void secondFileDestroyedSlot()                { f2 = 0; reset2ndFile(); }
+        void fileUpdatedSlot(AstroFile::Members);
+        void fileDestroyedSlot();//                      { f = 0;  resetFile(); }
 
     protected:
-        virtual void resetFile() = 0;                       // reset GUI values
-        virtual void reset2ndFile() = 0;
-        virtual void fileUpdated(AstroFile::Members) = 0;   // display file changes
-        virtual void secondFileUpdated(AstroFile::Members) = 0;
+        virtual void filesUpdated(MembersList members) = 0;
 
         virtual void showEvent(QShowEvent*);
 
@@ -133,11 +128,11 @@ class AstroFileHandler : public QWidget, public Customizable
     public:
         AstroFileHandler(QWidget *parent = 0);
 
-        void setFile (AstroFile* file);
-        void set2ndFile(AstroFile* file);
-        AstroFile* file()                             { return f; }
-        AstroFile* secondFile()                       { return f2; }
+        void setFiles (const AstroFileList& files);
+        AstroFile* file(int index = 0)            { if (f.count() > index) return f[index]; return 0; }
+        int filesCount()                          { return f.count(); }
 };
+
 
 
 /* =========================== ASTRO TREE VIEW ====================================== */

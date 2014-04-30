@@ -49,11 +49,12 @@ AstroFile::FileType AstroFile :: typeFromString (QString str) const
   return TypeOther;
  }
 
-AstroFile::Members AstroFile :: diffFlags(AstroFile* other) const
+AstroFile::Members AstroFile :: diff(AstroFile* other) const
  {
   if (!other) return AstroFile::All;
+  if (this == other) return 0;
 
-  AstroFile::Members flags;
+  AstroFile::Members flags = 0;
   if (getName()           != other->getName())           flags |= Name;
   if (getType()           != other->getType())           flags |= Type;
   if (getGMT()            != other->getGMT())            flags |= GMT;
@@ -65,6 +66,7 @@ AstroFile::Members AstroFile :: diffFlags(AstroFile* other) const
   if (getZodiac()         != other->getZodiac())         flags |= Zodiac;
   if (getAspetLevel()     != other->getAspetLevel())     flags |= AspectLevel;
   if (hasUnsavedChanges() != other->hasUnsavedChanges()) flags |= ChangedState;
+  //lastChangedMembers = flags;
   return flags;
  }
 
@@ -116,23 +118,24 @@ void AstroFile :: resumeUpdate()
  {
   if (!holdUpdate) return;
   holdUpdate = false;
-  change(holdUpdateMembers);
+  change(holdUpdateMembers, false);
   holdUpdateMembers = None;
  }
 
-void AstroFile :: change(AstroFile::Members members)
+void AstroFile :: change(AstroFile::Members members, bool affectChangedState)
  {
   if (members == None) return;
 
-  if (!unsavedChanges && !(members & ChangedState))
-    unsavedChanges = true;
+  bool unsavedBefore = unsavedChanges;
+  if (affectChangedState && !(members & ChangedState)) unsavedChanges = true;
+  if (unsavedBefore != unsavedChanges) members |= ChangedState;
 
   if (!holdUpdate)
    {
     if (members & (GMT|Location|HouseSystem|Zodiac|AspectLevel))
       recalculate();
 
-    emit changed(members|ChangedState);
+    emit changed(members);
    }
   else
    {
@@ -145,7 +148,10 @@ void AstroFile :: clearUnsavedState()
   if (hasUnsavedChanges())
    {
     unsavedChanges = false;
-    change(ChangedState);
+    if (!holdUpdate)
+      change(ChangedState);
+    else if (holdUpdateMembers & ChangedState)
+      holdUpdateMembers ^= ChangedState;
    }
  }
 
@@ -261,102 +267,93 @@ void AstroFile :: destroy()
 
 AstroFileHandler :: AstroFileHandler(QWidget *parent) : QWidget(parent), Customizable()
  {
-  f = 0;
-  f2 = 0;
   delayUpdate = false;
-  delayMembers = AstroFile::None;
  }
 
-void AstroFileHandler :: setFile (AstroFile* file)
+void AstroFileHandler :: setFiles (const AstroFileList& files)
  {
-  if (file == f) return;
+  MembersList flags;
+  int i = 0;
 
-  if (f)
+  foreach(AstroFile* file, files)
    {
-    f->disconnect(this, SLOT(fileUpdatedSlot(AstroFile::Members)));
-    f->disconnect(this, SLOT(fileDestroyedSlot()));
-   }
-
-  if (file)
-   {
-    connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
-    connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
-
-    if (f)
+    AstroFile* old = (f.count() >= i + 1) ? f[i] : 0;
+    if (file == old)
      {
-      AstroFile::Members flags = f->diffFlags(file);
-      f = file;
-      fileUpdatedSlot(flags);
+      flags << 0;
      }
     else
      {
-      f = file;
-      fileUpdatedSlot(AstroFile::All);
+      if (old)
+       {
+        old->disconnect(this, SLOT(fileUpdatedSlot(AstroFile::Members)));
+        old->disconnect(this, SLOT(fileDestroyedSlot()));
+       }
+
+      if (file)
+       {
+        connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
+        connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
+        flags << file->diff(old);
+       }
+      else
+       {
+        flags << 0;
+       }
      }
+
+    i++;
+   }
+
+  f = files;
+
+  if (isVisible())
+   {
+    delayMembers = blankMembers();
+    filesUpdated(flags);
    }
   else
    {
-    fileDestroyedSlot();
+    delayMembers = flags;
+    delayUpdate = true;
    }
+
  }
 
-void AstroFileHandler :: set2ndFile(AstroFile* file)
+MembersList AstroFileHandler :: blankMembers()
  {
-  if (file == f2) return;
-
-  if (f2)
-   {
-    f2->disconnect(this, SLOT(secondFileUpdatedSlot(AstroFile::Members)));
-    f2->disconnect(this, SLOT(secondFileDestroyedSlot()));
-   }
-
-  if (file)
-   {
-    connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(secondFileUpdatedSlot(AstroFile::Members)));
-    connect (file, SIGNAL(destroyed()), this, SLOT(secondFileDestroyedSlot()));
-
-    if (f2)
-     {
-      AstroFile::Members flags = f2->diffFlags(file);
-      f2 = file;
-      secondFileUpdatedSlot(flags);
-     }
-    else
-     {
-      f2 = file;
-      secondFileUpdatedSlot(AstroFile::All);
-     }
-   }
-  else
-   {
-    secondFileDestroyedSlot();
-   }
+  MembersList ret;
+  for (int i = 0; i < f.count(); i++)
+    ret << 0;
+  return ret;
  }
 
 void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
  {
+  int i = f.indexOf((AstroFile*)sender());
   if (isVisible())
    {
-    fileUpdated(m);
+    MembersList mList = blankMembers();
+    mList[i] = m;
+    filesUpdated(mList);
    }
   else
    {
     delayUpdate = true;
-    delayMembers |= m;
+    delayMembers[i] |= m;
    }
  }
 
-void AstroFileHandler :: secondFileUpdatedSlot(AstroFile::Members m)
+void AstroFileHandler :: fileDestroyedSlot()
  {
-  if (isVisible())
+  int i = f.indexOf((AstroFile*)sender());
+  if (i != -1)                      // TODO: discover how sender might be not in list
    {
-    secondFileUpdated(m);
+    f[i] = 0;
+    while (!f.last()) f.removeLast();
    }
-  else
-   {
-    delayUpdate = true;
-    delayMembers2nd |= m;
-   }
+
+  filesUpdated(blankMembers());
  }
 
 void AstroFileHandler :: showEvent(QShowEvent* e)
@@ -365,11 +362,9 @@ void AstroFileHandler :: showEvent(QShowEvent* e)
 
   if (delayUpdate)
    {
-    if (delayMembers)    fileUpdatedSlot(delayMembers);
-    if (delayMembers2nd) secondFileUpdatedSlot(delayMembers2nd);
-    delayMembers    = AstroFile::None;
-    delayMembers2nd = AstroFile::None;
-    delayUpdate = false;
+    filesUpdated(delayMembers);
+    delayMembers = blankMembers();
+    delayUpdate  = false;
    }
  }
 

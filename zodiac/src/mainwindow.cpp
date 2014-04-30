@@ -24,6 +24,8 @@
 
 AstroFileInfo :: AstroFileInfo (QWidget *parent) : AstroFileHandler(parent)
  {
+  currentIndex = 0;
+
   edit   = new QPushButton(this);
   shadow = new QLabel(this);
   QGraphicsBlurEffect* ef = new QGraphicsBlurEffect();
@@ -43,15 +45,10 @@ AstroFileInfo :: AstroFileInfo (QWidget *parent) : AstroFileHandler(parent)
   connect(edit, SIGNAL(clicked()), this, SIGNAL(clicked()));
  }
 
-void AstroFileInfo :: resetFile()
+void AstroFileInfo :: refresh()
  {
-  setText("");
- }
-
-void AstroFileInfo :: fileUpdated(AstroFile::Members)
- {
-  if (!file()) return;
-  QDateTime dt = file()->getLocalTime();
+  qDebug() << "AstroFileInfo::refresh";
+  QDateTime dt = currentFile()->getLocalTime();
 
   QString date      = dt.date().toString(Qt::DefaultLocaleShortDate);
   QString dayOfWeek = dt.date().toString("ddd");
@@ -67,29 +64,42 @@ void AstroFileInfo :: fileUpdated(AstroFile::Members)
    }
 
   QString timezone;
-  if (file()->getTimezone() > 0)
-    timezone = QString("GMT +%1").arg(file()->getTimezone());
-  else if (file()->getTimezone() < 0)
-    timezone = QString("GMT %1").arg(file()->getTimezone());
+  if (currentFile()->getTimezone() > 0)
+    timezone = QString("GMT +%1").arg(currentFile()->getTimezone());
+  else if (currentFile()->getTimezone() < 0)
+    timezone = QString("GMT %1").arg(currentFile()->getTimezone());
   else
     timezone = "GMT";
 
   QString place;
-  if (file()->getLocationName().isEmpty())
+  if (currentFile()->getLocationName().isEmpty())
    {
-    QString longitude = A::degreeToString(file()->getLocation().x(), A::HighPrecision);
-    QString latitude  = A::degreeToString(file()->getLocation().y(), A::HighPrecision);
+    QString longitude = A::degreeToString(currentFile()->getLocation().x(), A::HighPrecision);
+    QString latitude  = A::degreeToString(currentFile()->getLocation().y(), A::HighPrecision);
     place = QString("%1N  %2E").arg(latitude, longitude);
    }
   else
    {
-    place = file()->getLocationName();
+    place = currentFile()->getLocationName();
    }
 
 
-  setText( QString("%1\n").arg(file()->getName()) +
+  setText( QString("%1\n").arg(currentFile()->getName()) +
            tr("%1 %2 %3 (%4)%5\n").arg(date, dayOfWeek, time, timezone, age) +
            place );
+ }
+
+void AstroFileInfo :: filesUpdated(MembersList m)
+ {
+  if (currentIndex >= filesCount())
+   {
+    setText("");
+    return;
+   }
+
+  if (m[currentIndex] & (AstroFile::Name | AstroFile::GMT | AstroFile::Timezone |
+                         AstroFile::Location | AstroFile::LocationName))
+    refresh();
  }
 
 void AstroFileInfo :: setText(const QString& str)
@@ -115,7 +125,7 @@ AppSettings AstroFileInfo :: currentSettings ()
 void AstroFileInfo :: applySettings       ( const AppSettings& s )
  {
   showAge = s.value ( "age" ).toBool();
-  fileUpdated(AstroFile::All);
+  if (currentIndex < filesCount()) refresh();
  }
 
 void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
@@ -129,8 +139,6 @@ void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
 
 AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
  {
-  f = 0;
-  f2 = 0;
   editor = 0;
 
   toolBar = new QToolBar(tr("Slides"), this);
@@ -145,6 +153,7 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
   actionGroup -> setExclusive(true);
   slides      -> setTransitionEffect(SlideWidget::Transition_HorizontalSlide);
   fileView2nd -> setStatusTip(tr("Background data"));
+  fileView2nd -> setCurrentIndex(1);
 
   QGridLayout* layout = new QGridLayout(this);
    layout->setMargin(0);
@@ -192,26 +201,21 @@ void AstroWidget :: setupFile (AstroFile* file)
   file->resumeUpdate();
  }
 
-void AstroWidget :: setFiles (AstroFile* file1, AstroFile* file2)
+void AstroWidget :: setFiles (const AstroFileList& files)
  {
-  f = file1;
-  f2 = file2;
-  setupFile(file1);
-  setupFile(file2);
-  fileView->setFile(file1);
-  fileView2nd->setFile(file2);
+  f = files;
+
+  foreach(AstroFile* i, files)
+    setupFile(i);
+
+  fileView->setFiles(files);
+  fileView2nd->setFiles(files);
 
   if (editor)
-   {
-    editor->setFile(file1);
-    editor->set2ndFile(file2);
-   }
+    editor->setFiles(files);
 
   foreach (AstroFileHandler* h, handlers)
-   {
-    h->setFile(file1);
-    h->set2ndFile(file2);
-   }
+    h->setFiles(files);
  }
 
 void AstroWidget :: openEditor()
@@ -223,8 +227,7 @@ void AstroWidget :: openEditor()
   else
    {
     editor = new AstroFileEditor();
-    editor->setFile(file());
-    editor->set2ndFile(secondFile());
+    editor->setFiles(f);
     editor->move((topLevelWidget()->width()  - editor->width())  / 2 + topLevelWidget()->geometry().left(),
                  (topLevelWidget()->height() - editor->height()) / 2 + topLevelWidget()->geometry().top());
     editor->show();
@@ -232,7 +235,7 @@ void AstroWidget :: openEditor()
    }
 
   if (sender() == fileView)
-    editor->switchToFile1();
+   editor->switchToFile1();
   else if (sender() == fileView2nd)
     editor->switchToFile2();
  }
@@ -318,8 +321,8 @@ QVector3D AstroWidget :: vectorFromString (const QString& str)
 
 void AstroWidget :: horoscopeControlChanged()
  {
-  setupFile(file());
-  setupFile(secondFile());
+  foreach(AstroFile* i, f)
+    setupFile(i);
  }
 
 AppSettings AstroWidget :: defaultSettings ()
@@ -372,8 +375,8 @@ void AstroWidget :: applySettings      ( const AppSettings& s )
   fileView->applySettings(s);
   fileView2nd->applySettings(s);
 
-  setupFile(file());
-  setupFile(secondFile());
+  foreach(AstroFile* i, f)
+    setupFile(i);
 
   foreach (AstroFileHandler* h, handlers)
     h->applySettings(s);
@@ -404,6 +407,25 @@ FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
   connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
  }
 
+int FilesBar :: getTabIndex(AstroFile* f)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < files[i].count(); j++)
+      if (f == files[i][j])
+        return i;
+
+  return -1;
+ }
+
+int FilesBar :: getTabIndex(QString name)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < files[i].count(); j++)
+      if (name == files[i][j]->getName())
+        return i;
+  return -1;
+ }
+
 void FilesBar :: addFile (AstroFile* file)
  {
   if (!file)
@@ -412,50 +434,35 @@ void FilesBar :: addFile (AstroFile* file)
     return;
    }
 
-  files << file;
-  secondFiles << 0;
+  AstroFileList list;
+  list << file;
+  files << list;
   file->setParent(this);
   addTab("new");
   updateTab(count() - 1);
   setCurrentIndex(count() - 1);
 
-  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(updateTab()));
-  //connect(file, SIGNAL(destroyed()),                 this, SLOT(removeTab()));
- }
-
-AstroFile* FilesBar :: fileAt (int index)
- {
-  if (index < 0 || index >= count()) return 0;
-  return files[index];
+  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+  connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
  }
 
 void FilesBar :: updateTab(int index)
  {
-  if (files.count() <= index || count() <= index) return;
+  if (index >= count()) return;
+  QStringList names;
 
-  AstroFile* file = files[index];
-  AstroFile* file2 = secondFiles[index];
-  QString text = file->getName();
+  foreach (AstroFile* i, files[index])
+    if (i) names << i->getName() + (i->hasUnsavedChanges() ? "*" : "");
 
-  if (file->hasUnsavedChanges())
-    text += '*';
-
-  if (file2)
-   {
-    text += " | " + file2->getName();
-    if (file2->hasUnsavedChanges())
-      text += '*';
-   }
-
-  setTabText(index, text);
+  setTabText(index, names.join(" | "));
  }
 
-void FilesBar :: updateTab()
+void FilesBar :: fileUpdated(AstroFile::Members m)
  {
+  if (!(m & (AstroFile::Name|AstroFile::ChangedState))) return;
+  qDebug() << "FilesBar::updateTab";
   AstroFile* file = (AstroFile*)sender();
-  int index = files.indexOf(file);
-  if (index == -1) index = secondFiles.indexOf(file);
-  updateTab(index);
+  updateTab(getTabIndex(file));
  }
 
 /*void FilesBar :: removeTab()    // called when AstroFile going to be destroyed
@@ -469,30 +476,31 @@ void FilesBar :: updateTab()
   if (!count()) addNewFile();
  }*/
 
-void FilesBar :: secondFileDestroyed()    // called when second AstroFile going to be destroyed
+void FilesBar :: fileDestroyed()                // called when AstroFile going to be destroyed
  {
   AstroFile* file = (AstroFile*)sender();
-  int index = secondFiles.indexOf(file);
-  secondFiles[index] = 0;
-  updateTab(index);
+  int tab = getTabIndex(file);
+  if (tab == -1) return;                        // tab with the single file has been removed already
+  int index = files[tab].indexOf(file);
+  files[tab][index] = 0;
+  while (!files[tab].last()) files[tab].removeLast();
+  updateTab(tab);
  }
 
 void FilesBar :: swapFiles(int f1,int f2)
  {
-  AstroFile* temp    = files[f1];
-  AstroFile* temp2nd = secondFiles[f1];
+  AstroFileList temp = files[f1];
   files[f1] = files[f2];
   files[f2] = temp;
-  secondFiles[f1] = secondFiles[f2];
-  secondFiles[f2] = temp2nd;
  }
 
 bool FilesBar :: closeTab(int index)
  {
-  AstroFile* file = files[index];
-  AstroFile* secondFile = secondFiles[index];
+  AstroFileList f = files[index];
+  AstroFile* file = 0;
+  if (f.count()) file = f[0];
 
-  if (askToSave && file->hasUnsavedChanges())
+  if (askToSave && file && file->hasUnsavedChanges())
    {
     QMessageBox msgBox;
     msgBox.setText(tr("Save changes in '%1' before closing?").arg(file->getName()));
@@ -513,54 +521,40 @@ bool FilesBar :: closeTab(int index)
    }
 
   files.removeAt(index);
-  secondFiles.removeAt(index);
   ((QTabBar*)this)->removeTab(index);
-  file->destroy();                              // delete AstroFile, because we do not need it
-  if (secondFile) secondFile->destroy();
+  foreach (AstroFile* i, f)
+    i->destroy();                     // delete AstroFiles, because we do not need it
   if (!count()) addNewFile();
   return true;
  }
 
-void FilesBar :: deleteFile(QString name)
+/*void FilesBar :: deleteFile(QString name)
  {
-  foreach (AstroFile* file, files)
-   {
-    if (file->getName() == name)
-     {
-      file->destroy();
-      return;
-     }
-   }
- }
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < files[i].count(); j++)
+      if (file == files[i][j])
+       {
+        file->destroy();
+        return;
+       }
+ }*/
 
 void FilesBar :: openFile(QString name)
  {
-  for (int i = 0; i < count(); i++)
-   {
-    if (files[i]->getName() == name)
-     {
-      setCurrentIndex(i);            // focus if the file is currently opened
-      return;
-     }
-   }
+  int i = getTabIndex(name);
+  if (i != -1) return setCurrentIndex(i);            // focus if the file is currently opened
 
   /*if (currentFile()->hasUnsavedChanges())
     openFileInNewTab(name);
   else*/
-    currentFile()->load(name);
+    currentFiles()[0]->load(name);
 
  }
 
 void FilesBar :: openFileInNewTab(QString name)
  {
-  for (int i = 0; i < count(); i++)
-   {
-    if (files[i]->getName() == name)
-     {
-      setCurrentIndex(i);            // if the file is currently opened, focus it
-      return;
-     }
-   }
+  int i = getTabIndex(name);
+  if (i != -1) return setCurrentIndex(i);
 
   AstroFile* file = new AstroFile;
   file->load(name);
@@ -569,20 +563,20 @@ void FilesBar :: openFileInNewTab(QString name)
 
 void FilesBar :: openFileAsSecond(QString name)
  {
-  if (!current2ndFile())
+  if (files[currentIndex()].count() < 2)
    {
     AstroFile* file = new AstroFile;
     file->load(name);
     file->setParent(this);
-    secondFiles[currentIndex()] = file;
+    files[currentIndex()] << file;
     updateTab(currentIndex());
-    connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(updateTab()));
-    connect(file, SIGNAL(destroyed()),                 this, SLOT(secondFileDestroyed()));
+    connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+    connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
     emit currentChanged(currentIndex());
    }
   else
    {
-    current2ndFile()->load(name);
+    files[currentIndex()][1]->load(name);
    }
  }
 
@@ -792,7 +786,7 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   connect(astroDatabase, SIGNAL(openFile(QString)),            filesBar, SLOT(openFile(QString)));
   connect(astroDatabase, SIGNAL(openFileInNewTab(QString)),    filesBar, SLOT(openFileInNewTab(QString)));
   connect(astroDatabase, SIGNAL(openFileAsSecond(QString)),    filesBar, SLOT(openFileAsSecond(QString)));
-  connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
+  //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
   connect(statusBar(),   SIGNAL(messageChanged(QString)),      help,     SLOT(searchFor(QString)));
   connect(new QShortcut(QKeySequence("CTRL+TAB"), this), SIGNAL(activated()), filesBar, SLOT(nextTab()));
@@ -838,7 +832,7 @@ void MainWindow        :: addToolBarActions   ( )
 
 void MainWindow        :: currentTabChanged()
  {
-  astroWidget->setFiles(filesBar->currentFile(), filesBar->current2ndFile());
+  astroWidget->setFiles(filesBar->currentFiles());
  }
 
 AppSettings MainWindow :: defaultSettings     ( )
@@ -881,12 +875,15 @@ void MainWindow        :: setupSettingsEditor ( AppSettingsEditor* ed )
 
 void MainWindow        :: closeEvent          ( QCloseEvent* ev )
  { 
-  while (askToSave && filesBar->count() && filesBar->fileAt(0)->hasUnsavedChanges())   // close tabs
-    if (!filesBar->closeTab(0))
+  while (askToSave && filesBar->count() && filesBar->currentFiles().count() &&   // close tabs
+         filesBar->currentFiles()[0]->hasUnsavedChanges())
+    if (!filesBar->closeTab(filesBar->currentIndex()))
       return ev->ignore();
 
   if (databaseDockWidget->isFloating()) databaseDockWidget->hide();
   saveSettings();
+
+  QMainWindow::closeEvent(ev);
  }
 
 void MainWindow        :: gotoUrl             ( QString url )

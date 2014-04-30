@@ -20,7 +20,7 @@ class AstroFileEditor : public AstroFileHandler
     Q_OBJECT
 
     private:
-        bool currentFile1;
+        int currentFile;
 
         QAction* editData1;
         QAction* editData2;
@@ -36,21 +36,19 @@ class AstroFileEditor : public AstroFileHandler
         QPlainTextEdit* comment;
 
         void update(AstroFile::Members);
+        void set2ndFileEnabled(bool);
 
     protected:                            // AstroFileHandler implementations
-        void resetFile()                 { if (isVisible()) close(); }
-        void reset2ndFile();
-        void fileUpdated(AstroFile::Members);
-        void secondFileUpdated(AstroFile::Members);
+        void filesUpdated(MembersList members);
 
-        virtual void showEvent(QShowEvent*);
+        //virtual void showEvent(QShowEvent*);
         virtual void closeEvent(QCloseEvent*) { emit windowClosed(); }
 
     signals:
         void windowClosed();
 
     private slots:
-        void remove2ndFile() { if (secondFile()) secondFile()->destroy(); }
+        void remove2ndFile() { file(1)->destroy(); }
         void applyToFile();
         void timezoneChanged();
 

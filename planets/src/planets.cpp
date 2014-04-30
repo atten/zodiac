@@ -272,8 +272,20 @@ void Planets :: describePlanet()
     updateListHeight(aspectsList);
  }
 
-void Planets :: fileUpdated(AstroFile::Members)
+void Planets :: filesUpdated(MembersList m)
  { 
+  if (!filesCount())
+   {
+    view->setSource(QUrl());
+    selectedPlanet = A::Planet_None;
+    planetSelector->clear();
+    planetSelector->hide();
+    return;
+   }
+
+  if (m[0] == 0) return;
+
+  qDebug() << "Planets::refresh";
   if (planetSelector->count() == 1)                   // fill planet list
    {
     foreach (const A::Planet& p, file()->horoscope().planets)
@@ -395,14 +407,6 @@ void Planets :: collapseAspects()
 void Planets :: updateListHeight(QListWidget* w)
  {
   w->setFixedHeight(w->sizeHintForRow(0) * w->count());
- }
-
-void Planets :: resetFile()
- {
-  view->setSource(QUrl());
-  selectedPlanet = A::Planet_None;
-  planetSelector->clear();
-  planetSelector->hide();
  }
 
 AppSettings Planets :: defaultSettings ()

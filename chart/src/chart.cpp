@@ -117,9 +117,7 @@ void RotatingCircleItem :: setHelpTag(QGraphicsItem* item, QString tag)
 
 Chart :: Chart(QWidget *parent) : AstroFileHandler(parent)
  {
-  emptyScene = true;
-  dualChart = false;
-  justUpdated = false;
+  chartsCount = 0;
   zoom = 1;
 
   float scale = 0.8;
@@ -145,12 +143,6 @@ void Chart :: fitInView()
   view->fitInView(viewport, Qt::KeepAspectRatio);
  }
 
-QRect Chart :: chartRect()
- {
-  return QRect(-defaultChartRadius * zoom / 2, -defaultChartRadius * zoom / 2,
-               defaultChartRadius * zoom, defaultChartRadius * zoom);
- }
-
 void Chart :: createScene()
  {
   qDebug() << "Create scene";
@@ -163,13 +155,8 @@ void Chart :: createScene()
   QPen penCusp0(QColor(250,90,58), 3);
   QPen penCusp10(QColor(210,195,150), 3);
   QPen penCircle(QColor(227,214,202), 1);
-  QPen penPlanetMarkers(QColor(255,255,255), 1);
   QFont font("Times New Roman", 13, QFont::Bold);
   QFont zodiacFont("Almagest", 16 * zoom, QFont::Bold);
-  QFont planetFont("Almagest", 19, QFont::Bold);
-  QFont planetFontSmall("Almagest", 16);
-  QColor planetColor = "#cee1f2";
-  QColor planetShapeColor = "#78a895";
   QColor signFillColor = Qt::black;
   QColor signShapeColor = "#6d6d6d";
 
@@ -222,10 +209,8 @@ void Chart :: createScene()
   s->addLine(p.x(), p.y(), p.x() + 14, p.y() + 7, penCusp0)->setParentItem(cuspides[0]);  // arrow for first cuspide
   s->addLine(p.x(), p.y(), p.x() + 14, p.y() - 7, penCusp0)->setParentItem(cuspides[0]);
 
-  s->addEllipse(-innerRadius(), -innerRadius(),
-                2 * innerRadius(), 2 * innerRadius(), penCircle);               // inner circle
-  if (secondFile())                                                             // middle circle (if second file)
-    s->addEllipse(-middleRadius(), -middleRadius(), 2 * middleRadius(), 2 * middleRadius(), penCircle);
+  for (int i = 0; i < filesCount(); i++)                                        // inner circles (for all files)
+    s->addEllipse(-innerRadius(i), -innerRadius(i), 2 * innerRadius(i), 2 * innerRadius(i), penCircle);
 
   s->addEllipse(chartRect().adjusted(2,2,-2,-2), penBorder, background);        // fill background (with margin)
 
@@ -233,7 +218,7 @@ void Chart :: createScene()
   circle->setCursor(QPixmap("chart/rotate.png"));
   s->addItem(circle);
   s->addEllipse(chartRect(), penBorder)->setParentItem(circle);                 // zodiac outer border
-  s->addEllipse(chartRect().adjusted(zodiacWidth(), zodiacWidth(),                  // zodiac inner border
+  s->addEllipse(chartRect().adjusted(zodiacWidth(), zodiacWidth(),              // zodiac inner border
                                  -zodiacWidth(), -zodiacWidth()), penBorder)->setParentItem(circle);
 
   if (zodiacDropShadow)
@@ -276,48 +261,15 @@ void Chart :: createScene()
     signIcons << text;
    }
 
+  for(int i = 0; i < filesCount(); i++)
+    drawPlanets(i);
 
-  foreach(const A::Planet& planet, file()->horoscope().planets)       // planets
-   {
-    int radius = 4;
-
-    int charIndex = planet.userData["fontChar"].toInt();
-
-    QColor color (planet.userData["color"].toString());
-    if (!color.isValid()) color = planetColor;
-
-    QColor shapeColor (planet.userData["shapeColor"].toString());
-    if (!shapeColor.isValid()) shapeColor = planetShapeColor;
-
-    QGraphicsSimpleTextItem* text = s->addSimpleText(QString(charIndex),
-                                                     planet.isReal ? planetFont : planetFontSmall);
-
-    QGraphicsEllipseItem* marker = s->addEllipse(-innerRadius() - radius / 2, -radius / 2,
-                                               radius, radius, penPlanetMarkers);
-
-    text   -> setPos(normalPlanetPosX(text, marker), -text->boundingRect().height() / 2);
-    text   -> setBrush(color);
-    text   -> setPen(shapeColor);
-    //text   -> setOpacity(opacity);
-    text   -> setTransformOriginPoint(text->boundingRect().center());
-    text   -> setParentItem(marker);
-    marker -> setTransformOriginPoint (circle->boundingRect().center());
-    marker -> setZValue(1);
-
-    planets[planet.id]       = text;
-    planetMarkers[planet.id] = marker;
-   }
-
-
-  fitInView();
-  emptyScene = false;
-  dualChart  = secondFile();         // if not empty, sets to true
+  /*if (viewport.center() != QPointF(0,0)) */fitInView();
+  chartsCount = filesCount();
  }
 
 void Chart :: updateScene()
  {
-  if (justUpdated) return;
-  justUpdated = true;
   qDebug() << "Update scene";
 
   circle->setFile(file());
@@ -349,20 +301,26 @@ void Chart :: updateScene()
                                               .arg(A::zodiacPosition(cusp, file()->horoscope().zodiac)));
     cuspideLabels[i]->setToolTip(cuspides[i]->toolTip());
    }
+ }
 
+void Chart :: updatePlanets(int fileIndex)
+ {
+  qDebug() << "Update planets" << fileIndex;
 
-  foreach (const A::Planet& p, file()->horoscope().planets)  // update planets
+  float rotate = circle->rotation();
+  foreach (const A::Planet& p, file(fileIndex)->horoscope().planets)
    {
-    QGraphicsItem* marker = planetMarkers[p.id];
-    QGraphicsItem* planet = planets[p.id];
+    QGraphicsItem* marker = planetMarkers[fileIndex][p.id];
+    QGraphicsItem* planet = planets[fileIndex][p.id];
     float angle = p.eclipticPos.x();
     if (clockwise) angle = 180 - angle;
+
 
     planet -> setPos(normalPlanetPosX(planet, marker),planet->pos().y());
     planet -> setRotation(angle - rotate);
     marker -> setRotation(rotate - angle);
 
-    foreach (QGraphicsItem* other, planets)              // avoid intersection of planets
+    foreach (QGraphicsItem* other, planets[fileIndex])              // avoid intersection of planets
      {
       if (other == planet) break;
       if (qAbs(planet->rotation() - other->rotation()) < 10)
@@ -377,13 +335,16 @@ void Chart :: updateScene()
     circle->setHelpTag(planet, p.name + "+" + p.sign->name);
     circle->setHelpTag(marker, p.name);
    }
+ }
 
-
+void Chart :: updateAspects()
+ {
   int i = 0;
-  foreach (const A::Aspect& asp, file()->horoscope().aspects)   // update aspects
+  const A::AspectList& list = (filesCount() == 1 ? file()->horoscope().aspects : calculateSynastryAspects());
+  foreach (const A::Aspect& asp, list)
    {
-    QLineF line(planetMarkers[asp.planet1->id]->sceneBoundingRect().center(),
-                planetMarkers[asp.planet2->id]->sceneBoundingRect().center());
+    QLineF line(getCircleMarker(asp.planet1)->sceneBoundingRect().center(),
+                getCircleMarker(asp.planet2)->sceneBoundingRect().center());
 
     if (i >= aspects.count())                 // add or change geometry
       aspects << view->scene()->addLine(line, aspectPen(asp));
@@ -411,12 +372,76 @@ void Chart :: updateScene()
     view->scene()->removeItem(aspects.takeLast());
     //aspectMarkers.removeLast();
    }
-
  }
 
-void Chart :: updateSecondChart()
+A::AspectList Chart :: calculateSynastryAspects()
  {
-  qDebug() << "Update second chart";
+  qDebug() << "Calculate synatry apects";
+  return A::calculateAspects(file(0)->getAspetLevel(), file(0)->horoscope().planets, file(1)->horoscope().planets);
+ }
+
+void Chart :: clearScene()
+ {
+  qDebug() << "Clear scene";
+  view->scene()->clear();
+  chartsCount = 0;
+  cuspides.clear();
+  cuspideLabels.clear();
+  planets.clear();
+  planetMarkers.clear();
+  aspects.clear();
+  //aspectMarkers.clear();
+  signIcons.clear();
+ }
+
+QRect Chart :: chartRect()
+ {
+  return QRect(-defaultChartRadius * zoom, -defaultChartRadius * zoom,
+               defaultChartRadius * 2 * zoom, defaultChartRadius * 2 * zoom);
+ }
+
+float Chart :: innerRadius(int fileIndex)
+ {
+  if (filesCount() == 1) return l_innerRadius * zoom;
+  float meanInnerRadius = l_innerRadius * (1 - filesCount() * 0.1);
+  float r = (defaultChartRadius - l_zodiacWidth - meanInnerRadius) * fileIndex / (filesCount());
+  return (meanInnerRadius + r) * zoom;
+ }
+
+void Chart :: drawPlanets(int fileIndex)
+ {
+  QFont planetFont("Almagest", 17/*, QFont::Bold*/);
+  QFont planetFontSmall("Almagest", 15);
+
+  QGraphicsScene* s = view->scene();
+
+  foreach(const A::Planet& planet, file(fileIndex)->horoscope().planets)
+   {
+    int radius = 2;
+    int charIndex = planet.userData["fontChar"].toInt();
+
+    QGraphicsSimpleTextItem* text = s->addSimpleText(QString(charIndex),
+                                                     planet.isReal ? planetFont : planetFontSmall);
+
+    QGraphicsEllipseItem* marker = s->addEllipse(-innerRadius(fileIndex) - radius, -radius,
+                                               radius * 2, radius * 2, planetMarkerPen(planet, fileIndex));
+
+    if (filesCount() > 1)
+      s->addEllipse(-innerRadius(0) - radius, -radius, radius * 2, radius * 2,       // duplicate on circle
+                    planetMarkerPen(planet, fileIndex))->setParentItem(marker);
+
+    text   -> setPos(normalPlanetPosX(text, marker), -text->boundingRect().height() / 2);
+    text   -> setBrush(planetColor(planet, fileIndex));
+    text   -> setPen(planetShapeColor(planet, fileIndex));
+    //text   -> setOpacity(opacity);
+    text   -> setTransformOriginPoint(text->boundingRect().center());
+    text   -> setParentItem(marker);
+    marker -> setTransformOriginPoint (circle->boundingRect().center());
+    marker -> setZValue(1);
+
+    planets[fileIndex][planet.id]       = text;
+    planetMarkers[fileIndex][planet.id] = marker;
+   }
  }
 
 int  Chart :: normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker)
@@ -444,40 +469,111 @@ const QPen& Chart :: aspectPen(const A::Aspect& asp)
   return pens["0"];
  }
 
-void Chart :: clearScene()
+const QPen& Chart :: planetMarkerPen(const A::Planet& p, int fileIndex)
  {
-  view->scene()->clear();
-  justUpdated = false;
-  emptyScene = true;
-  dualChart = false;
-  cuspides.clear();
-  cuspideLabels.clear();
-  planets.clear();
-  planetMarkers.clear();
-  aspects.clear();
-  //aspectMarkers.clear();
-  signIcons.clear();
+  static QList<QPen>pens;
+  if (pens.isEmpty())
+   {
+    pens << QPen(QColor("#cee1f2"),  2);
+    pens << QPen(QColor("#f7edbd"),  2);
+   }
+
+  return pens[qMin(fileIndex, pens.count() - 1)];
  }
 
-void Chart :: fileUpdated(AstroFile::Members members)
+QColor Chart :: planetColor(const A::Planet& p, int fileIndex)
  {
-  //if (file()->isEmpty()) qDebug() << "wow, empty file!";//return;
-  justUpdated = false;
-  if (!emptyScene && members & AstroFile::Zodiac) clearScene();
-  if (emptyScene) createScene();
-  if (members & (AstroFile::GMT | AstroFile::Timezone | AstroFile::Location |
-                 AstroFile::HouseSystem | AstroFile::AspectLevel | AstroFile::Zodiac))
+  QColor color (p.userData["color"].toString());
+
+  if (filesCount() > 1 || !color.isValid())
+   {
+    if (fileIndex == 0)
+      return "#cee1f2";
+    else
+      return "#f7edbd";
+   }
+
+  return color;
+ }
+
+QColor Chart :: planetShapeColor(const A::Planet& p, int fileIndex)
+ {
+  QColor shapeColor (p.userData["shapeColor"].toString());
+
+  if (filesCount() > 1 || !shapeColor.isValid())
+   {
+    if (fileIndex == 0)
+      return "#78a895";
+    else
+      return "#dcb96e";
+   }
+
+  return shapeColor;
+ }
+
+QGraphicsItem* Chart :: getCircleMarker(const A::Planet* p)
+ {
+  for (int i = 0; i < filesCount(); i++)
+    if (*p == file(i)->horoscope().planets.value(p->id))
+     {
+      if (i == 0)
+        return planetMarkers[i][p->id];                   // return marker itself
+      else
+        return planetMarkers[i][p->id]->childItems()[0];  // return child of marker (duplicate on circle)
+     }
+
+  return 0;
+ }
+
+void Chart :: refreshAll()
+ {
+  if (!chartsCount) return;
+  clearScene();
+  createScene();
+  updateScene();
+
+  for (int i = 0; i < filesCount(); i++)
+    updatePlanets(i);
+
+  updateAspects();
+ }
+
+void Chart :: filesUpdated(MembersList m)
+ {
+  if (chartsCount && (chartsCount != filesCount() ||     // clear if charts count or zodiac has changed
+                      (filesCount() && m[0] & AstroFile::Zodiac)))
+   clearScene();
+
+  bool justCreated = false;
+  bool updAspects = false;
+  if (!chartsCount && filesCount())
+   {
+    createScene();
+    justCreated = true;
+   }
+
+  AstroFile::Members updateFlags = AstroFile::GMT         | AstroFile::Timezone |
+                                   AstroFile::Location    | AstroFile::HouseSystem |
+                                   AstroFile::AspectLevel | AstroFile::Zodiac;
+
+  if (filesCount() && (justCreated ||
+                       m[0] & updateFlags))
+   {
     updateScene();
- }
+    updatePlanets(0);
+    updAspects = true;
+   }
 
-void Chart :: secondFileUpdated(AstroFile::Members members)
- {
-  //if (secondFile()->isEmpty()) qDebug() << "wow, empty second file!";//return;
-  if (!emptyScene && !dualChart) clearScene();
-  if (emptyScene) { createScene(); updateScene(); }
-  if (members & (AstroFile::GMT | AstroFile::Timezone | AstroFile::Location |
-                 AstroFile::HouseSystem))
-    updateSecondChart();
+  if (filesCount() > 1 && (justCreated ||
+                           (m[1] & updateFlags) ||
+                           (m[0] & updateFlags && startPoint() == Start_Ascendent)))
+   {
+    updatePlanets(1);
+    updAspects = true;
+   }
+
+  if (updAspects)
+    updateAspects();
  }
 
 bool Chart :: eventFilter(QObject* obj, QEvent* ev)
@@ -490,8 +586,12 @@ bool Chart :: eventFilter(QObject* obj, QEvent* ev)
     float z = 1;
     if (e->delta() < 0)
      {
-      if (zoom == 1) return true;
       viewport.moveCenter(QPoint(0,0));
+      if (zoom == 1)
+       {
+        fitInView();
+        return true;
+       }
       zoom = 1;
      }
     else
@@ -500,9 +600,7 @@ bool Chart :: eventFilter(QObject* obj, QEvent* ev)
       viewport.moveCenter(e->scenePos());
      }
 
-    clearScene();
-    createScene();
-    updateScene();
+    refreshAll();
     return true;
    }
 
@@ -550,13 +648,7 @@ void Chart :: applySettings       ( const AppSettings& s )
   coloredZodiac    = s.value ( "Circle/coloredZodiac"    ).toBool();
   zodiacDropShadow = s.value ( "Circle/zodiacDropShadow" ).toBool();
 
-  if (!emptyScene)
-   {
-    clearScene();
-    createScene();
-    updateScene();
-    updateSecondChart();
-   }
+  refreshAll();
  }
 
 void Chart :: setupSettingsEditor ( AppSettingsEditor* ed )

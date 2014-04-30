@@ -17,7 +17,7 @@
 
 AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
  {
-  currentFile1 = true;
+  currentFile = 0;
 
   name              = new QLineEdit;
   type              = new QComboBox;
@@ -114,10 +114,18 @@ void AstroFileEditor :: timezoneChanged()
   comment   -> clear();
  }*/
 
+void AstroFileEditor :: set2ndFileEnabled(bool b)
+ {
+  editData2->setVisible(b);
+  delData2->setVisible(b);
+  addData2->setVisible(!b);
+  swapFiles->setVisible(b);
+ }
+
 void AstroFileEditor :: update(AstroFile::Members m)
  {
-  qDebug() << "AstroFileEditor: update file1:" << currentFile1;
-  AstroFile* source = currentFile1 ? file() : secondFile();
+  qDebug() << "AstroFileEditor: show file" << currentFile;
+  AstroFile* source =  file(currentFile);
 
   name      -> setText(source->getName());
   geoSearch -> setLocation(source->getLocation(), source->getLocationName());
@@ -133,49 +141,37 @@ void AstroFileEditor :: update(AstroFile::Members m)
    }
  }
 
-void AstroFileEditor :: fileUpdated(AstroFile::Members m)
+void AstroFileEditor :: filesUpdated(MembersList members)
  {
-  if (currentFile1) update(m);
- }
-
-void AstroFileEditor :: secondFileUpdated(AstroFile::Members m)
- {
-  editData2->setVisible(true);
-  delData2->setVisible(true);
-  addData2->setVisible(false);
-  swapFiles->setVisible(true);
-  if (!currentFile1) update(m);
- }
-
-void AstroFileEditor :: reset2ndFile()
- {
-  editData2->setVisible(false);
-  delData2->setVisible(false);
-  addData2->setVisible(true);
-  swapFiles->setVisible(false);
-  switchToFile1();
+  set2ndFileEnabled(filesCount() > 1);
+  if (!filesCount())
+    close();
+  else if (currentFile >= filesCount())
+    switchToFile1();
+  else
+    update(members[currentFile]);
  }
 
 void AstroFileEditor :: switchToFile1()
  {
-  if (currentFile1) return;
-  currentFile1 = true;
-  update(file()->diffFlags(secondFile()));
+  if (currentFile == 0) return;
+  currentFile = 0;
+  update(file(0)->diff(file(1)));
   editData1->setChecked(true);
  }
 
 void AstroFileEditor :: switchToFile2()
  {
-  if (!currentFile1) return;
-  currentFile1 = false;
-  update(file()->diffFlags(secondFile()));
+  if (currentFile == 1) return;
+  currentFile = 1;
+  update(file(1)->diff(file(0)));
   editData2->setChecked(true);
  }
 
 void AstroFileEditor :: applyToFile()
  {
   //if (!file()) qDebug() << "wow, file() == 0!";// return;
-  AstroFile* dst = currentFile1 ? file() : secondFile();
+  AstroFile* dst = file(currentFile);
 
   dst->suspendUpdate();
   dst->setName(name->text());
@@ -188,8 +184,8 @@ void AstroFileEditor :: applyToFile()
   dst->resumeUpdate();
  }
 
-void AstroFileEditor :: showEvent(QShowEvent* e)
+/*void AstroFileEditor :: showEvent(QShowEvent* e)
  {
   AstroFileHandler::showEvent(e);
   if (!secondFile()) reset2ndFile();
- }
+ }*/

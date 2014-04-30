@@ -47,7 +47,7 @@ const ZodiacId      Zodiac_None          = -1;
 
 const ZodiacSignId  Sign_None            = -1;
 
-const AspectLevel   Level_Default        =  2;
+const AspectLevel   Level_Default        =  0;
 
 
 struct ZodiacSign {
@@ -134,16 +134,16 @@ struct Planet
              sweNum = 0;
              sweFlags = 0;
              isReal = false;
-                horizontalPos = QPoint(0,0);
-                eclipticPos   = QPoint(0,0);
-                eclipticSpeed = QVector2D(0,0);
-                distance = 0;
-                position = Position_Normal;
-                sign = 0;
-                house = 0;
-                houseRuler = 0; }
+             horizontalPos = QPoint(0,0);
+             eclipticPos   = QPoint(0,0);
+             eclipticSpeed = QVector2D(0,0);
+             distance = 0;
+             position = Position_Normal;
+             sign = 0;
+             house = 0;
+             houseRuler = 0; }
 
-  //bool operator==(const Planet & other) const { return this->id == other.id; }
+  bool operator==(const Planet & other) const { return this->id == other.id && this->eclipticPos == other.eclipticPos; }
   bool operator!=(const Planet & other) const { return this->id != other.id; }
 };
 

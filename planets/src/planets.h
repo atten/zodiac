@@ -82,10 +82,7 @@ class Planets : public AstroFileHandler
         void planetSelected(int index);
 
     protected:                            // AstroFileHandler && other implementations
-        void resetFile();
-        void reset2ndFile() { }
-        void fileUpdated(AstroFile::Members);
-        void secondFileUpdated(AstroFile::Members) { }
+        void filesUpdated(MembersList);
 
         AppSettings defaultSettings ();
         AppSettings currentSettings ();

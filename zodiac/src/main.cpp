@@ -4,6 +4,7 @@
 #include <QTextCodec>
 #include <QTranslator>
 #include <QFontDatabase>
+#include <QDebug>
 #include "mainwindow.h"
 
 void loadTranslations(QApplication* a, QString lang)

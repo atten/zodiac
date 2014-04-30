@@ -36,6 +36,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
 Houses      calculateHouses      ( const InputData& input );
 Aspect      calculateAspect      ( AspectLevel aspectLevel, const Planet& planet1, const Planet& planet2 );
 AspectList  calculateAspects     ( AspectLevel aspectLevel, const PlanetMap& planets );
+AspectList  calculateAspects     ( AspectLevel aspectLevel, const PlanetMap& planets1, const PlanetMap& planets2 );   // synastry
 Horoscope   calculateAll         ( const InputData& input );
 
 }

@@ -476,22 +476,25 @@ AspectList calculateAspects ( AspectLevel aspectLevel, const PlanetMap &planets 
     ++i;
    }
 
+  return ret;
+ }
 
-  /*for (int i = 0; i < planets.count(); i++)
+AspectList calculateAspects ( AspectLevel aspectLevel, const PlanetMap& planets1, const PlanetMap& planets2 )
+ {
+  AspectList ret;
+
+  PlanetMap::const_iterator i = planets1.constBegin();
+  while (i != planets1.constEnd())
    {
-    const Planet& p1 = //(relatedPlanet.id == Planet_None) ?  // find next planet or choose related one
-                            planets[i];// : relatedPlanet;
-
-    for (int j = i + 1; j < planets.count(); j++)                 // choose second planet
+    PlanetMap::const_iterator j = planets2.constBegin();
+    while (j != planets2.constEnd())
      {
-      const Planet& p2 = planets[j];
-
-      if (aspect(p1, p2, aspectLevel) != Aspect_None)
-        ret << calculateAspect(aspectLevel, p1, p2);
+      if (aspect(i.value(), j.value(), aspectLevel) != Aspect_None)
+        ret << calculateAspect(aspectLevel, i.value(), j.value());
+      ++j;
      }
-
-    //if (relatedPlanet.id != Planet_None) break;                 // exit cycle if one planet is selected
-   }*/
+    ++i;
+   }
 
   return ret;
  }
