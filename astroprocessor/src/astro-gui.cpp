@@ -92,6 +92,7 @@ void AstroFile :: save()
 
 void AstroFile :: load(QString name/*, bool recalculate*/)
  {
+  if (name.isEmpty()) return;
   qDebug() << "Loading file" << getName() << "from" << name;
 
   suspendUpdate();
@@ -252,13 +253,18 @@ void AstroFile :: recalculate()
   scope = A::calculateAll(scope.inputData);
  }
 
-void AstroFile :: destroy()
+/*void AstroFile :: destroy()
+ {
+
+  deleteLater();
+ }*/
+
+AstroFile :: ~AstroFile()
  {
   if (getName().section(" ", -1).toInt() == counter)   // latest file
     --counter;                                         // decrement file counter
 
   qDebug() << "Deleted file" << getName();
-  deleteLater();
  }
 
 
@@ -348,10 +354,7 @@ void AstroFileHandler :: fileDestroyedSlot()
  {
   int i = f.indexOf((AstroFile*)sender());
   if (i != -1)                      // TODO: discover how sender might be not in list
-   {
-    f[i] = 0;
-    while (!f.last()) f.removeLast();
-   }
+    f.removeAt(i);
 
   filesUpdated(blankMembers());
  }

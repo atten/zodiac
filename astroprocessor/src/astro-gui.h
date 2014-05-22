@@ -32,6 +32,7 @@ class AstroFile : public QObject
         Q_DECLARE_FLAGS(Members, Member)
 
         AstroFile(QObject* parent = 0);
+        ~AstroFile();
 
         QString fileName() const;
         QString typeToString(FileType type) const;
@@ -74,8 +75,8 @@ class AstroFile : public QObject
     signals:
         void changed(AstroFile::Members);
 
-    public slots:
-        void destroy();
+    /*public slots:
+        void destroy();*/
 
     private:
         bool unsavedChanges;

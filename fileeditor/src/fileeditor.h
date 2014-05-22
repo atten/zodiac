@@ -3,14 +3,13 @@
 
 #include <Astroprocessor/Gui>
 
-class QAction;
-class QToolBar;
 class QLineEdit;
 class QComboBox;
 class QDateTimeEdit;
 class QDoubleSpinBox;
 class GeoSearchWidget;
 class QPlainTextEdit;
+class QTabBar;
 
 
 /* =========================== ASTRO FILE EDITOR ==================================== */
@@ -22,12 +21,8 @@ class AstroFileEditor : public AstroFileHandler
     private:
         int currentFile;
 
-        QAction* editData1;
-        QAction* editData2;
-        QAction* addData2;
-        QAction* delData2;
-        QAction* swapFiles;
-
+        QTabBar* tabs;
+        QPushButton* addFileBtn;
         QLineEdit* name;
         QComboBox* type;
         QDateTimeEdit* dateTime;
@@ -36,28 +31,28 @@ class AstroFileEditor : public AstroFileHandler
         QPlainTextEdit* comment;
 
         void update(AstroFile::Members);
-        void set2ndFileEnabled(bool);
+        void updateTabs();
 
-    protected:                            // AstroFileHandler implementations
-        void filesUpdated(MembersList members);
-
+    protected:
+        void filesUpdated(MembersList members);  // AstroFileHandler implementations
         //virtual void showEvent(QShowEvent*);
         virtual void closeEvent(QCloseEvent*) { emit windowClosed(); }
 
     signals:
         void windowClosed();
+        void appendFile();
+        void swapFiles(int, int);
 
     private slots:
-        void remove2ndFile() { file(1)->destroy(); }
+        void swapFilesSlot(int, int);
+        void currentTabChanged(int);
+        void removeTab(int);
         void applyToFile();
         void timezoneChanged();
 
-    public slots:
-        void switchToFile1();
-        void switchToFile2();
-
     public:
         AstroFileEditor(QWidget *parent = 0);
+        void setCurrentFile(int index);
 
 };
 

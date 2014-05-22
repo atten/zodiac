@@ -213,9 +213,10 @@ AstroFileInfo QPushButton {	/* button with info */
 	color: #FFF;
 }
 
+AstroFileInfo#secondFile  QPushButton { color: #00C0FF; }
+
 AstroFileInfo QLabel {		/* shadow */
 	color: #000;
-	/*font-weight: bold;*/
 	margin: 1px;
 }
 

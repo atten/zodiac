@@ -1,6 +1,4 @@
 #include <QLabel>
-#include <QAction>
-#include <QToolBar>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QPushButton>
@@ -19,6 +17,8 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
  {
   currentFile = 0;
 
+  tabs              = new QTabBar;
+  addFileBtn        = new QPushButton(tr("+"));
   name              = new QLineEdit;
   type              = new QComboBox;
   dateTime          = new QDateTimeEdit;
@@ -26,24 +26,13 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
   geoSearch         = new GeoSearchWidget;
   comment           = new QPlainTextEdit;
 
-  QActionGroup* aGroup = new QActionGroup(this);
   QPushButton* ok     = new QPushButton(tr("OK"));
   QPushButton* cancel = new QPushButton(tr("Cancel"));
   QPushButton* apply  = new QPushButton(tr("Apply"));
-  QToolBar* toolbar = new QToolBar;
 
-  editData1  = toolbar->addAction(tr("Input"), this, SLOT(switchToFile1()));
-  editData2  = toolbar->addAction(tr("Background"), this, SLOT(switchToFile2()));
-  addData2   = toolbar->addAction("+");
-  delData2   = toolbar->addAction("-", this, SLOT(remove2ndFile()));
-  swapFiles  = toolbar->addAction(tr("Swap"));
-
-  aGroup   -> setExclusive(true);
-  editData1-> setCheckable(true);
-  editData2-> setCheckable(true);
-  editData1-> setChecked(true);
-  editData1-> setActionGroup(aGroup);
-  editData2-> setActionGroup(aGroup);
+  tabs     -> setTabsClosable(true);
+  tabs     -> setMovable(true);
+  addFileBtn -> setMaximumWidth(32);
   type     -> addItem(tr("male"),      AstroFile::TypeMale);
   type     -> addItem(tr("female"),    AstroFile::TypeFemale);
   type     -> addItem(tr("undefined"), AstroFile::TypeOther);
@@ -55,6 +44,10 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
   this     -> setWindowFlags(Qt::Dialog |
                              Qt::MSWindowsFixedSizeDialogHint |
                              Qt::WindowStaysOnTopHint);
+
+  QHBoxLayout* lay4 = new QHBoxLayout;
+   lay4->addWidget(tabs);
+   lay4->addWidget(addFileBtn);
 
   QHBoxLayout* lay3 = new QHBoxLayout;
    lay3->addWidget(name);
@@ -80,20 +73,21 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
    buttons->addWidget(apply);
 
   QVBoxLayout* layout = new QVBoxLayout(this);
-   layout->addWidget(toolbar, 0, Qt::AlignHCenter);
+   layout->addLayout(lay4);
    layout->addLayout(lay1);
    layout->addLayout(buttons);
 
 
-  connect(ok,       SIGNAL(clicked()), this, SLOT(applyToFile()));
-  connect(apply,    SIGNAL(clicked()), this, SLOT(applyToFile()));
-  connect(ok,       SIGNAL(clicked()), this, SLOT(close()));
-  connect(cancel,   SIGNAL(clicked()), this, SLOT(close()));
-  connect(timeZone, SIGNAL(valueChanged(double)), this, SLOT(timezoneChanged()));
+  connect(tabs,       SIGNAL(currentChanged(int)),    this, SLOT(currentTabChanged(int)));
+  connect(tabs,       SIGNAL(tabMoved(int,int)),      this, SLOT(swapFilesSlot(int,int)));
+  connect(tabs,       SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
+  connect(addFileBtn, SIGNAL(clicked()), this, SIGNAL(appendFile()));
+  connect(ok,         SIGNAL(clicked()), this, SLOT(applyToFile()));
+  connect(apply,      SIGNAL(clicked()), this, SLOT(applyToFile()));
+  connect(ok,         SIGNAL(clicked()), this, SLOT(close()));
+  connect(cancel,     SIGNAL(clicked()), this, SLOT(close()));
+  connect(timeZone,   SIGNAL(valueChanged(double)), this, SLOT(timezoneChanged()));
 
-  //resetFile();
-  //reset2ndFile();
-  //timezoneChanged();
   dateTime -> setFocus();
  }
 
@@ -105,21 +99,21 @@ void AstroFileEditor :: timezoneChanged()
     timeZone->setPrefix("+");
  }
 
-/*void AstroFileEditor :: resetFile()
+void AstroFileEditor :: updateTabs()
  {
-  name      -> setText("");
-  type      -> setCurrentIndex(0);
-  dateTime  -> setDateTime(QDateTime::currentDateTime());
-  geoSearch -> setLocation(QVector3D(0,0,0),"");
-  comment   -> clear();
- }*/
+  for (int i = 0; i < filesCount(); i++)
+   {
+    QString txt = file(i)->getName();
+    if (tabs->count() <= i)
+      tabs->addTab(txt);
+    else
+      tabs->setTabText(i, txt);
+   }
 
-void AstroFileEditor :: set2ndFileEnabled(bool b)
- {
-  editData2->setVisible(b);
-  delData2->setVisible(b);
-  addData2->setVisible(!b);
-  swapFiles->setVisible(b);
+  for (int i = filesCount(); i < tabs->count(); i++)    // remove unused tabs
+    tabs->removeTab(i);
+
+  addFileBtn->setVisible(filesCount() < 2);
  }
 
 void AstroFileEditor :: update(AstroFile::Members m)
@@ -141,36 +135,46 @@ void AstroFileEditor :: update(AstroFile::Members m)
    }
  }
 
+void AstroFileEditor :: currentTabChanged(int index)
+ {
+  if (currentFile == index) return;
+  int oldFile = currentFile;
+  currentFile = index;
+  update(file(index)->diff(file(oldFile)));
+ }
+
+void AstroFileEditor :: removeTab(int index)
+ {
+  if (filesCount() < 2) return;
+  //currentFile = 0;
+  tabs->removeTab(index);
+  file(index)->deleteLater();
+ }
+
+void AstroFileEditor :: swapFilesSlot(int i, int j)
+ {
+  currentFile = i;
+  emit swapFiles(i, j);
+ }
+
+void AstroFileEditor :: setCurrentFile(int index)
+ {
+  tabs->setCurrentIndex(index);
+ }
+
 void AstroFileEditor :: filesUpdated(MembersList members)
  {
-  set2ndFileEnabled(filesCount() > 1);
+  updateTabs();
   if (!filesCount())
     close();
   else if (currentFile >= filesCount())
-    switchToFile1();
-  else
+    setCurrentFile(0);
+  else if(members[currentFile])
     update(members[currentFile]);
- }
-
-void AstroFileEditor :: switchToFile1()
- {
-  if (currentFile == 0) return;
-  currentFile = 0;
-  update(file(0)->diff(file(1)));
-  editData1->setChecked(true);
- }
-
-void AstroFileEditor :: switchToFile2()
- {
-  if (currentFile == 1) return;
-  currentFile = 1;
-  update(file(1)->diff(file(0)));
-  editData2->setChecked(true);
  }
 
 void AstroFileEditor :: applyToFile()
  {
-  //if (!file()) qDebug() << "wow, file() == 0!";// return;
   AstroFile* dst = file(currentFile);
 
   dst->suspendUpdate();

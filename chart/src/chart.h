@@ -61,8 +61,8 @@ class Chart : public AstroFileHandler
         bool coloredZodiac;
         bool zodiacDropShadow;
 
-        QList<QGraphicsLineItem*>         cuspides;
-        QList<QGraphicsSimpleTextItem*>   cuspideLabels;
+        QMap<int, QGraphicsItemDict>      cuspides;
+        QMap<int, QGraphicsItemDict>   cuspideLabels;
         QMap<int, QGraphicsItemDict> planetMarkers;
         QMap<int, QGraphicsItemDict> planets;
         //QList<QGraphicsSimpleTextItem*> aspectMarkers;
@@ -81,7 +81,8 @@ class Chart : public AstroFileHandler
         QGraphicsItem* getCircleMarker(const A::Planet* p);
 
         void drawPlanets(int fileIndex);
-        void updatePlanets(int fileIndex);
+        void drawCuspides(int fileIndex);
+        void updatePlanetsAndCusps(int fileIndex);
         void updateAspects();
         A::AspectList calculateSynastryAspects();
 

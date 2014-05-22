@@ -151,11 +151,7 @@ void Chart :: createScene()
   QBrush background(QColor(8, 103, 192, 50));
   QPen penZodiac(QColor(31,52,93), zodiacWidth());
   QPen penBorder(QColor(50,145,240));
-  QPen penCusp(QColor(227,214,202), 2);
-  QPen penCusp0(QColor(250,90,58), 3);
-  QPen penCusp10(QColor(210,195,150), 3);
   QPen penCircle(QColor(227,214,202), 1);
-  QFont font("Times New Roman", 13, QFont::Bold);
   QFont zodiacFont("Almagest", 16 * zoom, QFont::Bold);
   QColor signFillColor = Qt::black;
   QColor signShapeColor = "#6d6d6d";
@@ -186,31 +182,11 @@ void Chart :: createScene()
 
    }
 
-
-  for (int i = 0; i < 12; i++)        // cuspides
-   {
-    if (i == 0)
-      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0,
-                             chartRect().x() - cuspideLength * 1.4, 0, penCusp0);
-    else if (i == 9)
-      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0,
-                             chartRect().x() - cuspideLength * 1.4, 0, penCusp10);
-    else
-      cuspides << s->addLine(-innerRadius() - penCircle.width(), 0, chartRect().x() - cuspideLength, 0, penCusp);
-
-    cuspideLabels << s->addSimpleText(A::romanNum(i+1), font);
-    cuspideLabels.last()->setBrush(QColor(255,255,255,150));
-    cuspideLabels.last()->setParentItem(cuspides[i]);
-    cuspideLabels.last()->moveBy(chartRect().x() - cuspideLength + 5, 5);
-    cuspideLabels.last()->setTransformOriginPoint(cuspideLabels.last()->boundingRect().center());
+  for (int f = 0; f < filesCount(); f++)
+   {                                                                            // inner circles
+    s->addEllipse(-innerRadius(f), -innerRadius(f), 2 * innerRadius(f), 2 * innerRadius(f), penCircle);
+    drawCuspides(f);                                                            // cuspides
    }
-
-  QPointF p = cuspides[0]->line().p2();
-  s->addLine(p.x(), p.y(), p.x() + 14, p.y() + 7, penCusp0)->setParentItem(cuspides[0]);  // arrow for first cuspide
-  s->addLine(p.x(), p.y(), p.x() + 14, p.y() - 7, penCusp0)->setParentItem(cuspides[0]);
-
-  for (int i = 0; i < filesCount(); i++)                                        // inner circles (for all files)
-    s->addEllipse(-innerRadius(i), -innerRadius(i), 2 * innerRadius(i), 2 * innerRadius(i), penCircle);
 
   s->addEllipse(chartRect().adjusted(2,2,-2,-2), penBorder, background);        // fill background (with margin)
 
@@ -281,34 +257,18 @@ void Chart :: updateScene()
     rotate = file()->horoscope().zodiac.signs[0].startAngle;
     if (clockwise) rotate = -rotate;
 
+  foreach (QGraphicsItem* i, signIcons)
+    i->setRotation(-rotate);
+
   circle->setRotation(rotate);
-
-  for (int i = 0; i < 12; i++)                           // update cuspides && labels
-   {
-    float cusp = file()->horoscope().houses.cusp[i];
-    if (clockwise) cusp = 180 - cusp;
-
-    cuspides[i]->setRotation(-cusp + rotate);
-    cuspideLabels[i]->setRotation(cusp - rotate);
-    signIcons[i]->setRotation(-rotate);
-
-    QString tag = tr("%1+%2").arg(A::romanNum(i+1))
-                             .arg(A::getSign(cusp, file()->horoscope().zodiac).name);
-    circle->setHelpTag(cuspides[i], tag);
-    circle->setHelpTag(cuspideLabels[i], tag);
-
-    cuspides[i]->setToolTip(tr("House %1\n%2").arg(A::romanNum(i+1))
-                                              .arg(A::zodiacPosition(cusp, file()->horoscope().zodiac)));
-    cuspideLabels[i]->setToolTip(cuspides[i]->toolTip());
-   }
  }
 
-void Chart :: updatePlanets(int fileIndex)
+void Chart :: updatePlanetsAndCusps(int fileIndex)
  {
   qDebug() << "Update planets" << fileIndex;
 
   float rotate = circle->rotation();
-  foreach (const A::Planet& p, file(fileIndex)->horoscope().planets)
+  foreach (const A::Planet& p, file(fileIndex)->horoscope().planets) // update planets
    {
     QGraphicsItem* marker = planetMarkers[fileIndex][p.id];
     QGraphicsItem* planet = planets[fileIndex][p.id];
@@ -335,6 +295,27 @@ void Chart :: updatePlanets(int fileIndex)
     circle->setHelpTag(planet, p.name + "+" + p.sign->name);
     circle->setHelpTag(marker, p.name);
    }
+
+  for (int i = 0; i < 12; i++)                           // update cuspides && labels
+   {
+    float cusp = file(fileIndex)->horoscope().houses.cusp[i];
+    if (clockwise) cusp = 180 - cusp;
+
+    QGraphicsItem* c = cuspides[fileIndex][i];
+    QGraphicsItem* l = cuspideLabels[fileIndex][i];
+
+    c->setRotation(-cusp + rotate);
+    l->setRotation(cusp - rotate);
+
+    QString tag = tr("%1+%2").arg(A::romanNum(i+1))
+                             .arg(A::getSign(cusp, file()->horoscope().zodiac).name);
+    circle->setHelpTag(c, tag);
+    circle->setHelpTag(l, tag);
+
+    c->setToolTip(tr("House %1\n%2").arg(A::romanNum(i+1))
+                                    .arg(A::zodiacPosition(cusp, file()->horoscope().zodiac)));
+    l->setToolTip(c->toolTip());
+   }
  }
 
 void Chart :: updateAspects()
@@ -355,7 +336,7 @@ void Chart :: updateAspects()
      }
 
 
-    QString toolTip = A::describeAspectFull(asp);
+    QString toolTip = A::describeAspectFull(asp, "#1", "#2");
     if (aspects[i]->toolTip() != toolTip)     // assign messages
      {
       aspects[i]->setToolTip(toolTip);
@@ -444,6 +425,73 @@ void Chart :: drawPlanets(int fileIndex)
    }
  }
 
+void Chart :: drawCuspides(int fileIndex)
+ {
+  static QPen penCusp(QColor(227,214,202), 2);
+  static QPen penCusp0(QColor(250,90,58), 3);
+  static QPen penCusp10(QColor(210,195,150), 3);
+  static QFont font("Times New Roman", 13, QFont::Bold);
+
+  QGraphicsScene* s = view->scene();
+  QGraphicsLineItem* l;
+  QPen pen;
+  int endPointX;
+
+  for (int i = 0; i < 12; i++)
+   {
+    if (i == 0)
+     {
+      pen = penCusp0;
+      endPointX = chartRect().x() - cuspideLength * 1.4;
+     }
+    else if (i == 9)
+     {
+      pen = penCusp10;
+      endPointX = chartRect().x() - cuspideLength * 1.2;
+     }
+    else
+     {
+      pen = penCusp;
+      endPointX = chartRect().x() - cuspideLength;
+     }
+
+    if (filesCount() > 1 && fileIndex == 1)
+      pen.setColor(QColor("#00C0FF"));
+
+    if (filesCount() > 1 && fileIndex == 0)
+     {
+      l = s->addLine(-innerRadius(0), 0, -innerRadius(1), 0, pen);
+      s->addLine(chartRect().x(), 0, endPointX, 0, pen)->setParentItem(l);
+     }
+    else
+     {
+      l = s->addLine(-innerRadius(fileIndex), 0, endPointX, 0, pen);
+     }
+
+    if (i == 0)
+     {
+      s->addLine(endPointX, 0, endPointX + 14,   7, pen)->setParentItem(l);  // arrow for first cuspide
+      s->addLine(endPointX, 0, endPointX + 14, - 7, pen)->setParentItem(l);
+     }
+    else if (i == 9)
+     {
+      int d = 12;
+      s->addEllipse(endPointX - d, -d/2, d, d, pen)->setParentItem(l);
+     }
+
+    cuspides[fileIndex][i] = l;
+
+    QGraphicsSimpleTextItem* t = s->addSimpleText(i == 0 ? "Asc" : A::romanNum(i+1), font);
+    t->setBrush(QColor((filesCount() > 1 && fileIndex == 1) ? "#00C0FF" : "#FFFFFF"));
+    t->setOpacity(0.6);
+    t->setParentItem(l);
+    t->moveBy(endPointX + 5, 5);
+    t->setTransformOriginPoint(t->boundingRect().center());
+    cuspideLabels[fileIndex][i] = t;
+   }
+
+ }
+
 int  Chart :: normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker)
  {
   int indent = 6;
@@ -474,8 +522,8 @@ const QPen& Chart :: planetMarkerPen(const A::Planet& p, int fileIndex)
   static QList<QPen>pens;
   if (pens.isEmpty())
    {
-    pens << QPen(QColor("#cee1f2"),  2);
-    pens << QPen(QColor("#f7edbd"),  2);
+    pens << QPen(QColor("#cee1f2"), 2);
+    pens << QPen(QColor("#00C0FF"), 2);
    }
 
   return pens[qMin(fileIndex, pens.count() - 1)];
@@ -490,7 +538,7 @@ QColor Chart :: planetColor(const A::Planet& p, int fileIndex)
     if (fileIndex == 0)
       return "#cee1f2";
     else
-      return "#f7edbd";
+      return "#00C0FF";
    }
 
   return color;
@@ -505,7 +553,7 @@ QColor Chart :: planetShapeColor(const A::Planet& p, int fileIndex)
     if (fileIndex == 0)
       return "#78a895";
     else
-      return "#dcb96e";
+      return "#412631";
    }
 
   return shapeColor;
@@ -533,7 +581,7 @@ void Chart :: refreshAll()
   updateScene();
 
   for (int i = 0; i < filesCount(); i++)
-    updatePlanets(i);
+    updatePlanetsAndCusps(i);
 
   updateAspects();
  }
@@ -560,7 +608,7 @@ void Chart :: filesUpdated(MembersList m)
                        m[0] & updateFlags))
    {
     updateScene();
-    updatePlanets(0);
+    updatePlanetsAndCusps(0);
     updAspects = true;
    }
 
@@ -568,7 +616,7 @@ void Chart :: filesUpdated(MembersList m)
                            (m[1] & updateFlags) ||
                            (m[0] & updateFlags && startPoint() == Start_Ascendent)))
    {
-    updatePlanets(1);
+    updatePlanetsAndCusps(1);
     updAspects = true;
    }
 

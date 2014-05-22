@@ -30,10 +30,10 @@ Subprojects:
 * ``fileeditor`` - library for editing horoscope data.
 
 
-Directories:
+Content of subdirs:
 ------------
 
-* ***bin/*** - application build&run directory.
+* ***bin/*** - executable, libraries and other application files.
 * ***bin/i18n/*** - localization files for all projects;
 * ***bin/images/*** - various astrological images used in application
 * ***bin/style/*** - CSS and icons for application
@@ -44,7 +44,7 @@ Directories:
 * ***bin/fileeditor/***,
 * ***bin/plain/***,
 * ***bin/planets/***,
-* ***bin/swe/*** - files used by appropriate library;
+* ***bin/swe/*** - files used by Swiss Ephemeris library;
 * ***chart/***,
 * ***fileeditor/***,
 * ***plain/***,
@@ -63,14 +63,14 @@ Requirement: Qt > 4.8 (works in Qt 4.8.2 and in Qt 5.2 as well).
 Method 1: automatic bundle build
 ---------------------------------
 
-This method will produce a single executable file with integrated project libraries. It is useful, then qmake can't link that libraries to executable for some reason.
+This method will produce a single executable file with integrated project libraries.
 
 Open **zodiac/zodiac_bundle.pro** in Qt Creator, select a build configuration (Debug or Release) then build (Ctrl+B).
 
-Method 2: automatic separate build
+Method 2: automatic separate build (Windows only)
 -----------------------------------
 
-This method is tested in Windows only. It will produce a main executable (zodiac) with a few dynamic libraries. Open **all.pro** in Qt Creator, and build it as usual.
+Open **all.pro** in Qt Creator, and build it as usual. It will produce a main executable (zodiac) with a few dynamic libraries.
 
 Method 3: manual build
 -----------------------
@@ -78,13 +78,13 @@ Method 3: manual build
 This is a variation of 'method 2' that supposes manual building of all subprojects.
 Open projects in QtCreator and build them manually in the following order:
 
-    1. swe/swe.pro -> bin/swe.dll;
-    2. astroprocessor/astroprocessor.pro -> bin/astroprocessor.dll;
-    3. chart/chart.pro -> bin/chart.dll,
-    fileeditor/fileeditor.pro -> bin/fileeditor.dll,
-    plain/plain.pro -> bin/plain.dll,
-    planets/planets.pro -> bin/planets.dll;
-    4. zodiac/zodiac.pro -> bin/zodiac.exe.
+    1. swe/swe.pro
+    2. astroprocessor/astroprocessor.pro
+    3. chart/chart.pro
+    fileeditor/fileeditor.pro
+    plain/plain.pro
+    planets/planets.pro
+    4. zodiac/zodiac.pro
 	
 	
 Run on Windows:

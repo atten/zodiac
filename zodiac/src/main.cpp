@@ -7,6 +7,8 @@
 #include <QDebug>
 #include "mainwindow.h"
 
+//#define QT_NO_DEBUG_OUTPUT
+
 void loadTranslations(QApplication* a, QString lang)
  {
   QDir dir("i18n");

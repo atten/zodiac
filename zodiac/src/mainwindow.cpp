@@ -154,6 +154,7 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
   slides      -> setTransitionEffect(SlideWidget::Transition_HorizontalSlide);
   fileView2nd -> setStatusTip(tr("Background data"));
   fileView2nd -> setCurrentIndex(1);
+  fileView2nd -> setObjectName("secondFile");
 
   QGridLayout* layout = new QGridLayout(this);
    layout->setMargin(0);
@@ -231,13 +232,15 @@ void AstroWidget :: openEditor()
     editor->move((topLevelWidget()->width()  - editor->width())  / 2 + topLevelWidget()->geometry().left(),
                  (topLevelWidget()->height() - editor->height()) / 2 + topLevelWidget()->geometry().top());
     editor->show();
+    connect(editor, SIGNAL(appendFile()),   this, SIGNAL(appendFileRequested()));
+    connect(editor, SIGNAL(swapFiles(int,int)), this, SIGNAL(swapFilesRequested(int,int)));
     connect(editor, SIGNAL(windowClosed()), this, SLOT(destroyEditor()));
    }
 
   if (sender() == fileView)
-   editor->switchToFile1();
+    editor->setCurrentFile(0);
   else if (sender() == fileView2nd)
-    editor->switchToFile2();
+    editor->setCurrentFile(1);
  }
 
 void AstroWidget :: destroyEditor()
@@ -393,191 +396,6 @@ void AstroWidget :: setupSettingsEditor ( AppSettingsEditor* ed )
     h->setupSettingsEditor(ed);
 
   connect(ed, SIGNAL(apply(AppSettings&)), this, SLOT(applyGeoSettings(AppSettings&)));
- }
-
-
-/* =========================== FILES BAR ============================================ */
-
-FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
- {
-  setTabsClosable(true);
-  setMovable(true);
-
-  connect(this, SIGNAL(tabMoved(int,int)),      this, SLOT(swapFiles(int,int)));
-  connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
- }
-
-int FilesBar :: getTabIndex(AstroFile* f)
- {
-  for (int i = 0; i < count(); i++)
-    for (int j = 0; j < files[i].count(); j++)
-      if (f == files[i][j])
-        return i;
-
-  return -1;
- }
-
-int FilesBar :: getTabIndex(QString name)
- {
-  for (int i = 0; i < count(); i++)
-    for (int j = 0; j < files[i].count(); j++)
-      if (name == files[i][j]->getName())
-        return i;
-  return -1;
- }
-
-void FilesBar :: addFile (AstroFile* file)
- {
-  if (!file)
-   {
-    qWarning() << "FilesBar::addFile: failed to add an empty file";
-    return;
-   }
-
-  AstroFileList list;
-  list << file;
-  files << list;
-  file->setParent(this);
-  addTab("new");
-  updateTab(count() - 1);
-  setCurrentIndex(count() - 1);
-
-  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
-  connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
- }
-
-void FilesBar :: updateTab(int index)
- {
-  if (index >= count()) return;
-  QStringList names;
-
-  foreach (AstroFile* i, files[index])
-    if (i) names << i->getName() + (i->hasUnsavedChanges() ? "*" : "");
-
-  setTabText(index, names.join(" | "));
- }
-
-void FilesBar :: fileUpdated(AstroFile::Members m)
- {
-  if (!(m & (AstroFile::Name|AstroFile::ChangedState))) return;
-  qDebug() << "FilesBar::updateTab";
-  AstroFile* file = (AstroFile*)sender();
-  updateTab(getTabIndex(file));
- }
-
-/*void FilesBar :: removeTab()    // called when AstroFile going to be destroyed
- {
-  AstroFile* file = (AstroFile*)sender();
-  int index = files.indexOf(file);
-  files.removeAt(index);
-  AstroFile* second = secondFiles.takeAt(index);
-  if (second) second->destroy();
-  ((QTabBar*)this)->removeTab(index);
-  if (!count()) addNewFile();
- }*/
-
-void FilesBar :: fileDestroyed()                // called when AstroFile going to be destroyed
- {
-  AstroFile* file = (AstroFile*)sender();
-  int tab = getTabIndex(file);
-  if (tab == -1) return;                        // tab with the single file has been removed already
-  int index = files[tab].indexOf(file);
-  files[tab][index] = 0;
-  while (!files[tab].last()) files[tab].removeLast();
-  updateTab(tab);
- }
-
-void FilesBar :: swapFiles(int f1,int f2)
- {
-  AstroFileList temp = files[f1];
-  files[f1] = files[f2];
-  files[f2] = temp;
- }
-
-bool FilesBar :: closeTab(int index)
- {
-  AstroFileList f = files[index];
-  AstroFile* file = 0;
-  if (f.count()) file = f[0];
-
-  if (askToSave && file && file->hasUnsavedChanges())
-   {
-    QMessageBox msgBox;
-    msgBox.setText(tr("Save changes in '%1' before closing?").arg(file->getName()));
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Save);
-    int ret = msgBox.exec();
-
-    switch (ret)
-     {
-      case QMessageBox::Yes: file->save(); break;
-      case QMessageBox::Cancel: return false;
-      default: break;
-     }
-   }
-  else if (count() == 1)
-   {
-    return false;                               // avoid to close last tab (without unsaved changes)
-   }
-
-  files.removeAt(index);
-  ((QTabBar*)this)->removeTab(index);
-  foreach (AstroFile* i, f)
-    i->destroy();                     // delete AstroFiles, because we do not need it
-  if (!count()) addNewFile();
-  return true;
- }
-
-/*void FilesBar :: deleteFile(QString name)
- {
-  for (int i = 0; i < count(); i++)
-    for (int j = 0; j < files[i].count(); j++)
-      if (file == files[i][j])
-       {
-        file->destroy();
-        return;
-       }
- }*/
-
-void FilesBar :: openFile(QString name)
- {
-  int i = getTabIndex(name);
-  if (i != -1) return setCurrentIndex(i);            // focus if the file is currently opened
-
-  /*if (currentFile()->hasUnsavedChanges())
-    openFileInNewTab(name);
-  else*/
-    currentFiles()[0]->load(name);
-
- }
-
-void FilesBar :: openFileInNewTab(QString name)
- {
-  int i = getTabIndex(name);
-  if (i != -1) return setCurrentIndex(i);
-
-  AstroFile* file = new AstroFile;
-  file->load(name);
-  addFile(file);
- }
-
-void FilesBar :: openFileAsSecond(QString name)
- {
-  if (files[currentIndex()].count() < 2)
-   {
-    AstroFile* file = new AstroFile;
-    file->load(name);
-    file->setParent(this);
-    files[currentIndex()] << file;
-    updateTab(currentIndex());
-    connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
-    connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
-    emit currentChanged(currentIndex());
-   }
-  else
-   {
-    files[currentIndex()][1]->load(name);
-   }
  }
 
 
@@ -738,6 +556,177 @@ bool AstroDatabase :: eventFilter(QObject *o, QEvent *e)
  }
 
 
+/* =========================== FILES BAR ============================================ */
+
+FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
+ {
+  setTabsClosable(true);
+  setMovable(true);
+  setDocumentMode(true);
+
+  connect(this, SIGNAL(tabMoved(int,int)),      this, SLOT(swapTabs(int,int)));
+  connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+ }
+
+int FilesBar :: getTabIndex(AstroFile* f)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < files[i].count(); j++)
+      if (f == files[i][j])
+        return i;
+
+  return -1;
+ }
+
+int FilesBar :: getTabIndex(QString name)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < files[i].count(); j++)
+      if (name == files[i][j]->getName())
+        return i;
+  return -1;
+ }
+
+void FilesBar :: addFile (AstroFile* file)
+ {
+  if (!file)
+   {
+    qWarning() << "FilesBar::addFile: failed to add an empty file";
+    return;
+   }
+
+  AstroFileList list;
+  list << file;
+  files << list;
+  file->setParent(this);
+  addTab("new");
+  updateTab(count() - 1);
+  setCurrentIndex(count() - 1);
+
+  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+  connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
+ }
+
+void FilesBar :: updateTab(int index)
+ {
+  if (index >= count()) return;
+  QStringList names;
+
+  foreach (AstroFile* i, files[index])
+    if (i) names << i->getName() + (i->hasUnsavedChanges() ? "*" : "");
+
+  setTabText(index, names.join(" | "));
+ }
+
+void FilesBar :: fileUpdated(AstroFile::Members m)
+ {
+  if (!(m & (AstroFile::Name|AstroFile::ChangedState))) return;
+  qDebug() << "FilesBar::updateTab";
+  AstroFile* file = (AstroFile*)sender();
+  updateTab(getTabIndex(file));
+ }
+
+void FilesBar :: fileDestroyed()                // called when AstroFile going to be destroyed
+ {
+  AstroFile* file = (AstroFile*)sender();
+  int tab = getTabIndex(file);
+  if (tab == -1) return;                        // tab with the single file has been removed already
+  int index = files[tab].indexOf(file);
+  files[tab].removeAt(index);
+  updateTab(tab);
+ }
+
+void FilesBar :: swapTabs(int f1,int f2)
+ {
+  AstroFileList temp = files[f1];
+  files[f1] = files[f2];
+  files[f2] = temp;
+ }
+
+void FilesBar :: swapCurrentFiles(int i,int j)
+ {
+  AstroFile* temp = files[currentIndex()][i];
+  files[currentIndex()][i] = files[currentIndex()][j];
+  files[currentIndex()][j] = temp;
+  currentChanged(currentIndex());
+ }
+
+bool FilesBar :: closeTab(int index)
+ {
+  AstroFileList f = files[index];
+  AstroFile* file = 0;
+  if (f.count()) file = f[0];
+
+  if (askToSave && file && file->hasUnsavedChanges())
+   {
+    QMessageBox msgBox;
+    msgBox.setText(tr("Save changes in '%1' before closing?").arg(file->getName()));
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    switch (ret)
+     {
+      case QMessageBox::Yes: file->save(); break;
+      case QMessageBox::Cancel: return false;
+      default: break;
+     }
+   }
+  else if (count() == 1)
+   {
+    return false;                               // avoid to close last tab (without unsaved changes)
+   }
+
+  files.removeAt(index);
+  ((QTabBar*)this)->removeTab(index);
+  foreach (AstroFile* i, f)
+    i->deleteLater();                     // delete AstroFiles, because we do not need it
+  if (!count()) addNewFile();
+  return true;
+ }
+
+void FilesBar :: openFile(QString name)
+ {
+  int i = getTabIndex(name);
+  if (i != -1) return setCurrentIndex(i);            // focus if the file is currently opened
+
+  /*if (currentFile()->hasUnsavedChanges())
+    openFileInNewTab(name);
+  else*/
+    currentFiles()[0]->load(name);
+
+ }
+
+void FilesBar :: openFileInNewTab(QString name)
+ {
+  int i = getTabIndex(name);
+  if (i != -1) return setCurrentIndex(i);
+
+  AstroFile* file = new AstroFile;
+  file->load(name);
+  addFile(file);
+ }
+
+void FilesBar :: openFileAsSecond(QString name)
+ {
+  if (files[currentIndex()].count() < 2)
+   {
+    AstroFile* file = new AstroFile;
+    file->load(name);
+    file->setParent(this);
+    files[currentIndex()] << file;
+    updateTab(currentIndex());
+    connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+    connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
+    emit currentChanged(currentIndex());
+   }
+  else
+   {
+    files[currentIndex()][1]->load(name);
+   }
+ }
+
+
 /* =========================== MAIN WINDOW ========================================== */
 
 MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
@@ -787,7 +776,9 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   connect(astroDatabase, SIGNAL(openFileInNewTab(QString)),    filesBar, SLOT(openFileInNewTab(QString)));
   connect(astroDatabase, SIGNAL(openFileAsSecond(QString)),    filesBar, SLOT(openFileAsSecond(QString)));
   //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
+  connect(astroWidget,   SIGNAL(appendFileRequested()),        filesBar, SLOT(openFileAsSecond()));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
+  connect(astroWidget, SIGNAL(swapFilesRequested(int,int)),    filesBar, SLOT(swapCurrentFiles(int,int)));
   connect(statusBar(),   SIGNAL(messageChanged(QString)),      help,     SLOT(searchFor(QString)));
   connect(new QShortcut(QKeySequence("CTRL+TAB"), this), SIGNAL(activated()), filesBar, SLOT(nextTab()));
 
@@ -832,6 +823,7 @@ void MainWindow        :: addToolBarActions   ( )
 
 void MainWindow        :: currentTabChanged()
  {
+  if (!filesBar->count()) return;
   astroWidget->setFiles(filesBar->currentFiles());
  }
 

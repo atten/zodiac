@@ -188,12 +188,17 @@ QString     describeAspect    (const Aspect &aspect, bool monospace)
   return ret;
  }
 
-QString     describeAspectFull  (const Aspect &asp)
+QString     describeAspectFull  (const Aspect &asp, QString tag1, QString tag2)
  {
-  return QString("%1 (%2) %3-%4\n").arg(asp.d->name)
+  //if (!tag1.isEmpty()) tag1 = " (" + tag1 + ")";
+  //if (!tag2.isEmpty()) tag1 = " (" + tag2 + ")";
+
+  return QString("%1 (%2) %3%4-%5%6\n").arg(asp.d->name)
                                    .arg(degreeToString(asp.d->angle))
                                    .arg(asp.planet1->name)
-                                   .arg(asp.planet2->name) +
+                                   .arg(tag1)
+                                   .arg(asp.planet2->name)
+                                   .arg(tag2) +
          QObject::tr("Orb: %1 (max: %2)\n").arg(degreeToString(asp.orb))
                                            .arg(degreeToString(asp.d->orb)) +
          (asp.applying ? QObject::tr("Applying") : QObject::tr("Separating"));
