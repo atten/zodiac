@@ -67,10 +67,10 @@ class AstroWidget : public QWidget
 
         QComboBox* zodiacSelector;
         QComboBox* hsystemSelector;
-        QComboBox* levelSelector;
+        QComboBox* aspectsSelector;
         QList<QComboBox*> horoscopeControls;
 
-        void setupFile (AstroFile* file);
+        void setupFile (AstroFile* file, bool suspendUpdate = false);
         QString vectorToString (const QVector3D& v);
         QVector3D vectorFromString (const QString& str);
 
@@ -154,8 +154,8 @@ class FilesBar : public QTabBar
         QList<AstroFileList> files;
 
         void updateTab(int index);
-        int getTabIndex(AstroFile* f);
-        int getTabIndex(QString name);
+        int getTabIndex(AstroFile* f, bool seekFirstFileOnly = false);
+        int getTabIndex(QString name, bool seekFirstFileOnly = false);
 
     private slots:
         void swapTabs(int,int);

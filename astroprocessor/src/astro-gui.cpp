@@ -64,7 +64,7 @@ AstroFile::Members AstroFile :: diff(AstroFile* other) const
   if (getComment()        != other->getComment())        flags |= Comment;
   if (getHouseSystem()    != other->getHouseSystem())    flags |= HouseSystem;
   if (getZodiac()         != other->getZodiac())         flags |= Zodiac;
-  if (getAspetLevel()     != other->getAspetLevel())     flags |= AspectLevel;
+  if (getAspetSet().id    != other->getAspetSet().id)    flags |= AspectSet;
   if (hasUnsavedChanges() != other->hasUnsavedChanges()) flags |= ChangedState;
   //lastChangedMembers = flags;
   return flags;
@@ -133,7 +133,7 @@ void AstroFile :: change(AstroFile::Members members, bool affectChangedState)
 
   if (!holdUpdate)
    {
-    if (members & (GMT|Location|HouseSystem|Zodiac|AspectLevel))
+    if (members & (GMT|Location|HouseSystem|Zodiac|AspectSet))
       recalculate();
 
     emit changed(members);
@@ -238,12 +238,12 @@ void AstroFile :: setZodiac (A::ZodiacId zod)
    }
  }
 
-void AstroFile :: setAspectLevel  (A::AspectLevel lev)
+void AstroFile :: setAspectSet  (A::AspectSetId set)
  {
-  if (getAspetLevel() != lev)
+  if (getAspetSet().id != set)
    {
-    scope.inputData.level = lev;
-    change(AspectLevel);
+    scope.inputData.aspectSet = set;
+    change(AspectSet);
    }
  }
 

@@ -25,7 +25,7 @@ class AstroFile : public QObject
                       Comment       = 0x40,
                       HouseSystem   = 0x80,
                       Zodiac        = 0x100,
-                      AspectLevel   = 0x200,
+                      AspectSet     = 0x200,
                       ChangedState  = 0x400,
                       All           = 0xFFF };
 
@@ -57,7 +57,7 @@ class AstroFile : public QObject
         void setComment      (const QString&   comment);
         void setHouseSystem  (A::HouseSystemId system);
         void setZodiac       (A::ZodiacId zod);
-        void setAspectLevel  (A::AspectLevel lev);
+        void setAspectSet    (A::AspectSetId set);
 
         const QString&   getName()         const { return name; }
         const QString&   getComment()      const { return comment; }
@@ -69,7 +69,7 @@ class AstroFile : public QObject
         const A::Horoscope& horoscope()    const { return scope; }
         A::HouseSystemId getHouseSystem()  const { return scope.inputData.houseSystem; }
         A::ZodiacId      getZodiac()       const { return scope.inputData.zodiac; }
-        A::AspectLevel   getAspetLevel()   const { return scope.inputData.level; }
+        const A::AspectsSet& getAspetSet()  const { return A::getAspectSet(scope.inputData.aspectSet); }
         QDateTime        getLocalTime()    const { return scope.inputData.GMT.addSecs(timezone * 3600); }
 
     signals:

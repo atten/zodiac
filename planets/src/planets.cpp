@@ -369,14 +369,14 @@ void Planets :: expandAspects()
   aspectsList->item(aspectsList->count() - 1)->setText("^^^");
 
   const A::Planet& planet = file()->horoscope().planets[selectedPlanet];
-  A::AspectLevel level = file()->horoscope().inputData.level;
+  const A::AspectsSet& set = file()->getAspetSet();
 
   foreach (const A::Planet& p, file()->horoscope().planets)
    {
     if (p.name == planet.name ||
-        A::aspect(p, planet, level) != A::Aspect_None) continue;
+        A::aspect(p, planet, set) != A::Aspect_None) continue;
 
-    A::Aspect asp = A::calculateAspect(level, planet, p);
+    A::Aspect asp = A::calculateAspect(set, planet, p);
 
     QListWidgetItem* item = new QListWidgetItem;
     item->setIcon(QIcon("images/aspects/none.png"));

@@ -16,7 +16,7 @@ typedef int ZodiacId;
 typedef int AspectId;
 typedef int HouseSystemId;
 typedef int PlanetId;
-typedef int AspectLevel;
+typedef int AspectSetId;
 
 
 const PlanetId      Planet_None          = -1;
@@ -47,7 +47,7 @@ const ZodiacId      Zodiac_None          = -1;
 
 const ZodiacSignId  Sign_None            = -1;
 
-const AspectLevel   Level_Default        =  0;
+const AspectSetId   AspectSet_Default    =  0;
 
 
 struct ZodiacSign {
@@ -147,16 +147,18 @@ struct Planet
   bool operator!=(const Planet & other) const { return this->id != other.id; }
 };
 
+//struct AspectsSet;
+
 struct AspectType {
   AspectId id;
-  AspectLevel level;
+  const struct AspectsSet* set;
   QString  name;
   float    angle;
   float    orb;
   QMap<QString, QVariant> userData;
 
   AspectType() { id = Aspect_None;
-                 level = Level_Default;
+                 set = 0;
                  angle = 0;
                  orb = 0; }
 };
@@ -177,6 +179,14 @@ struct Aspect {
                 applying  = false; }
 };
 
+struct AspectsSet {
+  AspectSetId id;
+  QString name;
+  QMap<AspectId, AspectType> aspects;
+
+  AspectsSet() { id = AspectSet_Default; }
+};
+
 
 typedef QList<Aspect> AspectList;
 typedef QList<Planet> PlanetList;
@@ -185,11 +195,11 @@ typedef QMap<PlanetId, Planet> PlanetMap;
 class Data
 {
     private:
-        static QMap<AspectLevel, QMap<AspectId, AspectType> > aspects;
+        static QMap<AspectSetId, AspectsSet> aspectSets;
         static QMap<HouseSystemId, HouseSystem> houseSystems;
         static QMap<ZodiacId, Zodiac> zodiacs;
         static QMap<PlanetId, Planet> planets;
-        static AspectLevel maxAspectLevel;
+        static AspectSetId topAspSet;
 
     public:
         static void load(QString language);
@@ -202,10 +212,12 @@ class Data
         static const Zodiac& getZodiac(ZodiacId id);
         static const QList<Zodiac> getZodiacs();
 
-        static const AspectType& getAspect(AspectId id, AspectLevel level);
-        static const QList<AspectType> getAspects(AspectLevel level);
-        static QList<AspectLevel> getLevels();
-        static AspectLevel maxLevel() { return maxAspectLevel; }
+        static const AspectType& getAspect(AspectId id, const AspectsSet& set);
+        //static const QList<AspectType> getAspects(AspectSetId set);
+
+        static QList<AspectsSet> getAspectSets() { return aspectSets.values(); }
+        static const AspectsSet& getAspectSet(AspectSetId set);
+        static const AspectsSet& topAspectSet() { return aspectSets[topAspSet]; }
 };
 
 void load(QString language);
@@ -215,10 +227,11 @@ const HouseSystem& getHouseSystem(HouseSystemId id);
 const Zodiac& getZodiac(ZodiacId id);
 const QList<HouseSystem> getHouseSystems();
 const QList<Zodiac> getZodiacs();
-const QList<AspectType> getAspects(AspectLevel level);
-const AspectType& getAspect(AspectId id, AspectLevel level);
-QList<AspectLevel> getLevels();
-AspectLevel maxLevel();
+//const QList<AspectType> getAspects(AspectSetId set);
+const AspectType& getAspect(AspectId id, const AspectsSet& set);
+QList<AspectsSet> getAspectSets();
+const AspectsSet& getAspectSet(AspectSetId set);
+const AspectsSet&  topAspectSet();
 
 
 struct InputData
@@ -227,14 +240,14 @@ struct InputData
   QVector3D      location;            // x - longitude (-180...180); y - latitude (-180...180), z - height
   HouseSystemId  houseSystem;
   ZodiacId       zodiac;
-  AspectLevel    level;
+  AspectSetId    aspectSet;
 
   InputData() { GMT.setTimeSpec(Qt::UTC);
                 GMT.setTime_t(0);
                 location    = QVector3D(0,0,0);
                 houseSystem = Housesystem_Placidus;
                 zodiac      = Zodiac_Tropical;
-                level       = Level_Default;}
+                aspectSet   = AspectSet_Default; }
 };
 
 struct Horoscope

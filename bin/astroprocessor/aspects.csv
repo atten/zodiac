@@ -1,4 +1,4 @@
-﻿level;id;name;name_ru;angle;orb;good;icon
+﻿set_id;id;name;name_ru;angle;orb;good;icon
 
 0;0;Conjunction;Соединение;0;5;0;images/aspects/conjunction.png
 0;4;Quadrature;Квадрат;90;5;-;images/aspects/quadrature.png

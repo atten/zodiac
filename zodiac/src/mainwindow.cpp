@@ -195,7 +195,7 @@ void AstroWidget :: setupFile (AstroFile* file)
 
   file->setZodiac      (zodiacSelector->itemData(zodiacSelector->currentIndex()).toInt());   // set zodiac
   file->setHouseSystem (hsystemSelector->itemData(hsystemSelector->currentIndex()).toInt()); // set house system
-  file->setAspectLevel (levelSelector->itemData(levelSelector->currentIndex()).toInt());     // set aspect level
+  file->setAspectSet   (aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt()); // set aspect set
 
 
   if (!hasChanges) file->clearUnsavedState();
@@ -266,11 +266,11 @@ void AstroWidget :: addHoroscopeControls()
  {
   zodiacSelector  = new QComboBox;
   hsystemSelector = new QComboBox;
-  levelSelector   = new QComboBox;
+  aspectsSelector   = new QComboBox;
 
   zodiacSelector  -> setToolTip(tr("Sign"));
   hsystemSelector -> setToolTip(tr("House system"));
-  levelSelector   -> setToolTip(tr("Aspects and orbs level\n(by A.Podvodny)"));
+  aspectsSelector -> setToolTip(tr("Aspect sets\n(by A.Podvodny)"));
 
   foreach (const A::Zodiac& z, A::getZodiacs())
     zodiacSelector->addItem(z.name, z.id);                  // create combo box with zodiacs
@@ -278,10 +278,10 @@ void AstroWidget :: addHoroscopeControls()
   foreach (const A::HouseSystem& sys, A::getHouseSystems())
     hsystemSelector->addItem(sys.name, sys.id);             // create combo box with house systems
 
-  foreach (const A::AspectLevel& l, A::getLevels())
-    levelSelector->addItem(tr("%1 initiation").arg(A::romanNum(l)), l);  // create combo box with aspect levels
+  foreach (const A::AspectsSet& s, A::getAspectSets())
+    aspectsSelector->addItem(s.name, s.id);                 // create combo box with aspect sets
 
-  horoscopeControls << zodiacSelector << hsystemSelector << levelSelector;
+  horoscopeControls << zodiacSelector << hsystemSelector << aspectsSelector;
 
   foreach (QComboBox* c, horoscopeControls)
    {
@@ -341,7 +341,7 @@ AppSettings AstroWidget :: defaultSettings ()
   s.setValue("Scope/defaultLocationName", "Moscow, Russia");
   s.setValue("Scope/zodiac",              0);          // indexes of ComboBox items, not values itself
   s.setValue("Scope/houseSystem",         0);
-  s.setValue("Scope/level",               0);
+  s.setValue("Scope/aspectSet",           0);
   s.setValue("slide", slides->currentIndex());    // чтобы не возвращалась к первому слайду после сброса настроек
   return s;
  }
@@ -359,7 +359,7 @@ AppSettings AstroWidget :: currentSettings ()
 
   s.setValue("Scope/zodiac",      zodiacSelector  -> currentIndex());
   s.setValue("Scope/houseSystem", hsystemSelector -> currentIndex());
-  s.setValue("Scope/level",       levelSelector   -> currentIndex());
+  s.setValue("Scope/aspectSet",   aspectsSelector -> currentIndex());
   s.setValue("slide",             slides          -> currentIndex());
   return s;
  }
@@ -371,7 +371,7 @@ void AstroWidget :: applySettings      ( const AppSettings& s )
 
   zodiacSelector  -> setCurrentIndex (s.value("Scope/zodiac").toInt());
   hsystemSelector -> setCurrentIndex (s.value("Scope/houseSystem").toInt());
-  levelSelector   -> setCurrentIndex (s.value("Scope/level").toUInt());
+  aspectsSelector -> setCurrentIndex (s.value("Scope/aspectSet").toUInt());
   slides          -> setSlide        (s.value("slide").toInt() );
   toolBar         -> actions()[slides->currentIndex()]->setChecked(true);
 
@@ -568,20 +568,19 @@ FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
   connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
  }
 
-int FilesBar :: getTabIndex(AstroFile* f)
+int FilesBar  :: getTabIndex(AstroFile* f, bool seekFirstFileOnly)
  {
   for (int i = 0; i < count(); i++)
-    for (int j = 0; j < files[i].count(); j++)
+    for (int j = 0; j < (seekFirstFileOnly ? 1 : files[i].count()); j++)
       if (f == files[i][j])
         return i;
-
   return -1;
  }
 
-int FilesBar :: getTabIndex(QString name)
+int FilesBar  :: getTabIndex(QString name, bool seekFirstFileOnly)
  {
   for (int i = 0; i < count(); i++)
-    for (int j = 0; j < files[i].count(); j++)
+    for (int j = 0; j < (seekFirstFileOnly ? 1 : files[i].count()); j++)
       if (name == files[i][j]->getName())
         return i;
   return -1;
@@ -687,7 +686,7 @@ bool FilesBar :: closeTab(int index)
 
 void FilesBar :: openFile(QString name)
  {
-  int i = getTabIndex(name);
+  int i = getTabIndex(name, true);
   if (i != -1) return setCurrentIndex(i);            // focus if the file is currently opened
 
   /*if (currentFile()->hasUnsavedChanges())
@@ -876,6 +875,7 @@ void MainWindow        :: closeEvent          ( QCloseEvent* ev )
   saveSettings();
 
   QMainWindow::closeEvent(ev);
+  QApplication::quit();
  }
 
 void MainWindow        :: gotoUrl             ( QString url )

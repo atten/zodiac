@@ -265,7 +265,7 @@ void Chart :: updateScene()
 
 void Chart :: updatePlanetsAndCusps(int fileIndex)
  {
-  qDebug() << "Update planets" << fileIndex;
+  qDebug() << "Update planets and cusps" << fileIndex;
 
   float rotate = circle->rotation();
   foreach (const A::Planet& p, file(fileIndex)->horoscope().planets) // update planets
@@ -335,8 +335,12 @@ void Chart :: updateAspects()
       aspects[i]->setPen(aspectPen(asp));
      }
 
+    QString toolTip;
+    if (filesCount() > 1)
+      toolTip = A::describeAspectFull(asp, "#1", "#2");
+    else
+      toolTip = A::describeAspectFull(asp);
 
-    QString toolTip = A::describeAspectFull(asp, "#1", "#2");
     if (aspects[i]->toolTip() != toolTip)     // assign messages
      {
       aspects[i]->setToolTip(toolTip);
@@ -358,7 +362,7 @@ void Chart :: updateAspects()
 A::AspectList Chart :: calculateSynastryAspects()
  {
   qDebug() << "Calculate synatry apects";
-  return A::calculateAspects(file(0)->getAspetLevel(), file(0)->horoscope().planets, file(1)->horoscope().planets);
+  return A::calculateAspects(file(0)->getAspetSet(), file(0)->horoscope().planets, file(1)->horoscope().planets);
  }
 
 void Chart :: clearScene()
@@ -481,7 +485,7 @@ void Chart :: drawCuspides(int fileIndex)
 
     cuspides[fileIndex][i] = l;
 
-    QGraphicsSimpleTextItem* t = s->addSimpleText(i == 0 ? "Asc" : A::romanNum(i+1), font);
+    QGraphicsSimpleTextItem* t = s->addSimpleText(A::houseTag(i+1), font);
     t->setBrush(QColor((filesCount() > 1 && fileIndex == 1) ? "#00C0FF" : "#FFFFFF"));
     t->setOpacity(0.6);
     t->setParentItem(l);
@@ -600,9 +604,9 @@ void Chart :: filesUpdated(MembersList m)
     justCreated = true;
    }
 
-  AstroFile::Members updateFlags = AstroFile::GMT         | AstroFile::Timezone |
-                                   AstroFile::Location    | AstroFile::HouseSystem |
-                                   AstroFile::AspectLevel | AstroFile::Zodiac;
+  AstroFile::Members updateFlags = AstroFile::GMT       | AstroFile::Timezone |
+                                   AstroFile::Location  | AstroFile::HouseSystem |
+                                   AstroFile::AspectSet | AstroFile::Zodiac;
 
   if (filesCount() && (justCreated ||
                        m[0] & updateFlags))
