@@ -173,7 +173,7 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
   connect(slides,      SIGNAL(currentSlideChanged()), this, SLOT(currentSlideChanged()));
  }
 
-void AstroWidget :: setupFile (AstroFile* file)
+void AstroWidget :: setupFile (AstroFile* file, bool suspendUpdate)
  {
   if (!file) return;
   bool hasChanges = file->hasUnsavedChanges();
@@ -199,13 +199,11 @@ void AstroWidget :: setupFile (AstroFile* file)
 
 
   if (!hasChanges) file->clearUnsavedState();
-  file->resumeUpdate();
+  if (!suspendUpdate) file->resumeUpdate();
  }
 
 void AstroWidget :: setFiles (const AstroFileList& files)
  {
-  f = files;
-
   foreach(AstroFile* i, files)
     setupFile(i);
 
@@ -228,7 +226,7 @@ void AstroWidget :: openEditor()
   else
    {
     editor = new AstroFileEditor();
-    editor->setFiles(f);
+    editor->setFiles(files());
     editor->move((topLevelWidget()->width()  - editor->width())  / 2 + topLevelWidget()->geometry().left(),
                  (topLevelWidget()->height() - editor->height()) / 2 + topLevelWidget()->geometry().top());
     editor->show();
@@ -324,8 +322,11 @@ QVector3D AstroWidget :: vectorFromString (const QString& str)
 
 void AstroWidget :: horoscopeControlChanged()
  {
-  foreach(AstroFile* i, f)
-    setupFile(i);
+  foreach(AstroFile* i, files())
+    setupFile(i, true);
+
+  foreach(AstroFile* i, files())
+    i->resumeUpdate();
  }
 
 AppSettings AstroWidget :: defaultSettings ()
@@ -378,7 +379,7 @@ void AstroWidget :: applySettings      ( const AppSettings& s )
   fileView->applySettings(s);
   fileView2nd->applySettings(s);
 
-  foreach(AstroFile* i, f)
+  foreach(AstroFile* i, files())
     setupFile(i);
 
   foreach (AstroFileHandler* h, handlers)
@@ -777,7 +778,7 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
   connect(astroWidget,   SIGNAL(appendFileRequested()),        filesBar, SLOT(openFileAsSecond()));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
-  connect(astroWidget, SIGNAL(swapFilesRequested(int,int)),    filesBar, SLOT(swapCurrentFiles(int,int)));
+  connect(astroWidget,   SIGNAL(swapFilesRequested(int,int)),  filesBar, SLOT(swapCurrentFiles(int,int)));
   connect(statusBar(),   SIGNAL(messageChanged(QString)),      help,     SLOT(searchFor(QString)));
   connect(new QShortcut(QKeySequence("CTRL+TAB"), this), SIGNAL(activated()), filesBar, SLOT(nextTab()));
 

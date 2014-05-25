@@ -42,7 +42,7 @@ class AstroFile : public QObject
         void save();
         void load(QString name);
         void suspendUpdate()                     { holdUpdate = true; }
-        //bool isSuspendedUpdate()           const { return holdUpdate; }
+        bool isSuspendedUpdate()           const { return holdUpdate; }
         void resumeUpdate();
         void clearUnsavedState();
         bool hasUnsavedChanges()           const { return unsavedChanges; }
@@ -75,8 +75,8 @@ class AstroFile : public QObject
     signals:
         void changed(AstroFile::Members);
 
-    /*public slots:
-        void destroy();*/
+    public slots:
+        void destroy();
 
     private:
         bool unsavedChanges;
@@ -113,6 +113,7 @@ class AstroFileHandler : public QWidget, public Customizable
         MembersList delayMembers;
 
         MembersList blankMembers();
+        bool isAnyFileSuspended();                      // returns true if any file has isSuspendedUpdate() == true
 
     private slots:
         void fileUpdatedSlot(AstroFile::Members);
@@ -131,6 +132,7 @@ class AstroFileHandler : public QWidget, public Customizable
 
         void setFiles (const AstroFileList& files);
         AstroFile* file(int index = 0)            { if (f.count() > index) return f[index]; return 0; }
+        AstroFileList files()                     { return f; }
         int filesCount()                          { return f.count(); }
 };
 

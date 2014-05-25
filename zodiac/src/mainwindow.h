@@ -55,8 +55,6 @@ class AstroWidget : public QWidget
     Q_OBJECT
 
     private:
-        AstroFileList f;
-
         AstroFileEditor*  editor;
         GeoSearchWidget*  geoWdg;
         QToolBar*         toolBar;
@@ -71,6 +69,7 @@ class AstroWidget : public QWidget
         QList<QComboBox*> horoscopeControls;
 
         void setupFile (AstroFile* file, bool suspendUpdate = false);
+        AstroFileList files()                          { return fileView->files(); }
         QString vectorToString (const QVector3D& v);
         QVector3D vectorFromString (const QString& str);
 
@@ -98,7 +97,6 @@ class AstroWidget : public QWidget
         const QList<QComboBox*>& getHoroscopeControls() { return horoscopeControls; }
 
         void setFiles (const AstroFileList& files);
-        //AstroFile* currentFile()                     { if (f.count()) return f[0]; else return 0; }
 
         AppSettings defaultSettings ();
         AppSettings currentSettings ();

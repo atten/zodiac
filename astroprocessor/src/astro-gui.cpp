@@ -301,6 +301,7 @@ void AstroFileHandler :: setFiles (const AstroFileList& files)
         connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
         connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
         flags << file->diff(old);
+        qDebug() << "assign file" << file->getName() << this;
        }
       else
        {
@@ -334,13 +335,31 @@ MembersList AstroFileHandler :: blankMembers()
   return ret;
  }
 
+bool AstroFileHandler :: isAnyFileSuspended()
+ {
+  foreach (AstroFile* file, f)
+    if (file->isSuspendedUpdate()) return true;
+  return false;
+ }
+
 void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
  {
   int i = f.indexOf((AstroFile*)sender());
-  if (isVisible())
+  if (isVisible() && !isAnyFileSuspended())
    {
-    MembersList mList = blankMembers();
-    mList[i] = m;
+    MembersList mList;
+    if (delayUpdate)
+     {
+      mList = delayMembers;
+      delayMembers = blankMembers();
+      delayUpdate  = false;
+     }
+    else
+     {
+      mList = blankMembers();
+     }
+
+    mList[i] |= m;
     filesUpdated(mList);
    }
   else
@@ -353,10 +372,19 @@ void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
 void AstroFileHandler :: fileDestroyedSlot()
  {
   int i = f.indexOf((AstroFile*)sender());
-  if (i != -1)                      // TODO: discover how sender might be not in list
-    f.removeAt(i);
+  if (i == -1)                      // TODO: discover how sender might be not in list
+   {
+    qDebug() << "aaa";
+    return;
+   }
 
-  filesUpdated(blankMembers());
+  qDebug() << "remove file" << f[i]->getName() << this;
+  MembersList mList = blankMembers();
+  if (i < f.count() - 1)
+    mList[i] = f[i]->diff(f[i+1]);     // write difference with next file in list
+  f.removeAt(i);
+  mList.removeLast();
+  filesUpdated(mList);
  }
 
 void AstroFileHandler :: showEvent(QShowEvent* e)
