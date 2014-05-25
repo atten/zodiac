@@ -253,19 +253,23 @@ void AstroFile :: recalculate()
   scope = A::calculateAll(scope.inputData);
  }
 
-/*void AstroFile :: destroy()
- {
-
-  deleteLater();
- }*/
-
-AstroFile :: ~AstroFile()
+void AstroFile :: destroy()
  {
   if (getName().section(" ", -1).toInt() == counter)   // latest file
     --counter;                                         // decrement file counter
 
   qDebug() << "Deleted file" << getName();
+  //deleteLater();
+  emit destroyRequested();
  }
+
+/*AstroFile :: ~AstroFile()
+ {
+  if (getName().section(" ", -1).toInt() == counter)   // latest file
+    --counter;                                         // decrement file counter
+
+  qDebug() << "Deleted file" << getName();
+ }*/
 
 
 
@@ -299,9 +303,8 @@ void AstroFileHandler :: setFiles (const AstroFileList& files)
       if (file)
        {
         connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
-        connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
+        connect (file, SIGNAL(destroyRequested()), this, SLOT(fileDestroyedSlot()));
         flags << file->diff(old);
-        qDebug() << "assign file" << file->getName() << this;
        }
       else
        {
@@ -378,10 +381,9 @@ void AstroFileHandler :: fileDestroyedSlot()
     return;
    }
 
-  qDebug() << "remove file" << f[i]->getName() << this;
   MembersList mList = blankMembers();
   if (i < f.count() - 1)
-    mList[i] = f[i]->diff(f[i+1]);     // write difference with next file in list
+    mList[i] = f[i+1]->diff(f[i]);     // write difference with next file in list
   f.removeAt(i);
   mList.removeLast();
   filesUpdated(mList);

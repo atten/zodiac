@@ -148,7 +148,7 @@ void AstroFileEditor :: removeTab(int index)
   if (filesCount() < 2) return;
   //currentFile = 0;
   tabs->removeTab(index);
-  file(index)->deleteLater();
+  file(index)->destroy();
  }
 
 void AstroFileEditor :: swapFilesSlot(int i, int j)

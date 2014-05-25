@@ -604,7 +604,7 @@ void FilesBar :: addFile (AstroFile* file)
   setCurrentIndex(count() - 1);
 
   connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
-  connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
+  connect(file, SIGNAL(destroyRequested()),          this, SLOT(fileDestroyed()));
  }
 
 void FilesBar :: updateTab(int index)
@@ -634,6 +634,7 @@ void FilesBar :: fileDestroyed()                // called when AstroFile going t
   int index = files[tab].indexOf(file);
   files[tab].removeAt(index);
   updateTab(tab);
+  file->deleteLater();
  }
 
 void FilesBar :: swapTabs(int f1,int f2)
@@ -680,7 +681,7 @@ bool FilesBar :: closeTab(int index)
   files.removeAt(index);
   ((QTabBar*)this)->removeTab(index);
   foreach (AstroFile* i, f)
-    i->deleteLater();                     // delete AstroFiles, because we do not need it
+    i->destroy();                     // delete AstroFiles, because we do not need it
   if (!count()) addNewFile();
   return true;
  }
@@ -717,7 +718,7 @@ void FilesBar :: openFileAsSecond(QString name)
     files[currentIndex()] << file;
     updateTab(currentIndex());
     connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
-    connect(file, SIGNAL(destroyed()),                 this, SLOT(fileDestroyed()));
+    connect(file, SIGNAL(destroyRequested()),          this, SLOT(fileDestroyed()));
     emit currentChanged(currentIndex());
    }
   else
