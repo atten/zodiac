@@ -1,6 +1,6 @@
 **Zodiac** is an Astrological software for personal use.
 
-**Download the latest version**: [**Windows**](http://sourceforge.net/projects/zodiac-app/files/Zodiac-0.6.3-installer.exe/download) | [**Linux64**](http://sourceforge.net/projects/zodiac-app/files/zodiac-0.6.3.tar.gz/download)
+**Download the latest version**: [**Windows**](http://sourceforge.net/projects/zodiac-app/files/Zodiac-0.7.0-installer.exe/download) | [**Linux64**](http://sourceforge.net/projects/zodiac-app/files/zodiac-0.7.0.tar.gz/download)
 
 
 
