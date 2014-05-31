@@ -9,7 +9,7 @@
 
 SlideWidget :: SlideWidget(QWidget *parent) : QWidget(parent)
  {
-  currentIndex = -1;
+  index = -1;
   effect = Transition_HorizontalSlide;
   animating = false;
 
@@ -41,11 +41,11 @@ void SlideWidget :: setSlide(QWidget* wdg)
 
 void SlideWidget :: setSlide(int number)
  {
-  if (currentIndex == number || number < 0 || number >= slides.count())
+  if (index == number || number < 0 || number >= slides.count())
     return;
 
 
-  if (currentIndex < 0)
+  if (index < 0)
    {
     layout->addWidget(slides[number]);
     slides[number]->show();
@@ -64,27 +64,28 @@ void SlideWidget :: setSlide(int number)
      }
    }
 
-  currentIndex = number;
+  index = number;
+  emit currentSlideChanged();
  }
 
 void SlideWidget :: nextSlide()
  {
-  int i = (currentSlideIndex() + 1) % count();
+  int i = (index + 1) % count();
   setSlide(i);
  }
 
 QWidget* SlideWidget :: currentSlide()
  {
-  if (slides.count() < currentIndex || currentIndex < 0)
+  if (slides.count() < index || index < 0)
     return 0;
 
-  return slides[currentIndex];
+  return slides[index];
  }
 
-void SlideWidget :: slideSimple(int index)
+void SlideWidget :: slideSimple(int i)
  {
-  QWidget* lastWdg = slides[currentIndex];
-  QWidget* newWdg  = slides[index];
+  QWidget* lastWdg = slides[index];
+  QWidget* newWdg  = slides[i];
 
   layout->removeWidget(lastWdg);
   layout->addWidget(newWdg);
@@ -92,10 +93,10 @@ void SlideWidget :: slideSimple(int index)
   newWdg->show();
  }
 
-void SlideWidget :: slideHorizontal(int index)
+void SlideWidget :: slideHorizontal(int i)
  {
-  QWidget* lastWdg = slides[currentIndex];
-  QWidget* newWdg  = slides[index];
+  QWidget* lastWdg = slides[index];
+  QWidget* newWdg  = slides[i];
 
   layout->removeWidget(lastWdg);
 
@@ -117,7 +118,7 @@ void SlideWidget :: slideHorizontal(int index)
   connect (slide2, SIGNAL(finished()), this, SLOT(transitionDone()));
 
 
-  if (index > currentIndex)   // | <---
+  if (i > index)   // | <---
    {
     if (!animating) slide1->setStartValue(centerArea);
     if (!animating) slide2->setStartValue(rightArea);
@@ -139,10 +140,10 @@ void SlideWidget :: slideHorizontal(int index)
   newWdg->show();
  }
 
-void SlideWidget :: slideOverlay(int index)
+void SlideWidget :: slideOverlay(int i)
  {
-  QWidget* lastWdg = slides[currentIndex];
-  QWidget* newWdg  = slides[index];
+  QWidget* lastWdg = slides[index];
+  QWidget* newWdg  = slides[i];
 
   layout->removeWidget(lastWdg);
   lastWdg->setGeometry(rect());
@@ -182,8 +183,8 @@ void SlideWidget :: slideOverlay(int index)
 void SlideWidget :: transitionDone()
  {
   animating = false;
-  layout->addWidget(slides[currentIndex]);          // ensure to show current slide
+  layout->addWidget(slides[index]);          // ensure to show current slide
 
   foreach (QWidget* wdg, slides)
-    if (wdg != slides[currentIndex]) wdg->hide();   // hide others
+    if (wdg != slides[index]) wdg->hide();   // hide others
  }

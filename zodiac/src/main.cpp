@@ -4,6 +4,7 @@
 #include <QTextCodec>
 #include <QTranslator>
 #include <QFontDatabase>
+#include <QDebug>
 #include "mainwindow.h"
 
 void loadTranslations(QApplication* a, QString lang)
@@ -18,16 +19,27 @@ void loadTranslations(QApplication* a, QString lang)
    }
  }
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+void emptyOutput ( QtMsgType type, const char *msg )
+#else
+void emptyOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+#endif
+ {
+ }
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("v0.6.3 (build 2014-04-16)");
+    a.setApplicationVersion("v0.7.0 (build 2014-05-31)");
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
     QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );
     QTextCodec::setCodecForCStrings ( codec );
     QTextCodec::setCodecForTr ( codec );
+    qInstallMsgHandler (emptyOutput);
+#else
+    qInstallMessageHandler(emptyOutput);
 #endif
 
     QDir::setCurrent(a.applicationDirPath());

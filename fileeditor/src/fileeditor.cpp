@@ -15,6 +15,10 @@
 
 AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
  {
+  currentFile = 0;
+
+  tabs              = new QTabBar;
+  addFileBtn        = new QPushButton(tr("+"));
   name              = new QLineEdit;
   type              = new QComboBox;
   dateTime          = new QDateTimeEdit;
@@ -26,7 +30,9 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
   QPushButton* cancel = new QPushButton(tr("Cancel"));
   QPushButton* apply  = new QPushButton(tr("Apply"));
 
-
+  tabs     -> setTabsClosable(true);
+  tabs     -> setMovable(true);
+  addFileBtn -> setMaximumWidth(32);
   type     -> addItem(tr("male"),      AstroFile::TypeMale);
   type     -> addItem(tr("female"),    AstroFile::TypeFemale);
   type     -> addItem(tr("undefined"), AstroFile::TypeOther);
@@ -38,6 +44,10 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
   this     -> setWindowFlags(Qt::Dialog |
                              Qt::MSWindowsFixedSizeDialogHint |
                              Qt::WindowStaysOnTopHint);
+
+  QHBoxLayout* lay4 = new QHBoxLayout;
+   lay4->addWidget(tabs);
+   lay4->addWidget(addFileBtn);
 
   QHBoxLayout* lay3 = new QHBoxLayout;
    lay3->addWidget(name);
@@ -63,18 +73,21 @@ AstroFileEditor :: AstroFileEditor (QWidget *parent) : AstroFileHandler(parent)
    buttons->addWidget(apply);
 
   QVBoxLayout* layout = new QVBoxLayout(this);
+   layout->addLayout(lay4);
    layout->addLayout(lay1);
    layout->addLayout(buttons);
 
 
-  connect(ok,       SIGNAL(clicked()), this, SLOT(applyToFile()));
-  connect(apply,    SIGNAL(clicked()), this, SLOT(applyToFile()));
-  connect(ok,       SIGNAL(clicked()), this, SLOT(close()));
-  connect(cancel,   SIGNAL(clicked()), this, SLOT(close()));
-  connect(timeZone, SIGNAL(valueChanged(double)), this, SLOT(timezoneChanged()));
+  connect(tabs,       SIGNAL(currentChanged(int)),    this, SLOT(currentTabChanged(int)));
+  connect(tabs,       SIGNAL(tabMoved(int,int)),      this, SLOT(swapFilesSlot(int,int)));
+  connect(tabs,       SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
+  connect(addFileBtn, SIGNAL(clicked()), this, SIGNAL(appendFile()));
+  connect(ok,         SIGNAL(clicked()), this, SLOT(applyToFile()));
+  connect(apply,      SIGNAL(clicked()), this, SLOT(applyToFile()));
+  connect(ok,         SIGNAL(clicked()), this, SLOT(close()));
+  connect(cancel,     SIGNAL(clicked()), this, SLOT(close()));
+  connect(timeZone,   SIGNAL(valueChanged(double)), this, SLOT(timezoneChanged()));
 
-  resetToDefault();
-  timezoneChanged();
   dateTime -> setFocus();
  }
 
@@ -86,52 +99,97 @@ void AstroFileEditor :: timezoneChanged()
     timeZone->setPrefix("+");
  }
 
-void AstroFileEditor :: resetToDefault()
+void AstroFileEditor :: updateTabs()
  {
-  name      -> setText("");
-  type      -> setCurrentIndex(0);
-  dateTime  -> setDateTime(QDateTime::currentDateTime());
-  geoSearch -> setLocation(QVector3D(0,0,0),"");
-  comment   -> clear();
+  for (int i = 0; i < filesCount(); i++)
+   {
+    QString txt = file(i)->getName();
+    if (tabs->count() <= i)
+      tabs->addTab(txt);
+    else
+      tabs->setTabText(i, txt);
+   }
+
+  for (int i = filesCount(); i < tabs->count(); i++)    // remove unused tabs
+    tabs->removeTab(i);
+
+  addFileBtn->setVisible(filesCount() < 2);
  }
 
-void AstroFileEditor :: fileUpdated(AstroFile::Members m)
+void AstroFileEditor :: update(AstroFile::Members m)
  {
-  name      -> setText(file()->getName());
-  geoSearch -> setLocation(file()->getLocation(), file()->getLocationName());
-  timeZone  -> setValue(file()->getTimezone());
-  dateTime  -> setDateTime(file()->getLocalTime());
-  comment   -> setPlainText(file()->getComment());
+  qDebug() << "AstroFileEditor: show file" << currentFile;
+  AstroFile* source =  file(currentFile);
+
+  name      -> setText(source->getName());
+  geoSearch -> setLocation(source->getLocation(), source->getLocationName());
+  timeZone  -> setValue(source->getTimezone());
+  dateTime  -> setDateTime(source->getLocalTime());
+  comment   -> setPlainText(source->getComment());
 
   if (m & AstroFile::Type)
    {
     for (int i = 0; i < type->count(); i++)
-      if (type->itemData(i) == file()->getType())
+      if (type->itemData(i) == source->getType())
         type->setCurrentIndex(i);
    }
+ }
 
+void AstroFileEditor :: currentTabChanged(int index)
+ {
+  if (currentFile == index) return;
+  int oldFile = currentFile;
+  currentFile = index;
+  update(file(index)->diff(file(oldFile)));
+ }
+
+void AstroFileEditor :: removeTab(int index)
+ {
+  if (filesCount() < 2) return;
+  //currentFile = 0;
+  tabs->removeTab(index);
+  file(index)->destroy();
+ }
+
+void AstroFileEditor :: swapFilesSlot(int i, int j)
+ {
+  currentFile = i;
+  emit swapFiles(i, j);
+ }
+
+void AstroFileEditor :: setCurrentFile(int index)
+ {
+  tabs->setCurrentIndex(index);
+ }
+
+void AstroFileEditor :: filesUpdated(MembersList members)
+ {
+  updateTabs();
+  if (!filesCount())
+    close();
+  else if (currentFile >= filesCount())
+    setCurrentFile(0);
+  else if(members[currentFile])
+    update(members[currentFile]);
  }
 
 void AstroFileEditor :: applyToFile()
  {
-  qDebug() << file();
+  AstroFile* dst = file(currentFile);
 
-  if (!file()) return;
-
-  file()->suspendUpdate();
-
-  // todo: time mismatch
-  qDebug() << file()->getGMT().toTime_t()
-           << dateTime->dateTime().addSecs(timeZone->value() * -3600).toTime_t()
-           << dateTime->dateTime().toUTC().addSecs(timeZone->value() * -3600).toTime_t();
-
-  file()->setName(name->text());
-  file()->setType((AstroFile::FileType)type->itemData(type->currentIndex()).toInt());
-  file()->setLocationName(geoSearch->locationName());
-  file()->setLocation(geoSearch->location());
-  file()->setTimezone(timeZone->value());
-  file()->setGMT(dateTime->dateTime().addSecs(timeZone->value() * -3600));
-  file()->setComment(comment->document()->toPlainText());
-
-  file()->resumeUpdate();
+  dst->suspendUpdate();
+  dst->setName(name->text());
+  dst->setType((AstroFile::FileType)type->itemData(type->currentIndex()).toInt());
+  dst->setLocationName(geoSearch->locationName());
+  dst->setLocation(geoSearch->location());
+  dst->setTimezone(timeZone->value());
+  dst->setGMT(dateTime->dateTime().addSecs(timeZone->value() * -3600));
+  dst->setComment(comment->document()->toPlainText());
+  dst->resumeUpdate();
  }
+
+/*void AstroFileEditor :: showEvent(QShowEvent* e)
+ {
+  AstroFileHandler::showEvent(e);
+  if (!secondFile()) reset2ndFile();
+ }*/

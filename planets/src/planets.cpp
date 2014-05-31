@@ -253,16 +253,7 @@ void Planets :: describePlanet()
     QListWidgetItem* item = new QListWidgetItem;
     item->setIcon(QIcon(asp.d->userData["icon"].toString()));
     item->setText(A::describeAspect(asp));
-
-    QString tip = QString("%1 (%2) %3-%4\n").arg(asp.d->name)
-                                            .arg(A::degreeToString(asp.d->angle))
-                                            .arg(asp.planet1->name)
-                                            .arg(asp.planet2->name);
-    tip += tr("Acceptable orb: %1 (%2)\n")  .arg(A::degreeToString(asp.d->orb))
-                                            .arg(A::degreeToString(asp.orb));
-    tip += (asp.applying) ? tr("Applying") : tr("Seperating");
-    item->setToolTip(tip);
-
+    item->setToolTip(A::describeAspectFull(asp));
     item->setStatusTip(QString("%1+%2+%3").arg(asp.d->name)
                                           .arg(asp.planet1->name)
                                           .arg(asp.planet2->name));
@@ -281,8 +272,20 @@ void Planets :: describePlanet()
     updateListHeight(aspectsList);
  }
 
-void Planets :: fileUpdated(AstroFile::Members)
+void Planets :: filesUpdated(MembersList m)
  { 
+  if (!filesCount())
+   {
+    view->setSource(QUrl());
+    selectedPlanet = A::Planet_None;
+    planetSelector->clear();
+    planetSelector->hide();
+    return;
+   }
+
+  if (m[0] == 0) return;
+
+  qDebug() << "Planets::refresh";
   if (planetSelector->count() == 1)                   // fill planet list
    {
     foreach (const A::Planet& p, file()->horoscope().planets)
@@ -366,14 +369,14 @@ void Planets :: expandAspects()
   aspectsList->item(aspectsList->count() - 1)->setText("^^^");
 
   const A::Planet& planet = file()->horoscope().planets[selectedPlanet];
-  A::AspectLevel level = file()->horoscope().inputData.level;
+  const A::AspectsSet& set = file()->getAspetSet();
 
   foreach (const A::Planet& p, file()->horoscope().planets)
    {
     if (p.name == planet.name ||
-        A::aspect(p, planet, level) != A::Aspect_None) continue;
+        A::aspect(p, planet, set) != A::Aspect_None) continue;
 
-    A::Aspect asp = A::calculateAspect(level, planet, p);
+    A::Aspect asp = A::calculateAspect(set, planet, p);
 
     QListWidgetItem* item = new QListWidgetItem;
     item->setIcon(QIcon("images/aspects/none.png"));
@@ -404,14 +407,6 @@ void Planets :: collapseAspects()
 void Planets :: updateListHeight(QListWidget* w)
  {
   w->setFixedHeight(w->sizeHintForRow(0) * w->count());
- }
-
-void Planets :: resetToDefault()
- {
-  view->setSource(QUrl());
-  selectedPlanet = A::Planet_None;
-  planetSelector->clear();
-  planetSelector->hide();
  }
 
 AppSettings Planets :: defaultSettings ()

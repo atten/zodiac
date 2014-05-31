@@ -25,7 +25,8 @@ Q_DECLARE_FLAGS(Articles, Article)
 
 
 
-QString romanNum             ( int num);
+QString romanNum             ( int num );
+QString houseTag             ( int num );
 QString houseNum             ( const Planet& planet );
 QString getPositionName      ( PlanetPosition p );
 QString degreeToString       ( float deg, AnglePrecision precision = NormalPrecision );
@@ -38,6 +39,7 @@ void    sortPlanets          ( PlanetList &planets, PlanetsOrder order );
 QString     describeInput       ( const InputData& data );
 QString     describeHouses      ( const Houses& houses, const Zodiac& zodiac );
 QString     describeAspect      (const Aspect &aspect, bool monospace = false);
+QString     describeAspectFull  (const Aspect &asp, QString tag1 = "", QString tag2 = "");
 QString     describePlanet      ( const Planet& planet, const Zodiac& zodiac );
 QString     describePlanetCoord  ( const Planet& planet );
 QString     describePlanetCoordInHtml ( const Planet& planet );

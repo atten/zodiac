@@ -48,29 +48,33 @@ Plain              :: Plain               ( QWidget* parent ) : AstroFileHandler
     layout->addWidget(view);
 
 
-  connect(describeInput,   SIGNAL(toggled(bool)), this, SLOT(redraw()));
-  connect(describePlanets, SIGNAL(toggled(bool)), this, SLOT(redraw()));
-  connect(describeHouses,  SIGNAL(toggled(bool)), this, SLOT(redraw()));
-  connect(describeAspects, SIGNAL(toggled(bool)), this, SLOT(redraw()));
-  connect(describePower,   SIGNAL(toggled(bool)), this, SLOT(redraw()));
+  connect(describeInput,   SIGNAL(toggled(bool)), this, SLOT(refresh()));
+  connect(describePlanets, SIGNAL(toggled(bool)), this, SLOT(refresh()));
+  connect(describeHouses,  SIGNAL(toggled(bool)), this, SLOT(refresh()));
+  connect(describeAspects, SIGNAL(toggled(bool)), this, SLOT(refresh()));
+  connect(describePower,   SIGNAL(toggled(bool)), this, SLOT(refresh()));
 
   QFile cssfile ( "plain/style.css" );
   cssfile.open  ( QIODevice::ReadOnly | QIODevice::Text );
   setStyleSheet  ( cssfile.readAll() );
  }
 
-void Plain         :: resetToDefault()
+void Plain         :: filesUpdated(MembersList m)
  {
-  view->setText(tr("(empty data)"));
+  if (!file())
+   {
+    view->clear();
+    return;
+   }
+
+  if (m[0] == 0) return;
+
+  refresh();
  }
 
-void Plain         :: fileUpdated (AstroFile::Members)
+void Plain         :: refresh()
  {
-  redraw();
- }
-
-void Plain         :: redraw()
- {
+  qDebug() << "Plain::refresh";
   int articles = (A::Article_Input   * describeInput->isChecked())   |
                  (A::Article_Planet  * describePlanets->isChecked()) |
                  (A::Article_Houses  * describeHouses->isChecked())  |

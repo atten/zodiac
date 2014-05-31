@@ -23,8 +23,11 @@ class SlideWidget : public QWidget
         void setSlide(int number);
         void setSlide(QWidget* wdg);
         QWidget* currentSlide();
-        int currentSlideIndex()                       { return currentIndex; }
+        int currentIndex()                            { return index; }
         int count()                                   { return slides.count(); }
+
+    signals:
+        void currentSlideChanged();
 
     public slots:
         void nextSlide();
@@ -35,13 +38,13 @@ class SlideWidget : public QWidget
     private:
         QList<QWidget*> slides;
         Transitions effect;
-        int currentIndex;
+        int index;
         QHBoxLayout* layout;
         bool animating;
 
-        void slideSimple     (int index);
-        void slideHorizontal (int index);
-        void slideOverlay    (int index);
+        void slideSimple     (int i);
+        void slideHorizontal (int i);
+        void slideOverlay    (int i);
 };
 
 #endif // SLIDEWIDGET_H

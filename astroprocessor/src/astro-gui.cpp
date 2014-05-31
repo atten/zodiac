@@ -31,7 +31,7 @@ QString AstroFile :: fileName() const
   return "user/" + getName() + ".dat";
  }
 
-QString AstroFile :: typeToString (FileType type)
+QString AstroFile :: typeToString (FileType type) const
  {
   switch(type)
    {
@@ -42,11 +42,32 @@ QString AstroFile :: typeToString (FileType type)
   return "";
  }
 
-AstroFile::FileType AstroFile :: typeFromString (QString str)
+AstroFile::FileType AstroFile :: typeFromString (QString str) const
  {
   if (str == "Male")   return TypeMale;
   if (str == "Female") return TypeFemale;
   return TypeOther;
+ }
+
+AstroFile::Members AstroFile :: diff(AstroFile* other) const
+ {
+  if (!other) return AstroFile::All;
+  if (this == other) return 0;
+
+  AstroFile::Members flags = 0;
+  if (getName()           != other->getName())           flags |= Name;
+  if (getType()           != other->getType())           flags |= Type;
+  if (getGMT()            != other->getGMT())            flags |= GMT;
+  if (getTimezone()       != other->getTimezone())       flags |= Timezone;
+  if (getLocation()       != other->getLocation())       flags |= Location;
+  if (getLocationName()   != other->getLocationName())   flags |= LocationName;
+  if (getComment()        != other->getComment())        flags |= Comment;
+  if (getHouseSystem()    != other->getHouseSystem())    flags |= HouseSystem;
+  if (getZodiac()         != other->getZodiac())         flags |= Zodiac;
+  if (getAspetSet().id    != other->getAspetSet().id)    flags |= AspectSet;
+  if (hasUnsavedChanges() != other->hasUnsavedChanges()) flags |= ChangedState;
+  //lastChangedMembers = flags;
+  return flags;
  }
 
 void AstroFile :: save()
@@ -69,8 +90,9 @@ void AstroFile :: save()
   clearUnsavedState();
  }
 
-void AstroFile :: load(QString name)
+void AstroFile :: load(QString name/*, bool recalculate*/)
  {
+  if (name.isEmpty()) return;
   qDebug() << "Loading file" << getName() << "from" << name;
 
   suspendUpdate();
@@ -89,30 +111,32 @@ void AstroFile :: load(QString name)
   setComment  ( file.value("comment").toString() );
 
   clearUnsavedState();
-  resumeUpdate();
+  if (/*!recalculate*/!isEmpty()) resumeUpdate()/*holdUpdateMembers = None*/;  // if empty file is just loaded, it will not be recalculated
+  //resumeUpdate();
  }
 
 void AstroFile :: resumeUpdate()
  {
   if (!holdUpdate) return;
   holdUpdate = false;
-  change(holdUpdateMembers);
+  change(holdUpdateMembers, false);
   holdUpdateMembers = None;
  }
 
-void AstroFile :: change(AstroFile::Members members)
+void AstroFile :: change(AstroFile::Members members, bool affectChangedState)
  {
   if (members == None) return;
 
-  if (!unsavedChanges && !(members & ChangedState))
-    unsavedChanges = true;
+  bool unsavedBefore = unsavedChanges;
+  if (affectChangedState && !(members & ChangedState)) unsavedChanges = true;
+  if (unsavedBefore != unsavedChanges) members |= ChangedState;
 
   if (!holdUpdate)
    {
-    if (members & (GMT|Location|HouseSystem|Zodiac|AspectLevel))
+    if (members & (GMT|Location|HouseSystem|Zodiac|AspectSet))
       recalculate();
 
-    changed(members|ChangedState);
+    emit changed(members);
    }
   else
    {
@@ -125,7 +149,10 @@ void AstroFile :: clearUnsavedState()
   if (hasUnsavedChanges())
    {
     unsavedChanges = false;
-    change(ChangedState);
+    if (!holdUpdate)
+      change(ChangedState);
+    else if (holdUpdateMembers & ChangedState)
+      holdUpdateMembers ^= ChangedState;
    }
  }
 
@@ -211,12 +238,12 @@ void AstroFile :: setZodiac (A::ZodiacId zod)
    }
  }
 
-void AstroFile :: setAspectLevel  (A::AspectLevel lev)
+void AstroFile :: setAspectSet  (A::AspectSetId set)
  {
-  if (getAspetLevel() != lev)
+  if (getAspetSet().id != set)
    {
-    scope.inputData.level = lev;
-    change(AspectLevel);
+    scope.inputData.aspectSet = set;
+    change(AspectSet);
    }
  }
 
@@ -232,54 +259,130 @@ void AstroFile :: destroy()
     --counter;                                         // decrement file counter
 
   qDebug() << "Deleted file" << getName();
-  deleteLater();
+  //deleteLater();
+  emit destroyRequested();
  }
+
+/*AstroFile :: ~AstroFile()
+ {
+  if (getName().section(" ", -1).toInt() == counter)   // latest file
+    --counter;                                         // decrement file counter
+
+  qDebug() << "Deleted file" << getName();
+ }*/
+
 
 
 /* =========================== ABSTRACT FILE HANDLER ================================ */
 
 AstroFileHandler :: AstroFileHandler(QWidget *parent) : QWidget(parent), Customizable()
  {
-  f = 0;
   delayUpdate = false;
-  delayMembers = AstroFile::None;
  }
 
-void AstroFileHandler :: setFile (AstroFile* file)
+void AstroFileHandler :: setFiles (const AstroFileList& files)
  {
-  if (file == f) return;
+  MembersList flags;
+  int i = 0;
 
-  if (f)
+  foreach(AstroFile* file, files)
    {
-    f->disconnect(this, SLOT(fileUpdatedSlot(AstroFile::Members)));
-    f->disconnect(this, SLOT(fileDestroyedSlot()));
+    AstroFile* old = (f.count() >= i + 1) ? f[i] : 0;
+    if (file == old)
+     {
+      flags << 0;
+     }
+    else
+     {
+      if (old)
+       {
+        old->disconnect(this, SLOT(fileUpdatedSlot(AstroFile::Members)));
+        old->disconnect(this, SLOT(fileDestroyedSlot()));
+       }
+
+      if (file)
+       {
+        connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
+        connect (file, SIGNAL(destroyRequested()), this, SLOT(fileDestroyedSlot()));
+        flags << file->diff(old);
+       }
+      else
+       {
+        flags << 0;
+       }
+     }
+
+    i++;
    }
 
-  f = file;
+  f = files;
 
-  if (file)
+  if (isVisible())
    {
-    connect (file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdatedSlot(AstroFile::Members)));
-    connect (file, SIGNAL(destroyed()), this, SLOT(fileDestroyedSlot()));
-    fileUpdatedSlot(AstroFile::All);
+    delayMembers = blankMembers();
+    filesUpdated(flags);
    }
   else
    {
-    resetToDefault();
+    delayMembers = flags;
+    delayUpdate = true;
    }
+
+ }
+
+MembersList AstroFileHandler :: blankMembers()
+ {
+  MembersList ret;
+  for (int i = 0; i < f.count(); i++)
+    ret << 0;
+  return ret;
+ }
+
+bool AstroFileHandler :: isAnyFileSuspended()
+ {
+  foreach (AstroFile* file, f)
+    if (file->isSuspendedUpdate()) return true;
+  return false;
  }
 
 void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
  {
-  if (isVisible())
+  int i = f.indexOf((AstroFile*)sender());
+  if (isVisible() && !isAnyFileSuspended())
    {
-    fileUpdated(m);
+    MembersList mList;
+    if (delayUpdate)
+     {
+      mList = delayMembers;
+      delayMembers = blankMembers();
+      delayUpdate  = false;
+     }
+    else
+     {
+      mList = blankMembers();
+     }
+
+    mList[i] |= m;
+    filesUpdated(mList);
    }
   else
    {
     delayUpdate = true;
-    delayMembers |= m;
+    delayMembers[i] |= m;
    }
+ }
+
+void AstroFileHandler :: fileDestroyedSlot()
+ {
+  int i = f.indexOf((AstroFile*)sender());
+  if (i == -1) return;                  // ignore if destroying file not in list (e.g. in other tab)
+
+  MembersList mList = blankMembers();
+  if (i < f.count() - 1)
+    mList[i] = f[i+1]->diff(f[i]);      // write difference with next file in list
+  f.removeAt(i);
+  mList.removeLast();
+  filesUpdated(mList);
  }
 
 void AstroFileHandler :: showEvent(QShowEvent* e)
@@ -288,9 +391,9 @@ void AstroFileHandler :: showEvent(QShowEvent* e)
 
   if (delayUpdate)
    {
-    fileUpdatedSlot(delayMembers);
-    delayUpdate = false;
-    delayMembers = AstroFile::None;
+    filesUpdated(delayMembers);
+    delayMembers = blankMembers();
+    delayUpdate  = false;
    }
  }
 

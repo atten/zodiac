@@ -43,41 +43,59 @@ class Chart : public AstroFileHandler
     Q_OBJECT
 
     private:
-        bool emptyScene;
-        QRect mapRect;
-        float zoom, defaultZoom;
-        QPointF pan;
+        typedef QMap<A::PlanetId, QGraphicsItem*> QGraphicsItemDict;
+
+        static const int defaultChartRadius = 250;
+        int chartsCount;
+        QRectF viewport;
+        float zoom;
         QGraphicsView* view;
         RotatingCircleItem* circle;
+        //A::AspectList synAspects;
 
         CircleStart circleStart;
         bool clockwise;
-        int zodiacWidth;
-        int innerRadius;
-        int cuspideLength;
+        int l_zodiacWidth;
+        int l_innerRadius;
+        int l_cuspideLength;
         bool coloredZodiac;
         bool zodiacDropShadow;
 
-        QList<QGraphicsLineItem*>         cuspides;
-        QList<QGraphicsSimpleTextItem*>   cuspideLabels;
-        QMap<A::PlanetId, QGraphicsItem*> planetMarkers;
-        QMap<A::PlanetId, QGraphicsItem*> planets;
+        QMap<int, QGraphicsItemDict> cuspides;
+        QMap<int, QGraphicsItemDict> cuspideLabels;
+        QMap<int, QGraphicsItemDict> planetMarkers;
+        QMap<int, QGraphicsItemDict> planets;
         //QList<QGraphicsSimpleTextItem*> aspectMarkers;
         QList<QGraphicsLineItem*>         aspects;
         QList<QGraphicsItem*>             signIcons;
 
+        float zodiacWidth()  { return l_zodiacWidth * zoom; }
+        float innerRadius(int fileIndex = 0);
+        int cuspideLength(int fileIndex, int cusp);
+        QRect chartRect();
+
         int normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker);
         const QPen& aspectPen(const A::Aspect& asp);
+        const QPen& planetMarkerPen(const A::Planet& p, int fileIndex);
+        QColor planetColor(const A::Planet& p, int fileIndex);
+        QColor planetShapeColor(const A::Planet& p, int fileIndex);
+        QGraphicsItem* getCircleMarker(const A::Planet* p);
+
+        void drawPlanets(int fileIndex);
+        void drawCuspides(int fileIndex);
+        void updatePlanetsAndCusps(int fileIndex);
+        void updateAspects();
+        A::AspectList calculateSynastryAspects();
 
         void fitInView();
         void createScene();
         void updateScene();
         void clearScene();
 
+        void refreshAll();
+
     protected:                            // AstroFileHandler && other implementations
-        void resetToDefault()                    { clearScene(); }
-        void fileUpdated(AstroFile::Members);
-        void fileDestroyed()  { }
+        void filesUpdated(MembersList);
 
         AppSettings defaultSettings ();
         AppSettings currentSettings ();

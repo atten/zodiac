@@ -22,12 +22,10 @@ class Plain : public AstroFileHandler
         QTextBrowser* view;
 
     private slots:
-        void redraw();
+        void refresh();
 
     protected:                            // AstroFileHandler implementations
-        void resetToDefault();
-        void fileUpdated(AstroFile::Members);
-        void fileDestroyed()  { }
+        void filesUpdated(MembersList m);
 
     public:
         Plain  ( QWidget* parent = 0 );

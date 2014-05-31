@@ -16,10 +16,10 @@ float   angle                    ( const Planet& planet1, const Planet& planet2 
 float   angle                    ( const Planet& planet, float deg );
 float   angle                    ( const Planet& planet, QPointF coordinate );
 float   angle                    ( float deg1, float deg2 );
-AspectId aspect                  ( const Planet& planet1, const Planet& planet2, AspectLevel aspectLevel );
-AspectId aspect                  ( const Planet& planet, QPointF coordinate, AspectLevel aspectLevel );
-AspectId aspect                  ( const Planet& planet1, float degree, AspectLevel aspectLevel );
-AspectId aspect                  ( float angle, AspectLevel aspectLevel );
+AspectId aspect                  ( const Planet& planet1, const Planet& planet2, const AspectsSet& aspectSet );
+AspectId aspect                  ( const Planet& planet, QPointF coordinate, const AspectsSet& aspectSet );
+AspectId aspect                  ( const Planet& planet1, float degree, const AspectsSet& aspectSet );
+AspectId aspect                  ( float angle, const AspectsSet& aspectSet );
 bool    towardsMovement          ( const Planet& planet1, const Planet& planet2 );
 PlanetPosition getPosition       ( const Planet& planet, ZodiacSignId sign );
 const Planet* doryphoros         ( const Horoscope& scope );
@@ -34,8 +34,9 @@ PlanetId receptionWith           ( const Planet& planet, const Horoscope& scope 
 Planet      calculatePlanet      ( PlanetId planet, const InputData& input, const Houses& houses, const Zodiac& zodiac );
 PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope );
 Houses      calculateHouses      ( const InputData& input );
-Aspect      calculateAspect      ( AspectLevel aspectLevel, const Planet& planet1, const Planet& planet2 );
-AspectList  calculateAspects     ( AspectLevel aspectLevel, const PlanetMap& planets );
+Aspect      calculateAspect      ( const AspectsSet& aspectSet, const Planet& planet1, const Planet& planet2 );
+AspectList  calculateAspects     ( const AspectsSet& aspectSet, const PlanetMap& planets );
+AspectList  calculateAspects     ( const AspectsSet& aspectSet, const PlanetMap& planets1, const PlanetMap& planets2 );   // synastry
 Horoscope   calculateAll         ( const InputData& input );
 
 }

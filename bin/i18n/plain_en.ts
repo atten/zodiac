@@ -59,9 +59,8 @@
         <translation>Show dignity and deficient points for each planet</translation>
     </message>
     <message>
-        <location filename="../../plain/src/plain.cpp" line="64"/>
         <source>(empty data)</source>
-        <translation>(empty data)</translation>
+        <translation type="vanished">(empty data)</translation>
     </message>
 </context>
 </TS>

@@ -10,25 +10,41 @@
 namespace A {
 
 
-QMap<AspectLevel, QMap<AspectId, AspectType> > Data::aspects = QMap<AspectLevel, QMap<AspectId, AspectType> >();
+QMap<AspectSetId, AspectsSet> Data::aspectSets = QMap<AspectSetId, AspectsSet>();
 QMap<PlanetId, Planet> Data::planets = QMap<PlanetId, Planet>();
 QMap<HouseSystemId, HouseSystem> Data::houseSystems = QMap<HouseSystemId, HouseSystem>();
 QMap<ZodiacId, Zodiac> Data::zodiacs = QMap<ZodiacId, Zodiac>();
-AspectLevel Data::maxAspectLevel = AspectLevel();
+AspectSetId Data::topAspSet = AspectSetId();
 
 void Data :: load(QString language)
  {
   swe_set_ephe_path( "swe/" );
   CsvFile f;
-  QHash<QString, ZodiacSignId> signs;            // collect and find signs by tag
 
+  f.setFileName("astroprocessor/aspect_sets.csv");
+  if (!f.openForRead()) qDebug() << "A: Missing file" << f.fileName();
+  topAspSet = 0;
+  while (f.readRow())
+   {
+    AspectsSet s;
+    s.id   = f.row(0).toInt();
+    s.name = language.isEmpty() ? f.row(1) : f.row(2);
+
+    //for (int i = 3; i < f.columnsCount(); i++)
+    //  s.userData[f.header(i)] = f.row(i);
+
+    aspectSets[s.id] = s;
+    topAspSet = qMax(topAspSet, s.id);         // update top set
+   }
+
+  f.close();
   f.setFileName("astroprocessor/aspects.csv");
   if (!f.openForRead()) qDebug() << "A: Missing file" << f.fileName();
-  maxAspectLevel = 0;
   while (f.readRow())
    {
     AspectType a;
-    a.level = f.row(0).toUInt();
+    AspectSetId setId = f.row(0).toUInt();
+    a.set   = &aspectSets[setId];
     a.id    = f.row(1).toInt();
     a.name  = language.isEmpty() ? f.row(2) : f.row(3);
     a.angle = f.row(4).toFloat();
@@ -37,8 +53,7 @@ void Data :: load(QString language)
     for (int i = 6; i < f.columnsCount(); i++)
       a.userData[f.header(i)] = f.row(i);
 
-    aspects[a.level][a.id] = a;
-    maxAspectLevel = qMax(maxAspectLevel, a.level);         // update max level
+    aspectSets[setId].aspects[a.id] = a;
    }
 
   f.close();
@@ -69,6 +84,7 @@ void Data :: load(QString language)
   f.close();
   f.setFileName("astroprocessor/signs.csv");
   if (!f.openForRead()) qDebug() << "A: Missing file" << f.fileName();
+  QHash<QString, ZodiacSignId> signs;            // collect and find signs by tag
   while (f.readRow())
    {
     ZodiacSign s;
@@ -152,24 +168,32 @@ const QList<Zodiac> Data :: getZodiacs()
   return zodiacs.values();
  }
 
-const QList<AspectType> Data :: getAspects(AspectLevel level)
+/*const QList<AspectType> Data :: getAspects(AspectSetId set)
  {
-  level = qBound(0, level, aspects.count());
-  return aspects[level].values();
+  set = qBound(0, set, aspects.count());
+  return aspects[set].values();
+ }*/
+
+const AspectType& Data :: getAspect(AspectId id, const AspectsSet& set)
+ {
+  if (set.aspects.contains(id))
+    return aspectSets[set.id].aspects[id];
+
+  return aspectSets[AspectSet_Default].aspects[Aspect_None];
  }
 
-const AspectType& Data :: getAspect(AspectId id, AspectLevel level)
+const AspectsSet& Data :: getAspectSet(AspectSetId set)
  {
-  if (aspects.contains(level) && aspects[level].contains(id))
-    return aspects[level][id];
+  if (aspectSets.contains(set))
+    return aspectSets[set];
 
-  return aspects[Level_Default][Aspect_None];
+  return aspectSets[AspectSet_Default];
  }
 
-QList<AspectLevel> Data :: getLevels()
+/*QList<AspectsSet>& Data :: getAspectSets()
  {
-  return aspects.keys();
- }
+  return aspectSets.values();
+ }*/
 
 
 void load(QString language) { Data::load(language); }
@@ -179,8 +203,9 @@ const HouseSystem& getHouseSystem(HouseSystemId id) { return Data::getHouseSyste
 const Zodiac& getZodiac(ZodiacId id) { return Data::getZodiac(id); }
 const QList<HouseSystem> getHouseSystems() { return Data::getHouseSystems(); }
 const QList<Zodiac> getZodiacs() { return Data::getZodiacs(); }
-const QList<AspectType> getAspects(AspectLevel level) { return Data::getAspects(level); }
-const AspectType& getAspect(AspectId id, AspectLevel level) { return Data::getAspect(id, level); }
-QList<AspectLevel> getLevels() { return Data::getLevels(); }
-AspectLevel maxLevel() { return Data::maxLevel(); }
+//const QList<AspectType> getAspects(AspectSetId set) { return Data::getAspects(set); }
+const AspectType& getAspect(AspectId id, const AspectsSet& set) { return Data::getAspect(id, set); }
+QList<AspectsSet> getAspectSets() { return Data::getAspectSets(); }
+const AspectsSet& getAspectSet(AspectSetId set) { return Data::getAspectSet(set); }
+const AspectsSet& topAspectSet() { return Data::topAspectSet(); }
 }

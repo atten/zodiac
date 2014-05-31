@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QGraphicsBlurEffect>
+#include <math.h>
 #include <QDebug>
 #include "../plain/src/plain.h"
 #include "../chart/src/chart.h"
@@ -24,6 +25,8 @@
 
 AstroFileInfo :: AstroFileInfo (QWidget *parent) : AstroFileHandler(parent)
  {
+  currentIndex = 0;
+
   edit   = new QPushButton(this);
   shadow = new QLabel(this);
   QGraphicsBlurEffect* ef = new QGraphicsBlurEffect();
@@ -41,19 +44,12 @@ AstroFileInfo :: AstroFileInfo (QWidget *parent) : AstroFileHandler(parent)
    layout->addWidget(shadow,0,0,1,1);
 
   connect(edit, SIGNAL(clicked()), this, SIGNAL(clicked()));
-
-  resetToDefault();
  }
 
-void AstroFileInfo :: resetToDefault()
+void AstroFileInfo :: refresh()
  {
-  setText(tr("No data represented."));
- }
-
-void AstroFileInfo :: fileUpdated(AstroFile::Members)
- {
-  if (!file()) return;
-  QDateTime dt = file()->getLocalTime();
+  qDebug() << "AstroFileInfo::refresh";
+  QDateTime dt = currentFile()->getLocalTime();
 
   QString date      = dt.date().toString(Qt::DefaultLocaleShortDate);
   QString dayOfWeek = dt.date().toString("ddd");
@@ -65,33 +61,46 @@ void AstroFileInfo :: fileUpdated(AstroFile::Members)
     float a1 = dt.daysTo(QDateTime::currentDateTime()) / 365.25;
     char a[7];
     sprintf(a, "%5.2f", a1);
-    age = tr(", %1 years old").arg(a);
+    age = tr(", %1 years").arg(a);
    }
 
   QString timezone;
-  if (file()->getTimezone() > 0)
-    timezone = QString("GMT +%1").arg(file()->getTimezone());
-  else if (file()->getTimezone() < 0)
-    timezone = QString("GMT %1").arg(file()->getTimezone());
+  if (currentFile()->getTimezone() > 0)
+    timezone = QString("GMT +%1").arg(currentFile()->getTimezone());
+  else if (currentFile()->getTimezone() < 0)
+    timezone = QString("GMT %1").arg(currentFile()->getTimezone());
   else
     timezone = "GMT";
 
   QString place;
-  if (file()->getLocationName().isEmpty())
+  if (currentFile()->getLocationName().isEmpty())
    {
-    QString longitude = A::degreeToString(file()->getLocation().x(), A::HighPrecision);
-    QString latitude  = A::degreeToString(file()->getLocation().y(), A::HighPrecision);
+    QString longitude = A::degreeToString(currentFile()->getLocation().x(), A::HighPrecision);
+    QString latitude  = A::degreeToString(currentFile()->getLocation().y(), A::HighPrecision);
     place = QString("%1N  %2E").arg(latitude, longitude);
    }
   else
    {
-    place = file()->getLocationName();
+    place = currentFile()->getLocationName();
    }
 
 
-  setText( QString("%1\n").arg(file()->getName()) +
+  setText( QString("%1\n").arg(currentFile()->getName()) +
            tr("%1 %2 %3 (%4)%5\n").arg(date, dayOfWeek, time, timezone, age) +
            place );
+ }
+
+void AstroFileInfo :: filesUpdated(MembersList m)
+ {
+  if (currentIndex >= filesCount())
+   {
+    setText("");
+    return;
+   }
+
+  if (m[currentIndex] & (AstroFile::Name | AstroFile::GMT | AstroFile::Timezone |
+                         AstroFile::Location | AstroFile::LocationName))
+    refresh();
  }
 
 void AstroFileInfo :: setText(const QString& str)
@@ -117,7 +126,7 @@ AppSettings AstroFileInfo :: currentSettings ()
 void AstroFileInfo :: applySettings       ( const AppSettings& s )
  {
   showAge = s.value ( "age" ).toBool();
-  fileUpdated(AstroFile::All);
+  if (currentIndex < filesCount()) refresh();
  }
 
 void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
@@ -131,24 +140,28 @@ void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
 
 AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
  {
-  f = 0;
   editor = 0;
 
   toolBar = new QToolBar(tr("Slides"), this);
   actionGroup = new QActionGroup(this);
 
-  geoWdg     = new GeoSearchWidget;
-  slides     = new SlideWidget;
-  fileView   = new AstroFileInfo;
+  geoWdg      = new GeoSearchWidget;
+  slides      = new SlideWidget;
+  fileView    = new AstroFileInfo;
+  fileView2nd = new AstroFileInfo;
 
-  toolBar->setObjectName("slides");
-  actionGroup->setExclusive(true);
-  slides->setTransitionEffect(SlideWidget::Transition_HorizontalSlide);
+  toolBar     -> setObjectName("slides");
+  actionGroup -> setExclusive(true);
+  slides      -> setTransitionEffect(SlideWidget::Transition_HorizontalSlide);
+  fileView2nd -> setStatusTip(tr("Background data"));
+  fileView2nd -> setCurrentIndex(1);
+  fileView2nd -> setObjectName("secondFile");
 
   QGridLayout* layout = new QGridLayout(this);
    layout->setMargin(0);
-   layout->addWidget(slides,   0,0, 1,1);
-   layout->addWidget(fileView, 0,0, 1,1, Qt::AlignLeft|Qt::AlignTop);
+   layout->addWidget(slides,      0,0, 1,1);
+   layout->addWidget(fileView,    0,0, 1,1, Qt::AlignLeft|Qt::AlignTop);
+   layout->addWidget(fileView2nd, 0,0, 1,1, Qt::AlignRight|Qt::AlignTop);
 
   addSlide(new Chart,   QIcon("style/natal.png"),   tr("Chart"));
   addSlide(new Planets, QIcon("style/planets.png"), tr("Planets"));
@@ -156,10 +169,12 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
 
   addHoroscopeControls();
 
-  connect(fileView, SIGNAL(clicked()), this, SLOT(editCurrentFile()));
+  connect(fileView,    SIGNAL(clicked()), this, SLOT(openEditor()));
+  connect(fileView2nd, SIGNAL(clicked()), this, SLOT(openEditor()));
+  connect(slides,      SIGNAL(currentSlideChanged()), this, SLOT(currentSlideChanged()));
  }
 
-void AstroWidget :: setupFile (AstroFile* file)
+void AstroWidget :: setupFile (AstroFile* file, bool suspendUpdate)
  {
   if (!file) return;
   bool hasChanges = file->hasUnsavedChanges();
@@ -179,41 +194,97 @@ void AstroWidget :: setupFile (AstroFile* file)
     file->setLocationName(geoWdg->locationName());
    }
 
-  file->setZodiac      (zodiacSelector->itemData(zodiacSelector->currentIndex()).toInt());  // set zodiac
+  file->setZodiac      (zodiacSelector->itemData(zodiacSelector->currentIndex()).toInt());   // set zodiac
   file->setHouseSystem (hsystemSelector->itemData(hsystemSelector->currentIndex()).toInt()); // set house system
-  file->setAspectLevel (levelSelector->itemData(levelSelector->currentIndex()).toInt());   // set aspect level
-
+  file->setAspectSet   (aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt()); // set aspect set
 
   if (!hasChanges) file->clearUnsavedState();
-  file->resumeUpdate();
+  if (!suspendUpdate) file->resumeUpdate();
+
+  connect(file, SIGNAL(destroyRequested()), this, SLOT(destroyingFile()));
  }
 
-void AstroWidget :: setFile (AstroFile* file)
+void AstroWidget :: switchToSingleAspectSet()
  {
-  f = file;
-  setupFile(file);
-  fileView->setFile(file);
+  aspectsSelector->blockSignals(true);
+  A::AspectSetId set = aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt();
+  A::AspectSetId set2 = sqrtf(set);
+  int itemIndex = aspectsSelector->findData(set2);
+  if (set2 * set2 == set && itemIndex >= 0)
+   {
+    qDebug() << "restore aspect set to single";
+    aspectsSelector->setCurrentIndex(itemIndex);
+   }
+  aspectsSelector->blockSignals(false);
+ }
+
+void AstroWidget :: switchToSynastryAspectSet()
+ {
+  aspectsSelector->blockSignals(true);
+  A::AspectSetId set = aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt();
+  A::AspectSetId set2 = set * set;
+  int itemIndex = aspectsSelector->findData(set2);
+  if (itemIndex >= 0)
+   {
+    qDebug() << "replace aspect set to synastry";
+    aspectsSelector->setCurrentIndex(itemIndex);
+   }
+  aspectsSelector->blockSignals(false);
+ }
+
+void AstroWidget :: setFiles (const AstroFileList& files)
+ {
+  if (files.count() == 2)
+    switchToSynastryAspectSet();
+  else if (files.count() == 1)
+    switchToSingleAspectSet();
+
+  foreach(AstroFile* i, files)
+    if (!this->files().contains(i))                  // don't affect already assigned files
+      setupFile(i, true);
+
+  foreach(AstroFile* i, files)
+    i->resumeUpdate();
+
+  fileView->setFiles(files);
+  fileView2nd->setFiles(files);
+
+  if (editor)
+    editor->setFiles(files);
 
   foreach (AstroFileHandler* h, handlers)
-    h->setFile(file);
+    h->setFiles(files);
  }
 
-void AstroWidget :: editCurrentFile()
+void AstroWidget :: openEditor()
  {
   if (editor)
    {
-    editor->setFile(file());
     editor->raise();
    }
   else
    {
     editor = new AstroFileEditor();
-    editor->setFile(file());
+    editor->setFiles(files());
     editor->move((topLevelWidget()->width()  - editor->width())  / 2 + topLevelWidget()->geometry().left(),
                  (topLevelWidget()->height() - editor->height()) / 2 + topLevelWidget()->geometry().top());
     editor->show();
+    connect(editor, SIGNAL(appendFile()),   this, SIGNAL(appendFileRequested()));
+    connect(editor, SIGNAL(swapFiles(int,int)), this, SIGNAL(swapFilesRequested(int,int)));
     connect(editor, SIGNAL(windowClosed()), this, SLOT(destroyEditor()));
    }
+
+  if (sender() == fileView)
+    editor->setCurrentFile(0);
+  else if (sender() == fileView2nd)
+    editor->setCurrentFile(1);
+ }
+
+void AstroWidget :: destroyingFile()
+ {
+  AstroFile* file = (AstroFile*)sender();
+  if (!files().contains(file) || files().count() > 2) return;
+  switchToSingleAspectSet();
  }
 
 void AstroWidget :: destroyEditor()
@@ -239,11 +310,11 @@ void AstroWidget :: addHoroscopeControls()
  {
   zodiacSelector  = new QComboBox;
   hsystemSelector = new QComboBox;
-  levelSelector   = new QComboBox;
+  aspectsSelector   = new QComboBox;
 
   zodiacSelector  -> setToolTip(tr("Sign"));
   hsystemSelector -> setToolTip(tr("House system"));
-  levelSelector   -> setToolTip(tr("Aspects and orbs level\n(by A.Podvodny)"));
+  aspectsSelector -> setToolTip(tr("Aspect sets\n(by A.Podvodny)"));
 
   foreach (const A::Zodiac& z, A::getZodiacs())
     zodiacSelector->addItem(z.name, z.id);                  // create combo box with zodiacs
@@ -251,10 +322,10 @@ void AstroWidget :: addHoroscopeControls()
   foreach (const A::HouseSystem& sys, A::getHouseSystems())
     hsystemSelector->addItem(sys.name, sys.id);             // create combo box with house systems
 
-  foreach (const A::AspectLevel& l, A::getLevels())
-    levelSelector->addItem(tr("%1 initiation").arg(A::romanNum(l)), l);  // create combo box with aspect levels
+  foreach (const A::AspectsSet& s, A::getAspectSets())
+    aspectsSelector->addItem(s.name, s.id);                 // create combo box with aspect sets
 
-  horoscopeControls << zodiacSelector << hsystemSelector << levelSelector;
+  horoscopeControls << zodiacSelector << hsystemSelector << aspectsSelector;
 
   foreach (QComboBox* c, horoscopeControls)
    {
@@ -268,6 +339,11 @@ void AstroWidget :: toolBarActionClicked()
   QAction* s = (QAction*)sender();
   int i = toolBar->actions().indexOf(s);
   slides->setSlide(i);
+ }
+
+void AstroWidget :: currentSlideChanged()
+ {
+  fileView2nd->setVisible(slides->currentIndex() == 0);   // show background data only in chart view
  }
 
 void AstroWidget :: applyGeoSettings(AppSettings& s)
@@ -292,7 +368,11 @@ QVector3D AstroWidget :: vectorFromString (const QString& str)
 
 void AstroWidget :: horoscopeControlChanged()
  {
-  setupFile(file());
+  foreach(AstroFile* i, files())
+    setupFile(i, true);
+
+  foreach(AstroFile* i, files())
+    i->resumeUpdate();
  }
 
 AppSettings AstroWidget :: defaultSettings ()
@@ -308,8 +388,8 @@ AppSettings AstroWidget :: defaultSettings ()
   s.setValue("Scope/defaultLocationName", "Moscow, Russia");
   s.setValue("Scope/zodiac",              0);          // indexes of ComboBox items, not values itself
   s.setValue("Scope/houseSystem",         0);
-  s.setValue("Scope/level",               0);
-  s.setValue("slide", slides->currentSlideIndex());    // чтобы не возвращалась к первому слайду после сброса настроек
+  s.setValue("Scope/aspectSet",           0);
+  s.setValue("slide", slides->currentIndex());    // чтобы не возвращалась к первому слайду после сброса настроек
   return s;
  }
 
@@ -326,8 +406,8 @@ AppSettings AstroWidget :: currentSettings ()
 
   s.setValue("Scope/zodiac",      zodiacSelector  -> currentIndex());
   s.setValue("Scope/houseSystem", hsystemSelector -> currentIndex());
-  s.setValue("Scope/level",       levelSelector   -> currentIndex());
-  s.setValue("slide",             slides          -> currentSlideIndex());
+  s.setValue("Scope/aspectSet",   aspectsSelector -> currentIndex());
+  s.setValue("slide",             slides          -> currentIndex());
   return s;
  }
 
@@ -338,13 +418,15 @@ void AstroWidget :: applySettings      ( const AppSettings& s )
 
   zodiacSelector  -> setCurrentIndex (s.value("Scope/zodiac").toInt());
   hsystemSelector -> setCurrentIndex (s.value("Scope/houseSystem").toInt());
-  levelSelector   -> setCurrentIndex (s.value("Scope/level").toUInt());
+  aspectsSelector -> setCurrentIndex (s.value("Scope/aspectSet").toUInt());
   slides          -> setSlide        (s.value("slide").toInt() );
-  toolBar         -> actions()[slides->currentSlideIndex()]->setChecked(true);
+  toolBar         -> actions()[slides->currentIndex()]->setChecked(true);
 
   fileView->applySettings(s);
+  fileView2nd->applySettings(s);
 
-  setupFile(file());
+  foreach(AstroFile* i, files())
+    setupFile(i);
 
   foreach (AstroFileHandler* h, handlers)
     h->applySettings(s);
@@ -361,161 +443,6 @@ void AstroWidget :: setupSettingsEditor ( AppSettingsEditor* ed )
     h->setupSettingsEditor(ed);
 
   connect(ed, SIGNAL(apply(AppSettings&)), this, SLOT(applyGeoSettings(AppSettings&)));
- }
-
-
-/* =========================== FILES BAR ============================================ */
-
-FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
- {
-  setTabsClosable(true);
-  setMovable(true);
-
-  connect(this, SIGNAL(tabMoved(int,int)),      this, SLOT(swapFiles(int,int)));
-  connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
- }
-
-void FilesBar :: addEmptyFile()
- {
-  AstroFile* file = new AstroFile;
-  addFile(file);
- }
-
-void FilesBar :: addFile (AstroFile* file)
- {
-  if (!file)
-   {
-    qWarning() << "FilesBar::addFile: failed to add an empty file";
-    return;
-   }
-
-  files << file;
-  file->setParent(this);
-  addTab("new");
-  updateTab(count() - 1);
-  setCurrentIndex(count() - 1);
-
-  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(updateTab()));
-  connect(file, SIGNAL(destroyed()),                 this, SLOT(removeTab()));
- }
-
-AstroFile* FilesBar :: fileAt (int index)
- {
-  if (index < 0 || index >= count()) return 0;
-  return files[index];
- }
-
-void FilesBar :: updateTab(int index)
- {
-  if (files.count() <= index || count() <= index) return;
-
-  AstroFile* file = files[index];
-  QString text = file->getName();
-
-  if (file->hasUnsavedChanges())
-    text += '*';
-
-  setTabText(index, text);
- }
-
-void FilesBar :: updateTab()
- {
-  AstroFile* file = (AstroFile*)sender();
-  int index = files.indexOf(file);
-  updateTab(index);
- }
-
-void FilesBar :: removeTab()    // called when AstroFile going to be destroyed
- {
-  AstroFile* file = (AstroFile*)sender();
-  int index = files.indexOf(file);
-  files.removeAt(index);
-  ((QTabBar*)this)->removeTab(index);
-  if (!count()) addEmptyFile();
- }
-
-void FilesBar :: swapFiles(int f1,int f2)
- {
-  AstroFile* temp = files[f1];
-  files[f1] = files[f2];
-  files[f2] = temp;
- }
-
-bool FilesBar :: closeTab(int index)
- {
-  AstroFile* file = files[index];
-
-  if (askToSave && file->hasUnsavedChanges())
-   {
-    QMessageBox msgBox;
-    msgBox.setText(tr("Save changes in '%1' before closing?").arg(file->getName()));
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Save);
-    int ret = msgBox.exec();
-
-    switch (ret)
-     {
-      case QMessageBox::Yes: file->save(); break;
-      case QMessageBox::Cancel: return false;
-      default: break;
-     }
-   }
-  else if (count() == 1)
-   {
-    return false;                               // avoid to close last tab (without unsaved changes)
-   }
-
-  files.removeAt(index);
-  ((QTabBar*)this)->removeTab(index);
-  file->destroy();                              // delete AstroFile, because we do not need it
-  if (!count()) addEmptyFile();
-  return true;
- }
-
-void FilesBar :: deleteFile(QString name)
- {
-  foreach (AstroFile* file, files)
-   {
-    if (file->getName() == name)
-     {
-      file->destroy();
-      return;
-     }
-   }
- }
-
-void FilesBar :: openFile(QString name)
- {
-  for (int i = 0; i < count(); i++)
-   {
-    if (files[i]->getName() == name)
-     {
-      setCurrentIndex(i);            // focus if the file is currently opened
-      return;
-     }
-   }
-
-  if (currentFile()->hasUnsavedChanges())
-    openFileInNewTab(name);
-  else
-    currentFile()->load(name);
-
- }
-
-void FilesBar :: openFileInNewTab(QString name)
- {
-  for (int i = 0; i < count(); i++)
-   {
-    if (files[i]->getName() == name)
-     {
-      setCurrentIndex(i);            // if the file is currently opened, focus it
-      return;
-     }
-   }
-
-  AstroFile* file = new AstroFile;
-  file->load(name);
-  addFile(file);
  }
 
 
@@ -637,6 +564,12 @@ void AstroDatabase :: openSelectedInNewTab()
     emit openFileInNewTab(item->text());
  }
 
+void AstroDatabase :: openSelectedAsSecond()
+ {
+  QListWidgetItem* item = fileList->selectedItems().first();
+  emit openFileAsSecond(item->text());
+ }
+
 void AstroDatabase :: showContextMenu(QPoint p)
  {
   QMenu* mnu = new QMenu(this);
@@ -644,6 +577,7 @@ void AstroDatabase :: showContextMenu(QPoint p)
 
   mnu -> addAction(tr("Open"), this, SLOT(openSelected()));
   mnu -> addAction(tr("Open in new tab"), this, SLOT(openSelectedInNewTab()));
+  mnu -> addAction(tr("Synastry view"), this, SLOT(openSelectedAsSecond()));
   mnu -> addSeparator();
   mnu -> addAction(QIcon("style/delete.png"), tr("Delete"),this, SLOT(deleteSelected()));
 
@@ -666,6 +600,178 @@ bool AstroDatabase :: eventFilter(QObject *o, QEvent *e)
     return true;
    }
   return QObject::eventFilter(o, e);
+ }
+
+
+/* =========================== FILES BAR ============================================ */
+
+FilesBar :: FilesBar(QWidget *parent) : QTabBar(parent)
+ {
+  setTabsClosable(true);
+  setMovable(true);
+  setDocumentMode(true);
+
+  connect(this, SIGNAL(tabMoved(int,int)),      this, SLOT(swapTabs(int,int)));
+  connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+ }
+
+int FilesBar  :: getTabIndex(AstroFile* f, bool seekFirstFileOnly)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < (seekFirstFileOnly ? 1 : files[i].count()); j++)
+      if (f == files[i][j])
+        return i;
+  return -1;
+ }
+
+int FilesBar  :: getTabIndex(QString name, bool seekFirstFileOnly)
+ {
+  for (int i = 0; i < count(); i++)
+    for (int j = 0; j < (seekFirstFileOnly ? 1 : files[i].count()); j++)
+      if (name == files[i][j]->getName())
+        return i;
+  return -1;
+ }
+
+void FilesBar :: addFile (AstroFile* file)
+ {
+  if (!file)
+   {
+    qWarning() << "FilesBar::addFile: failed to add an empty file";
+    return;
+   }
+
+  AstroFileList list;
+  list << file;
+  files << list;
+  file->setParent(this);
+  addTab("new");
+  updateTab(count() - 1);
+  setCurrentIndex(count() - 1);
+
+  connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+  connect(file, SIGNAL(destroyRequested()),          this, SLOT(fileDestroyed()));
+ }
+
+void FilesBar :: updateTab(int index)
+ {
+  if (index >= count()) return;
+  QStringList names;
+
+  foreach (AstroFile* i, files[index])
+    if (i) names << i->getName() + (i->hasUnsavedChanges() ? "*" : "");
+
+  setTabText(index, names.join(" | "));
+ }
+
+void FilesBar :: fileUpdated(AstroFile::Members m)
+ {
+  if (!(m & (AstroFile::Name|AstroFile::ChangedState))) return;
+  qDebug() << "FilesBar::updateTab";
+  AstroFile* file = (AstroFile*)sender();
+  updateTab(getTabIndex(file));
+ }
+
+void FilesBar :: fileDestroyed()                // called when AstroFile going to be destroyed
+ {
+  AstroFile* file = (AstroFile*)sender();
+  int tab = getTabIndex(file);
+  if (tab == -1) return;                        // tab with the single file has been removed already
+  int index = files[tab].indexOf(file);
+  files[tab].removeAt(index);
+  updateTab(tab);
+  file->deleteLater();
+ }
+
+void FilesBar :: swapTabs(int f1,int f2)
+ {
+  AstroFileList temp = files[f1];
+  files[f1] = files[f2];
+  files[f2] = temp;
+ }
+
+void FilesBar :: swapCurrentFiles(int i,int j)
+ {
+  AstroFile* temp = files[currentIndex()][i];
+  files[currentIndex()][i] = files[currentIndex()][j];
+  files[currentIndex()][j] = temp;
+  updateTab(currentIndex());
+  currentChanged(currentIndex());
+ }
+
+bool FilesBar :: closeTab(int index)
+ {
+  AstroFileList f = files[index];
+  AstroFile* file = 0;
+  if (f.count()) file = f[0];
+
+  if (askToSave && file && file->hasUnsavedChanges())
+   {
+    QMessageBox msgBox;
+    msgBox.setText(tr("Save changes in '%1' before closing?").arg(file->getName()));
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    switch (ret)
+     {
+      case QMessageBox::Yes: file->save(); break;
+      case QMessageBox::Cancel: return false;
+      default: break;
+     }
+   }
+  else if (count() == 1)
+   {
+    return false;                               // avoid to close last tab (without unsaved changes)
+   }
+
+  files.removeAt(index);
+  ((QTabBar*)this)->removeTab(index);
+  foreach (AstroFile* i, f)
+    i->destroy();                     // delete AstroFiles, because we do not need it
+  if (!count()) addNewFile();
+  return true;
+ }
+
+void FilesBar :: openFile(QString name)
+ {
+  int i = getTabIndex(name, true);
+  if (i != -1) return setCurrentIndex(i);            // focus if the file is currently opened
+
+  /*if (currentFile()->hasUnsavedChanges())
+    openFileInNewTab(name);
+  else*/
+    currentFiles()[0]->load(name);
+
+ }
+
+void FilesBar :: openFileInNewTab(QString name)
+ {
+  //int i = getTabIndex(name, true);
+  //if (i != -1) return setCurrentIndex(i);
+
+  AstroFile* file = new AstroFile;
+  file->load(name);
+  addFile(file);
+ }
+
+void FilesBar :: openFileAsSecond(QString name)
+ {
+  if (files[currentIndex()].count() < 2)
+   {
+    AstroFile* file = new AstroFile;
+    file->load(name);
+    file->setParent(this);
+    files[currentIndex()] << file;
+    updateTab(currentIndex());
+    connect(file, SIGNAL(changed(AstroFile::Members)), this, SLOT(fileUpdated(AstroFile::Members)));
+    connect(file, SIGNAL(destroyRequested()),          this, SLOT(fileDestroyed()));
+    emit currentChanged(currentIndex());
+   }
+  else
+   {
+    files[currentIndex()][1]->load(name);
+   }
  }
 
 
@@ -713,25 +819,28 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   foreach(QWidget* w, astroWidget->getHoroscopeControls())
     statusBar()->addPermanentWidget(w);
 
-  connect(filesBar,      SIGNAL(currentChanged(int)),          this,     SLOT(currentFileChanged()));
+  connect(filesBar,      SIGNAL(currentChanged(int)),          this,     SLOT(currentTabChanged()));
   connect(astroDatabase, SIGNAL(openFile(QString)),            filesBar, SLOT(openFile(QString)));
   connect(astroDatabase, SIGNAL(openFileInNewTab(QString)),    filesBar, SLOT(openFileInNewTab(QString)));
-  connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
+  connect(astroDatabase, SIGNAL(openFileAsSecond(QString)),    filesBar, SLOT(openFileAsSecond(QString)));
+  //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
+  connect(astroWidget,   SIGNAL(appendFileRequested()),        filesBar, SLOT(openFileAsSecond()));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
+  connect(astroWidget,   SIGNAL(swapFilesRequested(int,int)),  filesBar, SLOT(swapCurrentFiles(int,int)));
   connect(statusBar(),   SIGNAL(messageChanged(QString)),      help,     SLOT(searchFor(QString)));
   connect(new QShortcut(QKeySequence("CTRL+TAB"), this), SIGNAL(activated()), filesBar, SLOT(nextTab()));
 
   loadSettings();
-  filesBar->addEmptyFile();
+  filesBar->addNewFile();
  }
 
 void MainWindow        :: addToolBarActions   ( )
  {
-  toolBar     -> addAction(QIcon("style/file.png"),  tr("New"),      this, SLOT(addNewFile()));
+  toolBar     -> addAction(QIcon("style/file.png"),  tr("New"),   filesBar, SLOT(addNewFile()));
   toolBar     -> addAction(QIcon("style/save.png"),  tr("Save"),  this, SLOT(saveFile()));
   toolBar     -> addAction(QIcon("style/database.png"), tr("Open"));
   //toolBar     -> addAction(QIcon("style/print.png"), tr("Экспорт"));
-  toolBar     -> addAction(QIcon("style/edit.png"),  tr("Edit"), astroWidget, SLOT(editCurrentFile()));
+  toolBar     -> addAction(QIcon("style/edit.png"),  tr("Edit"), astroWidget, SLOT(openEditor()));
 
   toolBar     -> actions()[0]->setShortcut(QKeySequence("CTRL+N"));
   toolBar     -> actions()[1]->setShortcut(QKeySequence("CTRL+S"));
@@ -760,10 +869,10 @@ void MainWindow        :: addToolBarActions   ( )
   connect(helpToggle, SIGNAL(toggled(bool)), help, SLOT(setVisible(bool)));
  }
 
-void MainWindow        :: addNewFile          ( )
+void MainWindow        :: currentTabChanged()
  {
-  filesBar->addEmptyFile();
-  //astroWidget->editCurrentFile();
+  if (!filesBar->count()) return;
+  astroWidget->setFiles(filesBar->currentFiles());
  }
 
 AppSettings MainWindow :: defaultSettings     ( )
@@ -806,12 +915,16 @@ void MainWindow        :: setupSettingsEditor ( AppSettingsEditor* ed )
 
 void MainWindow        :: closeEvent          ( QCloseEvent* ev )
  { 
-  while (askToSave && filesBar->count() && filesBar->fileAt(0)->hasUnsavedChanges())   // close tabs
-    if (!filesBar->closeTab(0))
+  while (askToSave && filesBar->count() && filesBar->currentFiles().count() &&   // close tabs
+         filesBar->currentFiles()[0]->hasUnsavedChanges())
+    if (!filesBar->closeTab(filesBar->currentIndex()))
       return ev->ignore();
 
   if (databaseDockWidget->isFloating()) databaseDockWidget->hide();
   saveSettings();
+
+  QMainWindow::closeEvent(ev);
+  QApplication::quit();
  }
 
 void MainWindow        :: gotoUrl             ( QString url )

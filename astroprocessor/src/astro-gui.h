@@ -3,8 +3,6 @@
 
 #include "astro-data.h"
 #include "appsettings.h"
-#include <QDebug>
-
 
 /* =========================== ASTRO FILE =========================================== */
 
@@ -27,21 +25,22 @@ class AstroFile : public QObject
                       Comment       = 0x40,
                       HouseSystem   = 0x80,
                       Zodiac        = 0x100,
-                      AspectLevel   = 0x200,
+                      AspectSet     = 0x200,
                       ChangedState  = 0x400,
                       All           = 0xFFF };
 
         Q_DECLARE_FLAGS(Members, Member)
 
         AstroFile(QObject* parent = 0);
+        //~AstroFile();
+
+        QString fileName() const;
+        QString typeToString(FileType type) const;
+        FileType typeFromString(QString str) const;
+        AstroFile::Members diff(AstroFile* other) const;
 
         void save();
         void load(QString name);
-        QString fileName() const;
-
-        QString typeToString(FileType type);
-        FileType typeFromString(QString str);
-
         void suspendUpdate()                     { holdUpdate = true; }
         bool isSuspendedUpdate()           const { return holdUpdate; }
         void resumeUpdate();
@@ -58,23 +57,24 @@ class AstroFile : public QObject
         void setComment      (const QString&   comment);
         void setHouseSystem  (A::HouseSystemId system);
         void setZodiac       (A::ZodiacId zod);
-        void setAspectLevel  (A::AspectLevel lev);
+        void setAspectSet    (A::AspectSetId set);
 
         const QString&   getName()         const { return name; }
         const QString&   getComment()      const { return comment; }
-        FileType         getType()               { return type; }
+        FileType         getType()         const { return type; }
         const QVector3D& getLocation()     const { return scope.inputData.location; }
         const QString&   getLocationName() const { return locationName; }
         const QDateTime& getGMT()          const { return scope.inputData.GMT; }
         const short&     getTimezone()     const { return timezone; }
-        const A::Horoscope& horoscope()   const { return scope; }
-        A::HouseSystemId getHouseSystem() const { return scope.inputData.houseSystem; }
-        A::ZodiacId      getZodiac()      const { return scope.inputData.zodiac; }
-        A::AspectLevel   getAspetLevel() const { return scope.inputData.level; }
+        const A::Horoscope& horoscope()    const { return scope; }
+        A::HouseSystemId getHouseSystem()  const { return scope.inputData.houseSystem; }
+        A::ZodiacId      getZodiac()       const { return scope.inputData.zodiac; }
+        const A::AspectsSet& getAspetSet()  const { return A::getAspectSet(scope.inputData.aspectSet); }
         QDateTime        getLocalTime()    const { return scope.inputData.GMT.addSecs(timezone * 3600); }
 
     signals:
         void changed(AstroFile::Members);
+        void destroyRequested();
 
     public slots:
         void destroy();
@@ -92,12 +92,14 @@ class AstroFile : public QObject
         FileType type;
         A::Horoscope scope;
 
-        void change(AstroFile::Members);
         void recalculate();
+        void change(AstroFile::Members, bool affectChangedState = true);
 
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(AstroFile::Members)
+typedef QList<AstroFile*> AstroFileList;
+typedef QList<AstroFile::Members> MembersList;
 
 
 /* =========================== ABSTRACT FILE HANDLER ================================ */
@@ -107,18 +109,19 @@ class AstroFileHandler : public QWidget, public Customizable
     Q_OBJECT
 
     private:
-        AstroFile* f;
+        AstroFileList f;
         bool delayUpdate;
-        AstroFile::Members delayMembers;
+        MembersList delayMembers;
+
+        MembersList blankMembers();
+        bool isAnyFileSuspended();                      // returns true if any file has isSuspendedUpdate() == true
 
     private slots:
-        void fileUpdatedSlot(AstroFile::Members m);
-        void fileDestroyedSlot()                      { f = 0; resetToDefault(); fileDestroyed(); }
+        void fileUpdatedSlot(AstroFile::Members);
+        void fileDestroyedSlot();//                      { f = 0;  resetFile(); }
 
     protected:
-        virtual void resetToDefault() = 0;                  // reset GUI values
-        virtual void fileUpdated(AstroFile::Members) = 0;   // display file changes
-        virtual void fileDestroyed()  = 0;
+        virtual void filesUpdated(MembersList members) = 0;
 
         virtual void showEvent(QShowEvent*);
 
@@ -128,9 +131,12 @@ class AstroFileHandler : public QWidget, public Customizable
     public:
         AstroFileHandler(QWidget *parent = 0);
 
-        void setFile (AstroFile* file);
-        AstroFile* file()                             { return f; }
+        void setFiles (const AstroFileList& files);
+        AstroFile* file(int index = 0)            { if (f.count() > index) return f[index]; return 0; }
+        AstroFileList files()                     { return f; }
+        int filesCount()                          { return f.count(); }
 };
+
 
 
 /* =========================== ASTRO TREE VIEW ====================================== */

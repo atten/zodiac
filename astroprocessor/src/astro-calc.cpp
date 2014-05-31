@@ -84,27 +84,27 @@ float   angle ( float deg1, float deg2 )
   return ret;
  }
 
-AspectId aspect ( const Planet& planet1, const Planet& planet2, AspectLevel aspectLevel )
+AspectId aspect ( const Planet& planet1, const Planet& planet2, const AspectsSet& aspectSet )
  {
   if ( planet1.sweNum == planet2.sweNum )
    return Aspect_None;
 
-  return aspect(angle(planet1,planet2), aspectLevel);
+  return aspect(angle(planet1,planet2), aspectSet);
  }
 
-AspectId aspect ( const Planet& planet1, float degree, AspectLevel aspectLevel )
+AspectId aspect ( const Planet& planet1, float degree, const AspectsSet& aspectSet )
  {
-  return aspect(angle(planet1,degree), aspectLevel);
+  return aspect(angle(planet1,degree), aspectSet);
  }
 
-AspectId aspect ( const Planet& planet, QPointF coordinate, AspectLevel aspectLevel )
+AspectId aspect ( const Planet& planet, QPointF coordinate, const AspectsSet& aspectSet )
  {
-  return aspect(angle(planet,coordinate), aspectLevel);
+  return aspect(angle(planet,coordinate), aspectSet);
  }
 
-AspectId aspect ( float angle, AspectLevel aspectLevel )
+AspectId aspect ( float angle, const AspectsSet& aspectSet )
  {
-  foreach ( const AspectType& aspect, getAspects(aspectLevel) )
+  foreach ( const AspectType& aspect, aspectSet.aspects )
    {
     //if (aspect.id == Aspect_None) qDebug() << "aaa!";
     if (aspect.angle - aspect.orb <= angle &&
@@ -391,7 +391,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
    }
 
 
-  switch (aspect(planet, scope.jupiter, maxLevel()))
+  switch (aspect(planet, scope.jupiter, topAspectSet()))
    {
     case Aspect_Conjunction: ret.dignity += 5; break;
     case Aspect_Trine:       ret.dignity += 4; break;
@@ -399,7 +399,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.venus, maxLevel()))
+  switch (aspect(planet, scope.venus, topAspectSet()))
    {
     case Aspect_Conjunction: ret.dignity += 5; break;
     case Aspect_Trine:       ret.dignity += 4; break;
@@ -407,7 +407,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.northNode, maxLevel()))
+  switch (aspect(planet, scope.northNode, topAspectSet()))
    {
     case Aspect_Conjunction:
     /*case Aspect_Trine:
@@ -416,7 +416,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.mars, maxLevel()))
+  switch (aspect(planet, scope.mars, topAspectSet()))
    {
     case Aspect_Conjunction: ret.deficient -= 5; break;
     case Aspect_Opposition:  ret.deficient -= 4; break;
@@ -424,7 +424,7 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
     default: break;
    }
 
-  switch (aspect(planet, scope.saturn, maxLevel()))
+  switch (aspect(planet, scope.saturn, topAspectSet()))
    {
     case Aspect_Conjunction: ret.deficient -= 5; break;
     case Aspect_Opposition:  ret.deficient -= 4; break;
@@ -433,24 +433,24 @@ PlanetPower calculatePlanetPower ( const Planet& planet, const Horoscope& scope 
    }
 
 
-  if (aspect(planet, QPointF(149.833, 0.45), maxLevel()) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(149.833, 0.45), topAspectSet()) == Aspect_Conjunction)
     ret.dignity += 6;                  // Regulus coordinates at 2000year: 29LEO50, +00.27'
 
-  if (aspect(planet, QPointF(203.833, -2.05), maxLevel()) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(203.833, -2.05), topAspectSet()) == Aspect_Conjunction)
     ret.dignity += 5;                  // Spica coordinates at 2000year: 23LIB50, -02.03'
 
-  if (aspect(planet, QPointF(56.166, 22.416), maxLevel()) == Aspect_Conjunction)
+  if (aspect(planet, QPointF(56.166, 22.416), topAspectSet()) == Aspect_Conjunction)
     ret.deficient -= 5;                // Algol coordinates at 2000year: 26TAU10, +22.25'
 
   return ret;
  }
 
-Aspect calculateAspect ( AspectLevel aspectLevel, const Planet& planet1, const Planet& planet2 )
+Aspect calculateAspect ( const AspectsSet& aspectSet, const Planet& planet1, const Planet& planet2 )
  {
   Aspect a;
 
   a.angle   = angle(planet1, planet2);
-  a.d       = &getAspect(aspect(a.angle, aspectLevel), aspectLevel);
+  a.d       = &getAspect(aspect(a.angle, aspectSet), aspectSet);
   a.orb     = qAbs(a.d->angle - a.angle);
   a.planet1 = &planet1;
   a.planet2 = &planet2;
@@ -459,7 +459,7 @@ Aspect calculateAspect ( AspectLevel aspectLevel, const Planet& planet1, const P
   return a;
  }
 
-AspectList calculateAspects ( AspectLevel aspectLevel, const PlanetMap &planets )
+AspectList calculateAspects ( const AspectsSet& aspectSet, const PlanetMap &planets )
  {
   AspectList ret;
 
@@ -469,29 +469,32 @@ AspectList calculateAspects ( AspectLevel aspectLevel, const PlanetMap &planets 
     PlanetMap::const_iterator j = i+1;
     while (j != planets.constEnd())
      {
-      if (aspect(i.value(), j.value(), aspectLevel) != Aspect_None)
-        ret << calculateAspect(aspectLevel, i.value(), j.value());
+      if (aspect(i.value(), j.value(), aspectSet) != Aspect_None)
+        ret << calculateAspect(aspectSet, i.value(), j.value());
       ++j;
      }
     ++i;
    }
 
+  return ret;
+ }
 
-  /*for (int i = 0; i < planets.count(); i++)
+AspectList calculateAspects ( const AspectsSet& aspectSet, const PlanetMap& planets1, const PlanetMap& planets2 )
+ {
+  AspectList ret;
+
+  PlanetMap::const_iterator i = planets1.constBegin();
+  while (i != planets1.constEnd())
    {
-    const Planet& p1 = //(relatedPlanet.id == Planet_None) ?  // find next planet or choose related one
-                            planets[i];// : relatedPlanet;
-
-    for (int j = i + 1; j < planets.count(); j++)                 // choose second planet
+    PlanetMap::const_iterator j = planets2.constBegin();
+    while (j != planets2.constEnd())
      {
-      const Planet& p2 = planets[j];
-
-      if (aspect(p1, p2, aspectLevel) != Aspect_None)
-        ret << calculateAspect(aspectLevel, p1, p2);
+      if (aspect(i.value(), j.value(), aspectSet) != Aspect_None)
+        ret << calculateAspect(aspectSet, i.value(), j.value());
+      ++j;
      }
-
-    //if (relatedPlanet.id != Planet_None) break;                 // exit cycle if one planet is selected
-   }*/
+    ++i;
+   }
 
   return ret;
  }
@@ -521,7 +524,7 @@ Horoscope calculateAll ( const InputData& input )
   foreach (PlanetId id, scope.planets.keys())
     scope.planets[id].power = calculatePlanetPower(scope.planets[id], scope);
 
-  scope.aspects = calculateAspects(input.level, scope.planets);
+  scope.aspects = calculateAspects(getAspectSet(input.aspectSet), scope.planets);
 
   return scope;
  }

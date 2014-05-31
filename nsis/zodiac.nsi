@@ -1,5 +1,5 @@
 !define PRODUCT 'Zodiac'
-!define VERSION '0.6.3'
+!define VERSION '0.7.0'
 
 !include FontReg.nsh
 !include FontName.nsh

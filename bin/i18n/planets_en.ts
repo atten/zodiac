@@ -67,16 +67,6 @@
         <translation>Oriental</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
-        <source>Applying</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
-        <source>Seperating</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Almuthen</source>
         <translation type="vanished">Almuten</translation>
     </message>
@@ -91,10 +81,9 @@
         <translation type="vanished">Doriforius</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="261"/>
         <source>Acceptable orb: %1 (%2)
 </source>
-        <translation>Acceptable orb: %1 (%2)\n</translation>
+        <translation type="vanished">Acceptable orb: %1 (%2)\n</translation>
     </message>
     <message>
         <source>Convergent</source>
@@ -105,7 +94,7 @@
         <translation type="vanished">Seperating</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="273"/>
+        <location filename="../../planets/src/planets.cpp" line="264"/>
         <source>more</source>
         <translation>more</translation>
     </message>

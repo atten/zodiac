@@ -63,9 +63,8 @@
         <translation type="obsolete">Показывать очки достоинств и слабостей планет</translation>
     </message>
     <message>
-        <location filename="../../plain/src/plain.cpp" line="64"/>
         <source>(empty data)</source>
-        <translation>(нет данных)</translation>
+        <translation type="vanished">(нет данных)</translation>
     </message>
 </context>
 </TS>

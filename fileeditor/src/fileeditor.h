@@ -9,6 +9,7 @@ class QDateTimeEdit;
 class QDoubleSpinBox;
 class GeoSearchWidget;
 class QPlainTextEdit;
+class QTabBar;
 
 
 /* =========================== ASTRO FILE EDITOR ==================================== */
@@ -18,6 +19,10 @@ class AstroFileEditor : public AstroFileHandler
     Q_OBJECT
 
     private:
+        int currentFile;
+
+        QTabBar* tabs;
+        QPushButton* addFileBtn;
         QLineEdit* name;
         QComboBox* type;
         QDateTimeEdit* dateTime;
@@ -25,22 +30,29 @@ class AstroFileEditor : public AstroFileHandler
         GeoSearchWidget* geoSearch;
         QPlainTextEdit* comment;
 
-    protected:                            // AstroFileHandler implementations
-        void resetToDefault();
-        void fileUpdated(AstroFile::Members);
-        void fileDestroyed() { close(); }
+        void update(AstroFile::Members);
+        void updateTabs();
 
+    protected:
+        void filesUpdated(MembersList members);  // AstroFileHandler implementations
+        //virtual void showEvent(QShowEvent*);
         virtual void closeEvent(QCloseEvent*) { emit windowClosed(); }
-
-    private slots:
-        void applyToFile();
-        void timezoneChanged();
 
     signals:
         void windowClosed();
+        void appendFile();
+        void swapFiles(int, int);
+
+    private slots:
+        void swapFilesSlot(int, int);
+        void currentTabChanged(int);
+        void removeTab(int);
+        void applyToFile();
+        void timezoneChanged();
 
     public:
         AstroFileEditor(QWidget *parent = 0);
+        void setCurrentFile(int index);
 
 };
 
