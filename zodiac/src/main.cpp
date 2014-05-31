@@ -19,7 +19,11 @@ void loadTranslations(QApplication* a, QString lang)
    }
  }
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+void emptyOutput ( QtMsgType type, const char *msg )
+#else
 void emptyOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+#endif
  {
  }
 
@@ -29,12 +33,13 @@ int main(int argc, char *argv[])
     a.setApplicationName("Zodiac");
     a.setApplicationVersion("v0.7.0 (build 2014-05-31)");
 
-    qInstallMessageHandler(emptyOutput);
-
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
     QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );
     QTextCodec::setCodecForCStrings ( codec );
     QTextCodec::setCodecForTr ( codec );
+    qInstallMsgHandler (emptyOutput);
+#else
+    qInstallMessageHandler(emptyOutput);
 #endif
 
     QDir::setCurrent(a.applicationDirPath());
