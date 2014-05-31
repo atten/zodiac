@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QGraphicsBlurEffect>
+#include <math.h>
 #include <QDebug>
 #include "../plain/src/plain.h"
 #include "../chart/src/chart.h"
@@ -197,15 +198,53 @@ void AstroWidget :: setupFile (AstroFile* file, bool suspendUpdate)
   file->setHouseSystem (hsystemSelector->itemData(hsystemSelector->currentIndex()).toInt()); // set house system
   file->setAspectSet   (aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt()); // set aspect set
 
-
   if (!hasChanges) file->clearUnsavedState();
   if (!suspendUpdate) file->resumeUpdate();
+
+  connect(file, SIGNAL(destroyRequested()), this, SLOT(destroyingFile()));
+ }
+
+void AstroWidget :: switchToSingleAspectSet()
+ {
+  aspectsSelector->blockSignals(true);
+  A::AspectSetId set = aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt();
+  A::AspectSetId set2 = sqrtf(set);
+  int itemIndex = aspectsSelector->findData(set2);
+  if (set2 * set2 == set && itemIndex >= 0)
+   {
+    qDebug() << "restore aspect set to single";
+    aspectsSelector->setCurrentIndex(itemIndex);
+   }
+  aspectsSelector->blockSignals(false);
+ }
+
+void AstroWidget :: switchToSynastryAspectSet()
+ {
+  aspectsSelector->blockSignals(true);
+  A::AspectSetId set = aspectsSelector->itemData(aspectsSelector->currentIndex()).toInt();
+  A::AspectSetId set2 = set * set;
+  int itemIndex = aspectsSelector->findData(set2);
+  if (itemIndex >= 0)
+   {
+    qDebug() << "replace aspect set to synastry";
+    aspectsSelector->setCurrentIndex(itemIndex);
+   }
+  aspectsSelector->blockSignals(false);
  }
 
 void AstroWidget :: setFiles (const AstroFileList& files)
  {
+  if (files.count() == 2)
+    switchToSynastryAspectSet();
+  else if (files.count() == 1)
+    switchToSingleAspectSet();
+
   foreach(AstroFile* i, files)
-    setupFile(i);
+    if (!this->files().contains(i))                  // don't affect already assigned files
+      setupFile(i, true);
+
+  foreach(AstroFile* i, files)
+    i->resumeUpdate();
 
   fileView->setFiles(files);
   fileView2nd->setFiles(files);
@@ -239,6 +278,13 @@ void AstroWidget :: openEditor()
     editor->setCurrentFile(0);
   else if (sender() == fileView2nd)
     editor->setCurrentFile(1);
+ }
+
+void AstroWidget :: destroyingFile()
+ {
+  AstroFile* file = (AstroFile*)sender();
+  if (!files().contains(file) || files().count() > 2) return;
+  switchToSingleAspectSet();
  }
 
 void AstroWidget :: destroyEditor()
@@ -649,6 +695,7 @@ void FilesBar :: swapCurrentFiles(int i,int j)
   AstroFile* temp = files[currentIndex()][i];
   files[currentIndex()][i] = files[currentIndex()][j];
   files[currentIndex()][j] = temp;
+  updateTab(currentIndex());
   currentChanged(currentIndex());
  }
 
@@ -700,8 +747,8 @@ void FilesBar :: openFile(QString name)
 
 void FilesBar :: openFileInNewTab(QString name)
  {
-  int i = getTabIndex(name);
-  if (i != -1) return setCurrentIndex(i);
+  //int i = getTabIndex(name, true);
+  //if (i != -1) return setCurrentIndex(i);
 
   AstroFile* file = new AstroFile;
   file->load(name);

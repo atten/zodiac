@@ -7,8 +7,6 @@
 #include <QDebug>
 #include "mainwindow.h"
 
-//#define QT_NO_DEBUG_OUTPUT
-
 void loadTranslations(QApplication* a, QString lang)
  {
   QDir dir("i18n");
@@ -21,11 +19,17 @@ void loadTranslations(QApplication* a, QString lang)
    }
  }
 
+void emptyOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+ {
+ }
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("v0.6.3 (build 2014-04-16)");
+    a.setApplicationVersion("v0.7.0 (build 2014-05-31)");
+
+    qInstallMessageHandler(emptyOutput);
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
     QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );

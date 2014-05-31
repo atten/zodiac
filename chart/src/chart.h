@@ -57,12 +57,12 @@ class Chart : public AstroFileHandler
         bool clockwise;
         int l_zodiacWidth;
         int l_innerRadius;
-        int cuspideLength;
+        int l_cuspideLength;
         bool coloredZodiac;
         bool zodiacDropShadow;
 
-        QMap<int, QGraphicsItemDict>      cuspides;
-        QMap<int, QGraphicsItemDict>   cuspideLabels;
+        QMap<int, QGraphicsItemDict> cuspides;
+        QMap<int, QGraphicsItemDict> cuspideLabels;
         QMap<int, QGraphicsItemDict> planetMarkers;
         QMap<int, QGraphicsItemDict> planets;
         //QList<QGraphicsSimpleTextItem*> aspectMarkers;
@@ -71,6 +71,7 @@ class Chart : public AstroFileHandler
 
         float zodiacWidth()  { return l_zodiacWidth * zoom; }
         float innerRadius(int fileIndex = 0);
+        int cuspideLength(int fileIndex, int cusp);
         QRect chartRect();
 
         int normalPlanetPosX(QGraphicsItem* planet, QGraphicsItem* marker);

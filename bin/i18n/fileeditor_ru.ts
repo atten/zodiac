@@ -4,67 +4,72 @@
 <context>
     <name>AstroFileEditor</name>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="25"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="21"/>
+        <source>+</source>
+        <translation>+</translation>
+    </message>
+    <message>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="29"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="26"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="30"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="27"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="31"/>
         <source>Apply</source>
         <translation>Применить</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="30"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="36"/>
         <source>male</source>
         <translation>муж</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="31"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="37"/>
         <source>female</source>
         <translation>жен</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="32"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="38"/>
         <source>undefined</source>
         <translation>не задано</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="37"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="43"/>
         <source>Edit entry</source>
         <translation>Изменить данные</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="44"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="54"/>
         <source>Gender:</source>
         <translation>Пол:</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="49"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="59"/>
         <source>Time zone:</source>
         <translation>Часовой пояс:</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="53"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="63"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="54"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="64"/>
         <source>Local time:</source>
         <translation>Местное время:</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="55"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="65"/>
         <source>Location:</source>
         <translation>Место:</translation>
     </message>
     <message>
-        <location filename="../../fileeditor/src/fileeditor.cpp" line="57"/>
+        <location filename="../../fileeditor/src/fileeditor.cpp" line="67"/>
         <source>Comment:</source>
         <translation>Комментарий:</translation>
     </message>

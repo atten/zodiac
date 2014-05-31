@@ -75,12 +75,15 @@ class AstroWidget : public QWidget
 
         void addHoroscopeControls();
         void addSlide(AstroFileHandler* w, const QIcon& icon, QString title);
+        void switchToSingleAspectSet();
+        void switchToSynastryAspectSet();
 
     private slots:
         void applyGeoSettings(AppSettings&);
         void toolBarActionClicked();
         void currentSlideChanged();
         void horoscopeControlChanged();
+        void destroyingFile();
         void destroyEditor();
 
     public slots:

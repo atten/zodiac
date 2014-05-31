@@ -393,10 +393,28 @@ float Chart :: innerRadius(int fileIndex)
   return (meanInnerRadius + r) * zoom;
  }
 
+int Chart :: cuspideLength(int fileIndex, int cusp)
+ {
+  int k = 0;
+  if (filesCount() > 1)                   // make bigger cuspides for first file and smaller for second file
+   {
+    if (fileIndex == 0)
+      k = 20;
+    else
+      k = -3;
+   }
+
+  if (cusp == 0)
+    return l_cuspideLength * 1.4 + k;
+  else if (cusp == 9)
+    return l_cuspideLength * 1.2 + k;
+  return l_cuspideLength + k;
+ }
+
 void Chart :: drawPlanets(int fileIndex)
  {
-  QFont planetFont("Almagest", 17/*, QFont::Bold*/);
-  QFont planetFontSmall("Almagest", 15);
+  QFont planetFont("Almagest", 17, QFont::Bold);
+  QFont planetFontSmall("Almagest", 15, QFont::Bold);
 
   QGraphicsScene* s = view->scene();
 
@@ -432,7 +450,7 @@ void Chart :: drawPlanets(int fileIndex)
 void Chart :: drawCuspides(int fileIndex)
  {
   static QPen penCusp(QColor(227,214,202), 2);
-  static QPen penCusp0(QColor(250,90,58), 3);
+  static QPen penCusp1(QColor(250,90,58), 3);
   static QPen penCusp10(QColor(210,195,150), 3);
   static QFont font("Times New Roman", 13, QFont::Bold);
 
@@ -443,21 +461,14 @@ void Chart :: drawCuspides(int fileIndex)
 
   for (int i = 0; i < 12; i++)
    {
+    endPointX = chartRect().x() - cuspideLength(fileIndex, i);
+
     if (i == 0)
-     {
-      pen = penCusp0;
-      endPointX = chartRect().x() - cuspideLength * 1.4;
-     }
+      pen = penCusp1;
     else if (i == 9)
-     {
       pen = penCusp10;
-      endPointX = chartRect().x() - cuspideLength * 1.2;
-     }
     else
-     {
       pen = penCusp;
-      endPointX = chartRect().x() - cuspideLength;
-     }
 
     if (filesCount() > 1 && fileIndex == 1)
       pen.setColor(QColor("#00C0FF"));
@@ -555,7 +566,7 @@ QColor Chart :: planetShapeColor(const A::Planet& p, int fileIndex)
   if (filesCount() > 1 || !shapeColor.isValid())
    {
     if (fileIndex == 0)
-      return "#78a895";
+      return "#48401d";
     else
       return "#412631";
    }
@@ -683,7 +694,7 @@ AppSettings Chart :: currentSettings ()
   s.setValue ( "Circle/circleStart",      circleStart );
   s.setValue ( "Circle/clockwise",        clockwise );
   s.setValue ( "Circle/zodiacWidth",      l_zodiacWidth );
-  s.setValue ( "Circle/cuspideLength",    cuspideLength );
+  s.setValue ( "Circle/cuspideLength",    l_cuspideLength );
   s.setValue ( "Circle/innerRadius",      l_innerRadius );
   s.setValue ( "Circle/coloredZodiac",    coloredZodiac );
   s.setValue ( "Circle/zodiacDropShadow", zodiacDropShadow );
@@ -695,7 +706,7 @@ void Chart :: applySettings       ( const AppSettings& s )
   circleStart      = (CircleStart)s.value("Circle/circleStart").toInt();
   clockwise        = s.value ( "Circle/clockwise"        ).toBool();
   l_zodiacWidth    = s.value ( "Circle/zodiacWidth"      ).toInt();
-  cuspideLength    = s.value ( "Circle/cuspideLength"    ).toInt();
+  l_cuspideLength  = s.value ( "Circle/cuspideLength"    ).toInt();
   l_innerRadius    = s.value ( "Circle/innerRadius"      ).toInt();
   coloredZodiac    = s.value ( "Circle/coloredZodiac"    ).toBool();
   zodiacDropShadow = s.value ( "Circle/zodiacDropShadow" ).toBool();

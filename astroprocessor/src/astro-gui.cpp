@@ -375,15 +375,11 @@ void AstroFileHandler :: fileUpdatedSlot(AstroFile::Members m)
 void AstroFileHandler :: fileDestroyedSlot()
  {
   int i = f.indexOf((AstroFile*)sender());
-  if (i == -1)                      // TODO: discover how sender might be not in list
-   {
-    qDebug() << "aaa";
-    return;
-   }
+  if (i == -1) return;                  // ignore if destroying file not in list (e.g. in other tab)
 
   MembersList mList = blankMembers();
   if (i < f.count() - 1)
-    mList[i] = f[i+1]->diff(f[i]);     // write difference with next file in list
+    mList[i] = f[i+1]->diff(f[i]);      // write difference with next file in list
   f.removeAt(i);
   mList.removeLast();
   filesUpdated(mList);

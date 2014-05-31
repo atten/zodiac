@@ -58,7 +58,7 @@ Content of subdirs:
 Build instructions:
 ===================
 
-Requirement: Qt > 4.8 (works in Qt 4.8.2 and in Qt 5.2 as well).
+Requirement: Qt > 4.8 (works in Qt 4.8.2 and in Qt 5.3 as well).
 
 Method 1: automatic bundle build
 ---------------------------------

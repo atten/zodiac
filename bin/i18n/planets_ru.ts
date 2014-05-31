@@ -67,14 +67,12 @@
         <translation>Дорифорий</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Applying</source>
-        <translation>Сходящийся</translation>
+        <translation type="vanished">Сходящийся</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="263"/>
         <source>Seperating</source>
-        <translation>Расходящийся</translation>
+        <translation type="vanished">Расходящийся</translation>
     </message>
     <message>
         <source>Almuthen</source>
@@ -91,10 +89,9 @@
         <translation type="vanished">Дорифорий</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="261"/>
         <source>Acceptable orb: %1 (%2)
 </source>
-        <translation>Допустимый орб: %1 (%2)
+        <translation type="vanished">Допустимый орб: %1 (%2)
 </translation>
     </message>
     <message>
@@ -112,7 +109,7 @@
 (%2, орб %3)</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="273"/>
+        <location filename="../../planets/src/planets.cpp" line="264"/>
         <source>more</source>
         <translation>еще</translation>
     </message>
