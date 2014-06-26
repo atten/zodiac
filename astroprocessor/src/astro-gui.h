@@ -123,14 +123,14 @@ class AstroFileHandler : public QWidget, public Customizable
     protected:
         virtual void filesUpdated(MembersList members) = 0;
 
-        virtual void showEvent(QShowEvent*);
+        virtual void showEvent(QShowEvent* e)       { QWidget::showEvent(e); resumeUpdate(); }
 
     signals:
         void requestHelp(QString tag);
 
     public:
         AstroFileHandler(QWidget *parent = 0);
-
+        void resumeUpdate();
         void setFiles (const AstroFileList& files);
         AstroFile* file(int index = 0)            { if (f.count() > index) return f[index]; return 0; }
         AstroFileList files()                     { return f; }

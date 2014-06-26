@@ -212,7 +212,7 @@ void AstroWidget :: switchToSingleAspectSet()
   int itemIndex = aspectsSelector->findData(set2);
   if (set2 * set2 == set && itemIndex >= 0)
    {
-    qDebug() << "restore aspect set to single";
+    qDebug() << "AstroWidget::restore aspect set to single";
     aspectsSelector->setCurrentIndex(itemIndex);
    }
   aspectsSelector->blockSignals(false);
@@ -226,7 +226,7 @@ void AstroWidget :: switchToSynastryAspectSet()
   int itemIndex = aspectsSelector->findData(set2);
   if (itemIndex >= 0)
    {
-    qDebug() << "replace aspect set to synastry";
+    qDebug() << "AstroWidget::replace aspect set to synastry";
     aspectsSelector->setCurrentIndex(itemIndex);
    }
   aspectsSelector->blockSignals(false);
@@ -240,20 +240,22 @@ void AstroWidget :: setFiles (const AstroFileList& files)
     switchToSingleAspectSet();
 
   foreach(AstroFile* i, files)
-    if (!this->files().contains(i))                  // don't affect already assigned files
-      setupFile(i, true);
+    setupFile(i, true);
+
+  fileView->setFiles(files);
+  fileView2nd->setFiles(files);
+  if (editor) editor->setFiles(files);
+  foreach (AstroFileHandler* h, handlers)
+    h->setFiles(files);
 
   foreach(AstroFile* i, files)
     i->resumeUpdate();
 
-  fileView->setFiles(files);
-  fileView2nd->setFiles(files);
-
-  if (editor)
-    editor->setFiles(files);
-
+  fileView->resumeUpdate();
+  fileView2nd->resumeUpdate();
+  if (editor) editor->resumeUpdate();
   foreach (AstroFileHandler* h, handlers)
-    h->setFiles(files);
+    if (h->isVisible()) h->resumeUpdate();
  }
 
 void AstroWidget :: openEditor()
@@ -722,7 +724,7 @@ bool FilesBar :: closeTab(int index)
    }
   else if (count() == 1)
    {
-    return false;                               // avoid to close last tab (without unsaved changes)
+    return false;                               // TODO: make an empty file instead last tab
    }
 
   files.removeAt(index);

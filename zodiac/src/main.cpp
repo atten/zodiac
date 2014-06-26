@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr ( codec );
     qInstallMsgHandler (emptyOutput);
 #else
-    qInstallMessageHandler(emptyOutput);
+    //qInstallMessageHandler(emptyOutput);
 #endif
 
     QDir::setCurrent(a.applicationDirPath());

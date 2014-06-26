@@ -361,7 +361,7 @@ void Chart :: updateAspects()
 
 A::AspectList Chart :: calculateSynastryAspects()
  {
-  qDebug() << "Calculate synatry apects";
+  qDebug() << "Calculate synatry apects" << file(0)->getAspetSet().id;
   return A::calculateAspects(file(0)->getAspetSet(), file(0)->horoscope().planets, file(1)->horoscope().planets);
  }
 
