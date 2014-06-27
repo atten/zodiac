@@ -786,17 +786,19 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   databaseDockWidget = new QDockWidget(this);
   astroDatabase      = new AstroDatabase();
   help               = new HelpWidget(this);
-  toolBar            = new QToolBar(tr("File"),   this);
+  toolBar            = new QToolBar(tr("File"),     this);
   toolBar2           = new QToolBar(tr("Options"),  this);
+  helpToolBar        = new QToolBar(tr("Article"),  this);
 
   toolBar            -> setObjectName("toolBar");
   toolBar2           -> setObjectName("toolBar2");
-  help               -> setAlignment(Qt::AlignCenter);
-  help               -> hide();
+  helpToolBar        -> setObjectName("helpToolBar");
+  helpToolBar        -> addWidget(help);
   databaseDockWidget -> setObjectName("dbDockWidget");
   databaseDockWidget -> setWidget(astroDatabase);
   databaseDockWidget -> setWindowTitle(tr("Database"));
   databaseDockWidget -> hide();
+  help               -> setFixedHeight(70);
   this               -> setIconSize(QSize(48,48));
   this               -> setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
   this               -> setWindowTitle(QApplication::applicationName());
@@ -805,18 +807,18 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
 
   QWidget* wdg = new QWidget(this);
   wdg->setObjectName("centralWidget");
-  QGridLayout* layout = new QGridLayout(wdg);
+  QVBoxLayout* layout = new QVBoxLayout(wdg);
    layout->setSpacing(0);
-   layout->setContentsMargins(0,0,0,0);
-   layout->addWidget(filesBar,    0,0, 1,1, Qt::AlignLeft);
-   layout->addWidget(astroWidget, 1,0, 1,1);
-   layout->addWidget(help,        1,0, 1,1, Qt::AlignBottom);
+   layout->setMargin(0);
+   layout->addWidget(filesBar, 0, Qt::AlignLeft);
+   layout->addWidget(astroWidget);
 
   setCentralWidget(wdg);
   addToolBarActions();
   addToolBar(Qt::TopToolBarArea, toolBar);
   addToolBar(Qt::TopToolBarArea, astroWidget->getToolBar());
   addToolBar(Qt::TopToolBarArea, toolBar2);
+  addToolBar(Qt::TopToolBarArea, helpToolBar);
   addDockWidget(Qt::LeftDockWidgetArea, databaseDockWidget);
   foreach(QWidget* w, astroWidget->getHoroscopeControls())
     statusBar()->addPermanentWidget(w);
@@ -825,7 +827,6 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   connect(astroDatabase, SIGNAL(openFile(QString)),            filesBar, SLOT(openFile(QString)));
   connect(astroDatabase, SIGNAL(openFileInNewTab(QString)),    filesBar, SLOT(openFileInNewTab(QString)));
   connect(astroDatabase, SIGNAL(openFileAsSecond(QString)),    filesBar, SLOT(openFileAsSecond(QString)));
-  //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
   connect(astroWidget,   SIGNAL(appendFileRequested()),        filesBar, SLOT(openFileAsSecond()));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
   connect(astroWidget,   SIGNAL(swapFilesRequested(int,int)),  filesBar, SLOT(swapCurrentFiles(int,int)));
@@ -868,7 +869,8 @@ void MainWindow        :: addToolBarActions   ( )
 
   helpToggle = toolBar2->actions()[1];
   helpToggle->setCheckable(true);
-  connect(helpToggle, SIGNAL(toggled(bool)), help, SLOT(setVisible(bool)));
+  connect(helpToggle,  SIGNAL(triggered(bool)),         helpToolBar, SLOT(setVisible(bool)));
+  connect(helpToolBar, SIGNAL(visibilityChanged(bool)), helpToggle,  SLOT(setChecked(bool)));
  }
 
 void MainWindow        :: currentTabChanged()
@@ -883,7 +885,6 @@ AppSettings MainWindow :: defaultSettings     ( )
   s << astroWidget->defaultSettings();
   s.setValue ( "Window/Geometry",         0 );
   s.setValue ( "Window/State",            0 );
-  s.setValue ( "help",                false );
   s.setValue ( "askToSave",           false );
   return s;
  }
@@ -894,7 +895,6 @@ AppSettings MainWindow :: currentSettings     ( )
   s << astroWidget->currentSettings();
   s.setValue ( "Window/Geometry",      this->saveGeometry() );
   s.setValue ( "Window/State",         this->saveState() );
-  s.setValue ( "help",                 helpToggle->isChecked() );
   s.setValue ( "askToSave",            askToSave );
   return s;
  }
@@ -904,7 +904,6 @@ void MainWindow        :: applySettings       ( const AppSettings& s )
   astroWidget->applySettings(s);
   this -> restoreGeometry   ( s.value ( "Window/Geometry" ).toByteArray() );
   this -> restoreState      ( s.value ( "Window/State" ).toByteArray() );
-  helpToggle->setChecked    ( s.value ( "help" ).toBool() );
   askToSave = s.value ( "askToSave" ).toBool();
  }
 

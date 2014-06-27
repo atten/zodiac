@@ -3,13 +3,13 @@
 
 #include <QMap>
 #include <QLabel>
-#include <QFrame>
+//#include <QFrame>
 #include "slidewidget.h"
 
 
 /* =========================== HELP ARTICLE ========================================= */
 
-class HelpWidget : public QFrame
+class HelpWidget : public QWidget
 {
     Q_OBJECT
 

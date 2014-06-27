@@ -1,11 +1,16 @@
-#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QPushButton>
 #include <QFile>
 #include <QDir>
+#include <QTextCodec>
+#include <QTime>
 #include <QDebug>
 #include "help.h"
 
-HelpWidget :: HelpWidget(QWidget *parent) : QFrame(parent)
+HelpWidget :: HelpWidget(QWidget *parent) : QWidget(parent)
  {
+  //QPushButton* more = new QPushButton(tr("Read more..."));
+
   title  = new QLabel;
   slides = new SlideWidget;
   label1 = new QLabel(this);
@@ -14,36 +19,42 @@ HelpWidget :: HelpWidget(QWidget *parent) : QFrame(parent)
   title->setObjectName("title");
   label1->setWordWrap(true);
   label2->setWordWrap(true);
+  //more->setCursor(Qt::PointingHandCursor);
+  //more->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
   slides->addSlide(label1);
   slides->addSlide(label2);
   slides->setTransitionEffect(SlideWidget::Transition_Overlay);
 
-  QVBoxLayout* layout = new QVBoxLayout(this);
+  QGridLayout* layout = new QGridLayout(this);
    layout->setMargin(0);
    layout->setSpacing(0);
-   layout->addWidget(title);
-   layout->addWidget(slides);
+   layout->addWidget(title,  0,0, 1,1);
+   //layout->addWidget(more,   0,1, 1,1);
+   layout->addWidget(slides, 1,0, 1,2);
 
-  loadArticles(1024);
+  loadArticles();
   clear();
  }
 
 void HelpWidget :: loadArticles(quint16 maxArticleLength)
  {
   int loadedCount = 0;
-
   QDir dir("text");
+  QTextCodec* codec = QTextCodec::codecForName("CP1251");
+  QTime startTime = QTime::currentTime();
+
   foreach(QString filename, dir.entryList(QDir::Files))
    {
     QFile f(dir.absolutePath() + '/' + filename);
     f.open(QIODevice::ReadOnly);
 
     Article article;
-    QByteArray buf;
+    QString buf;
 
     while (!f.atEnd())
      {
-      buf = f.readLine().trimmed();
+      buf = codec->toUnicode(f.readLine()).trimmed();
+      if (buf.isEmpty() || buf.startsWith("#")) continue;
 
       if (buf.startsWith('[') && buf.endsWith(']'))     // key
        {
@@ -80,7 +91,8 @@ void HelpWidget :: loadArticles(quint16 maxArticleLength)
       articles[article.key] = article;
    }
 
-  qDebug("HelpWidget: loaded %d/%d articles less than %d bytes", loadedCount, articles.count(), maxArticleLength);
+  qDebug("HelpWidget: loaded %d/%d articles less than %d bytes in %5.1fs",
+         loadedCount, articles.count(), maxArticleLength, startTime.msecsTo(QTime::currentTime()) * 1.0 / 1000);
  }
 
 void HelpWidget :: setContent(Article& article)
@@ -137,8 +149,6 @@ void HelpWidget :: searchFor(QString key)
   static QString usedKey;
   if (key == usedKey) return;
   usedKey = key;
-
-  //qDebug() << "HelpWidget: search for" << key;
 
   if (key.isEmpty())
    {

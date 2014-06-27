@@ -195,8 +195,7 @@ class MainWindow : public QMainWindow, public Customizable
         AstroDatabase* astroDatabase;
         HelpWidget*    help;
         QDockWidget*   databaseDockWidget;
-        QToolBar*      toolBar;
-        QToolBar*      toolBar2;
+        QToolBar       *toolBar, *toolBar2, *helpToolBar;
         QAction*       databaseToggle, *helpToggle;
 
         void addToolBarActions();
