@@ -21,6 +21,7 @@ HelpWidget :: HelpWidget(QWidget *parent) : QWidget(parent)
   label2->setWordWrap(true);
   //more->setCursor(Qt::PointingHandCursor);
   //more->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+  slides->setMinimumWidth(350);
   slides->addSlide(label1);
   slides->addSlide(label2);
   slides->setTransitionEffect(SlideWidget::Transition_Overlay);
@@ -30,7 +31,7 @@ HelpWidget :: HelpWidget(QWidget *parent) : QWidget(parent)
    layout->setSpacing(0);
    layout->addWidget(title,  0,0, 1,1);
    //layout->addWidget(more,   0,1, 1,1);
-   layout->addWidget(slides, 1,0, 1,2);
+   layout->addWidget(slides, 1,0, 1,1);
 
   loadArticles();
   clear();
@@ -67,6 +68,7 @@ void HelpWidget :: loadArticles(quint16 maxArticleLength)
       else if (article.title.isEmpty())                 // title
        {
         article.title = buf;
+        article.title.truncate(60);     // truncate too long titles
        }
       else if (article.content.isEmpty())              // content
        {
@@ -91,7 +93,7 @@ void HelpWidget :: loadArticles(quint16 maxArticleLength)
       articles[article.key] = article;
    }
 
-  qDebug("HelpWidget: loaded %d/%d articles less than %d bytes in %5.1fs",
+  qDebug("HelpWidget: loaded %d/%d articles less than %d bytes in %2.1fs",
          loadedCount, articles.count(), maxArticleLength, startTime.msecsTo(QTime::currentTime()) * 1.0 / 1000);
  }
 

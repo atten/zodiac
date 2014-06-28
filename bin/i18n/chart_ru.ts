@@ -4,64 +4,64 @@
 <context>
     <name>Chart</name>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="311"/>
+        <location filename="../../chart/src/chart.cpp" line="310"/>
         <source>%1+%2</source>
         <translation>%1+%2</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="316"/>
+        <location filename="../../chart/src/chart.cpp" line="315"/>
         <source>House %1
 %2</source>
         <translation>%1 Дом
 %2</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="507"/>
+        <location filename="../../chart/src/chart.cpp" line="719"/>
         <source>Chart</source>
         <translation>Круг</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="510"/>
+        <location filename="../../chart/src/chart.cpp" line="722"/>
         <source>Ascendent</source>
         <translation>Асцендент</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="511"/>
+        <location filename="../../chart/src/chart.cpp" line="723"/>
         <source>0 Aries</source>
         <translation>0 Овна</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="512"/>
+        <location filename="../../chart/src/chart.cpp" line="724"/>
         <source>Circle start:</source>
         <translation>Начало круга:</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="514"/>
+        <location filename="../../chart/src/chart.cpp" line="726"/>
         <source>Clockwise circle</source>
         <translation>Круг по часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="515"/>
+        <location filename="../../chart/src/chart.cpp" line="727"/>
         <source>Zodiac circle width:</source>
         <translation>Толщина зодиакального круга:</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="516"/>
+        <location filename="../../chart/src/chart.cpp" line="728"/>
         <source>Cusp line length</source>
         <translation>Длина линий куспидов</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="517"/>
+        <location filename="../../chart/src/chart.cpp" line="729"/>
         <source>Inner circle:</source>
         <translation>Радиус внутреннего круга:</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="519"/>
+        <location filename="../../chart/src/chart.cpp" line="731"/>
         <source>Colored circle:</source>
         <translation>Цветной зодиак:</translation>
     </message>
     <message>
-        <location filename="../../circle/src/circle.cpp" line="520"/>
+        <location filename="../../chart/src/chart.cpp" line="732"/>
         <source>Drop shadow:</source>
         <translation>Круг отбрасывает тень:</translation>
     </message>
