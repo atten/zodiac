@@ -58,13 +58,13 @@
         <location filename="../../planets/src/planets.cpp" line="203"/>
         <location filename="../../planets/src/planets.cpp" line="204"/>
         <source>Almuten</source>
-        <translation></translation>
+        <translation>Almuten</translation>
     </message>
     <message>
         <location filename="../../planets/src/planets.cpp" line="213"/>
         <location filename="../../planets/src/planets.cpp" line="214"/>
         <source>Doryphoros</source>
-        <translation>Oriental</translation>
+        <translation>Doryphoros</translation>
     </message>
     <message>
         <source>Almuthen</source>
@@ -74,7 +74,7 @@
         <location filename="../../planets/src/planets.cpp" line="208"/>
         <location filename="../../planets/src/planets.cpp" line="209"/>
         <source>Auriga</source>
-        <translation>Occidental</translation>
+        <translation>Auriga</translation>
     </message>
     <message>
         <source>Doriforius</source>

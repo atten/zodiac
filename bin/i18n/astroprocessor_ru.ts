@@ -121,7 +121,8 @@
         <location filename="../../astroprocessor/src/astro-output.cpp" line="259"/>
         <source>Longitude: %1
 </source>
-        <translation>Долгота: %1</translation>
+        <translation>Долгота: %1
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="260"/>

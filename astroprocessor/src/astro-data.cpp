@@ -15,9 +15,11 @@ QMap<PlanetId, Planet> Data::planets = QMap<PlanetId, Planet>();
 QMap<HouseSystemId, HouseSystem> Data::houseSystems = QMap<HouseSystemId, HouseSystem>();
 QMap<ZodiacId, Zodiac> Data::zodiacs = QMap<ZodiacId, Zodiac>();
 AspectSetId Data::topAspSet = AspectSetId();
+QString Data::usedLang = QString();
 
 void Data :: load(QString language)
  {
+  usedLang = language;
   swe_set_ephe_path( "swe/" );
   CsvFile f;
 
@@ -28,7 +30,7 @@ void Data :: load(QString language)
    {
     AspectsSet s;
     s.id   = f.row(0).toInt();
-    s.name = language.isEmpty() ? f.row(1) : f.row(2);
+    s.name = language == "ru" ? f.row(2) : f.row(1);
 
     //for (int i = 3; i < f.columnsCount(); i++)
     //  s.userData[f.header(i)] = f.row(i);
@@ -46,7 +48,7 @@ void Data :: load(QString language)
     AspectSetId setId = f.row(0).toUInt();
     a.set   = &aspectSets[setId];
     a.id    = f.row(1).toInt();
-    a.name  = language.isEmpty() ? f.row(2) : f.row(3);
+    a.name  = language == "ru" ? f.row(3) : f.row(2);
     a.angle = f.row(4).toFloat();
     a.orb   = f.row(5).toFloat();
 
@@ -63,7 +65,7 @@ void Data :: load(QString language)
    {
     HouseSystem h;
     h.id      = f.row(0).toInt();
-    h.name    = language.isEmpty() ? f.row(1) : f.row(2);
+    h.name    = language == "ru" ? f.row(2) : f.row(1);
     h.sweCode = f.row(3)[0].toLatin1();
 
     houseSystems[h.id] = h;
@@ -76,7 +78,7 @@ void Data :: load(QString language)
    {
     Zodiac z;
     z.id       = f.row(0).toInt();
-    z.name     = language.isEmpty() ? f.row(1) : f.row(2);
+    z.name     = language == "ru" ? f.row(2) : f.row(1);
 
     zodiacs[z.id] = z;
    }
@@ -91,7 +93,7 @@ void Data :: load(QString language)
     s.zodiacId  = f.row(0).toInt();
     s.id        = f.row(1).toInt();
     s.tag       = f.row(2);
-    s.name      = language.isEmpty() ? f.row(3) : f.row(4);
+    s.name      = language == "ru" ? f.row(4) : f.row(3);
     s.startAngle = f.row(5).toFloat();
     s.endAngle   = f.row(6).toFloat() + s.startAngle;
     if (s.endAngle > 360) s.endAngle -= 360;
@@ -110,7 +112,7 @@ void Data :: load(QString language)
    {
     Planet p;
     p.id       = f.row(0).toInt();
-    p.name     = language.isEmpty() ? f.row(1) : f.row(2);
+    p.name     = language == "ru" ? f.row(2) : f.row(1);
     p.sweNum   = f.row(3).toInt();
     p.sweFlags = f.row(4).toInt();
     p.defaultEclipticSpeed.setX(f.row(5).toFloat());
@@ -197,6 +199,7 @@ const AspectsSet& Data :: getAspectSet(AspectSetId set)
 
 
 void load(QString language) { Data::load(language); }
+QString usedLanguage()      { return Data::usedLanguage(); }
 const Planet& getPlanet(PlanetId id) { return Data::getPlanet(id); }
 QList<PlanetId> getPlanets() { return Data::getPlanets(); }
 const HouseSystem& getHouseSystem(HouseSystemId id) { return Data::getHouseSystem(id); }

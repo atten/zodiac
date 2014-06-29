@@ -118,37 +118,43 @@
         <location filename="../../astroprocessor/src/astro-output.cpp" line="259"/>
         <source>Longitude: %1
 </source>
-        <translation>Longitude: %1</translation>
+        <translation>Longitude: %1
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="260"/>
         <source>Latitude: %1
 </source>
-        <translation>Latitude: %1</translation>
+        <translation>Latitude: %1
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="261"/>
         <source>Distance: %1a.u.
 </source>
-        <translation>Distance: %1a.u.</translation>
+        <translation>Distance: %1a.u.
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="262"/>
         <source>Azimuth: %1
 </source>
-        <translation>Azimuth: %1</translation>
+        <translation>Azimuth: %1
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="263"/>
         <source>Height: %1
 </source>
-        <translation>Height: %1</translation>
+        <translation>Height: %1
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="266"/>
         <source>Speed: %1% (%2 per day)
 </source>
-        <translation>Speed: %1% (%2 per day)</translation>
+        <translation>Speed: %1% (%2 per day)
+</translation>
     </message>
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="292"/>
@@ -318,7 +324,7 @@
     <message>
         <location filename="../../astroprocessor/src/astro-output.cpp" line="485"/>
         <source>Doryphoros: %1</source>
-        <translation>Doryphory:  %1</translation>
+        <translation></translation>
     </message>
     <message>
         <source>+5: Planet is in own sign</source>
@@ -503,7 +509,7 @@
         <location filename="../../astroprocessor/src/astro-output.cpp" line="483"/>
         <source>Auriga:     %1</source>
         <translatorcomment>Again, I&apos;m not sure how this is being used. Are you talking about the constellation called Auriga, or about Capella, the fixed star located within Auriga.</translatorcomment>
-        <translation>Occidental: %1</translation>
+        <translation>Auriga:     %1</translation>
     </message>
     <message>
         <source>Almuthen:   %1</source>

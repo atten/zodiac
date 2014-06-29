@@ -46,13 +46,12 @@ int main(int argc, char *argv[])
     QString lang = "";
     if (!a.arguments().contains("nolocale"))
      {
-      if (QLocale::system().name().contains("ru", Qt::CaseInsensitive))
-       {
-        loadTranslations(&a, "ru");
+      if (QLocale::system().name().contains("RU", Qt::CaseInsensitive))
         lang = "ru";
-       }
       else
-        loadTranslations(&a, "en");
+        lang = "en";
+
+      loadTranslations(&a, lang);
      }
 
     QFontDatabase::addApplicationFont("fonts/Almagest.ttf");

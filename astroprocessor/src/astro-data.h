@@ -195,6 +195,7 @@ typedef QMap<PlanetId, Planet> PlanetMap;
 class Data
 {
     private:
+        static QString usedLang;
         static QMap<AspectSetId, AspectsSet> aspectSets;
         static QMap<HouseSystemId, HouseSystem> houseSystems;
         static QMap<ZodiacId, Zodiac> zodiacs;
@@ -203,6 +204,8 @@ class Data
 
     public:
         static void load(QString language);
+        static const QString usedLanguage() { return usedLang; }
+
         static const Planet& getPlanet(PlanetId id);
         static QList<PlanetId> getPlanets();
 
@@ -221,6 +224,7 @@ class Data
 };
 
 void load(QString language);
+QString usedLanguage();
 const Planet& getPlanet(PlanetId id);
 QList<PlanetId> getPlanets();
 const HouseSystem& getHouseSystem(HouseSystemId id);

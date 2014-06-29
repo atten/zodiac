@@ -135,7 +135,6 @@ void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
  }
 
 
-
 /* =========================== ASTRO WIDGET ========================================= */
 
 AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
@@ -785,7 +784,7 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   astroWidget        = new AstroWidget(this);
   databaseDockWidget = new QDockWidget(this);
   astroDatabase      = new AstroDatabase();
-  help               = new HelpWidget(this);
+  help               = new HelpWidget("text/" + A::usedLanguage(), this);
   toolBar            = new QToolBar(tr("File"),     this);
   toolBar2           = new QToolBar(tr("Options"),  this);
   helpToolBar        = new QToolBar(tr("Article"),  this);

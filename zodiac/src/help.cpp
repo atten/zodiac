@@ -7,7 +7,7 @@
 #include <QDebug>
 #include "help.h"
 
-HelpWidget :: HelpWidget(QWidget *parent) : QWidget(parent)
+HelpWidget :: HelpWidget(QString textsPath, QWidget *parent) : QWidget(parent)
  {
   //QPushButton* more = new QPushButton(tr("Read more..."));
 
@@ -33,14 +33,15 @@ HelpWidget :: HelpWidget(QWidget *parent) : QWidget(parent)
    //layout->addWidget(more,   0,1, 1,1);
    layout->addWidget(slides, 1,0, 1,1);
 
-  loadArticles();
+  loadArticles(textsPath);
   clear();
  }
 
-void HelpWidget :: loadArticles(quint16 maxArticleLength)
+void HelpWidget :: loadArticles(QString path, quint16 maxArticleLength)
  {
   int loadedCount = 0;
-  QDir dir("text");
+
+  QDir dir(path);
   QTextCodec* codec = QTextCodec::codecForName("CP1251");
   QTime startTime = QTime::currentTime();
 
@@ -93,8 +94,8 @@ void HelpWidget :: loadArticles(quint16 maxArticleLength)
       articles[article.key] = article;
    }
 
-  qDebug("HelpWidget: loaded %d/%d articles less than %d bytes in %2.1fs",
-         loadedCount, articles.count(), maxArticleLength, startTime.msecsTo(QTime::currentTime()) * 1.0 / 1000);
+  qDebug("HelpWidget: loaded %d/%d articles from %s less than %d bytes in %2.1fs",
+         loadedCount, articles.count(), qPrintable(path), maxArticleLength, startTime.msecsTo(QTime::currentTime()) * 1.0 / 1000);
  }
 
 void HelpWidget :: setContent(Article& article)
