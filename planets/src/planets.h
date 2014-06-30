@@ -2,16 +2,10 @@
 #define PLANETS_H
 
 #include <QDeclarativeView>
-#include <QModelIndex>
 #include <Astroprocessor/Gui>
 #include <Astroprocessor/Output>
 
-class ExpandWidget;
-class QLabel;
-class QListWidget;
-class QSplitter;
 class QRadioButton;
-class QComboBox;
 class QDeclarativeItem;
 
 
@@ -48,16 +42,6 @@ class Planets : public AstroFileHandler
 
     private:
         A::PlanetsOrder order;
-        A::PlanetId      selectedPlanet;
-        bool expandedAspects;
-
-        ExpandWidget* position;
-        ExpandWidget* aspects;
-        ExpandWidget* power;
-        QLabel*       positionLabel;
-        QListWidget*  aspectsList;
-        QLabel*       powerLabel;
-        QSplitter*    splitter;
 
         AstroQmlView* view;
         QList<QDeclarativeItem*> cardItems, labelItems;
@@ -66,27 +50,18 @@ class Planets : public AstroFileHandler
         QRadioButton* sortByHouses;
         QRadioButton* sortByPower;
         QRadioButton* sortByElement;
-        QComboBox*    planetSelector;
 
         void drawPlanets();
-        void describePlanet();
-        void expandAspects();
-        void collapseAspects();
-        void updateListHeight(QListWidget* w);
-        void setCurrentPlanet(A::PlanetId);
 
     private slots:
         void orderChanged();
-        void planetClicked(QString name);
-        void aspectClicked(QModelIndex);
-        void planetSelected(int index);
+        void objectClicked(QString name);
+
+    signals:
+        void planetSelected(A::PlanetId, int fileIndex);
 
     protected:                            // AstroFileHandler && other implementations
         void filesUpdated(MembersList);
-
-        AppSettings defaultSettings ();
-        AppSettings currentSettings ();
-        void applySettings ( const AppSettings& );
 
     public:
         Planets(QWidget *parent = 0);

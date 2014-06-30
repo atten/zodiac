@@ -5,4 +5,5 @@ SUBDIRS       = swe \
 		fileeditor \
 		plain \
 		planets \
+		details \
 		zodiac

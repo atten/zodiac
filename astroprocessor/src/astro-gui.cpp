@@ -317,7 +317,7 @@ void AstroFileHandler :: setFiles (const AstroFileList& files)
 
   f = files;
 
-  if (isVisible())
+  if (isVisible() && !isAnyFileSuspended())
    {
     delayMembers = blankMembers();
     filesUpdated(flags);
@@ -328,6 +328,12 @@ void AstroFileHandler :: setFiles (const AstroFileList& files)
     delayUpdate = true;
    }
 
+ }
+
+A::AspectList AstroFileHandler :: calculateSynastryAspects()
+ {
+  qDebug() << "Calculate synatry apects" << file(0)->getAspetSet().id;
+  return A::calculateAspects(file(0)->getAspetSet(), file(0)->horoscope().planets, file(1)->horoscope().planets);
  }
 
 MembersList AstroFileHandler :: blankMembers()
@@ -385,10 +391,8 @@ void AstroFileHandler :: fileDestroyedSlot()
   filesUpdated(mList);
  }
 
-void AstroFileHandler :: showEvent(QShowEvent* e)
+void AstroFileHandler :: resumeUpdate()
  {
-  QWidget::showEvent(e);
-
   if (delayUpdate)
    {
     filesUpdated(delayMembers);
@@ -396,6 +400,7 @@ void AstroFileHandler :: showEvent(QShowEvent* e)
     delayUpdate  = false;
    }
  }
+
 
 
 /* =========================== ASTRO TREE VIEW ====================================== */

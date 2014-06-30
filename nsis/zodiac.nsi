@@ -1,5 +1,5 @@
 !define PRODUCT 'Zodiac'
-!define VERSION '0.7.0'
+!define VERSION '0.7.1'
 
 !include FontReg.nsh
 !include FontName.nsh
@@ -77,6 +77,7 @@ Section "Essential files" SecMain
   SetOutPath "$INSTDIR\images\planets"
   File ..\bin\images\planets\*
   
+  
   SetOutPath "$INSTDIR\images\planets-mini"
   File ..\bin\images\planets-mini\*
   
@@ -92,6 +93,9 @@ Section "Essential files" SecMain
   SetOutPath "$INSTDIR\planets"
   File ..\bin\planets\*
   
+  SetOutPath "$INSTDIR\details"
+  File ..\bin\details\*
+  
   SetOutPath "$INSTDIR\platforms"
   File ..\bin\platforms\*
   
@@ -101,9 +105,12 @@ Section "Essential files" SecMain
   SetOutPath "$INSTDIR\swe"
   File ..\bin\swe\*
   
-  SetOutPath "$INSTDIR\text"
-  File ..\bin\text\*
+  SetOutPath "$INSTDIR\text\en"
+  File ..\bin\text\en\*
   
+  SetOutPath "$INSTDIR\text\ru"
+  File ..\bin\text\ru\*
+    
   SetOutPath "$INSTDIR\user"
   File "..\bin\user\Brad Pitt.dat"
   File "..\bin\user\Diana, Princess of Wales.dat"
@@ -137,8 +144,8 @@ SectionEnd
 ; Optional section (can be disabled by the user)
 Section "Start menu shortcut" SecFolder
   CreateDirectory "$SMPROGRAMS\Zodiac"
-  CreateShortCut "$SMPROGRAMS\Zodiac\Удалить.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Zodiac\Запуск.lnk" "$INSTDIR\zodiac.exe" "" "$INSTDIR\zodiac.exe" 0
+  CreateShortCut "$SMPROGRAMS\Zodiac\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\Zodiac\Zodiac.lnk" "$INSTDIR\zodiac.exe" "" "$INSTDIR\zodiac.exe" 0
 SectionEnd
 
 Section "Desktop shortcut" SecIco

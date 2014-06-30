@@ -3,13 +3,13 @@
 
 #include <QMap>
 #include <QLabel>
-#include <QFrame>
+//#include <QFrame>
 #include "slidewidget.h"
 
 
 /* =========================== HELP ARTICLE ========================================= */
 
-class HelpWidget : public QFrame
+class HelpWidget : public QWidget
 {
     Q_OBJECT
 
@@ -37,7 +37,7 @@ class HelpWidget : public QFrame
         QLabel* label2;
 
         QString getTag(QString searchStr);
-        void loadArticles(quint16 maxArticleLength = -1);
+        void loadArticles(QString path, quint16 maxArticleLength = -1);
         void setContent(Article& article);
         void setContent(const QString& title, const QString& text);
         void clear();
@@ -49,7 +49,7 @@ class HelpWidget : public QFrame
         void contentChanged();
 
     public:
-        HelpWidget(QWidget *parent = 0);
+        HelpWidget(QString textsPath, QWidget *parent = 0);
         QString currentTitle() { return title->text(); }
         void setAlignment(Qt::Alignment);
 

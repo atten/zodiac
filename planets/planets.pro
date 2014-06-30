@@ -39,6 +39,3 @@ LIBS += -lastroprocessor
 
 
 
-
-
-

@@ -1,5 +1,5 @@
 !define PRODUCT 'Zodiac'
-!define VERSION '0.6'
+!define VERSION '0.7.1'
 
 !include FontReg.nsh
 !include FontName.nsh
@@ -32,7 +32,7 @@ RequestExecutionLevel admin
 !define MUI_FINISHPAGE_RUN_TEXT "Запустить приложение"
 
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "license.txt"
+!insertmacro MUI_PAGE_LICENSE "license-ru.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -43,7 +43,7 @@ RequestExecutionLevel admin
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "Russian"
 
 ;--------------------------------
 
@@ -54,8 +54,10 @@ Section "Файлы программы" SecMain
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-  File ..\bin\*.dll
-  File ..\bin\*.exe
+  File ..\bin\Qt*.dll
+  File ..\bin\icu*.dll
+  File ..\bin\lib*.dll
+  File ..\bin\zodiac.exe
   
   SetOutPath "$INSTDIR\astroprocessor"
   File ..\bin\astroprocessor\*.csv
@@ -81,14 +83,17 @@ Section "Файлы программы" SecMain
   SetOutPath "$INSTDIR\images\signs"
   File ..\bin\images\signs\*
   
-  SetOutPath "$INSTDIR\circle"
-  File ..\bin\circle\*
+  SetOutPath "$INSTDIR\chart"
+  File ..\bin\chart\*
   
   SetOutPath "$INSTDIR\plain"
   File ..\bin\plain\*
   
   SetOutPath "$INSTDIR\planets"
   File ..\bin\planets\*
+  
+  SetOutPath "$INSTDIR\details"
+  File ..\bin\details\*
   
   SetOutPath "$INSTDIR\platforms"
   File ..\bin\platforms\*
@@ -99,8 +104,11 @@ Section "Файлы программы" SecMain
   SetOutPath "$INSTDIR\swe"
   File ..\bin\swe\*
   
-  SetOutPath "$INSTDIR\text"
-  File ..\bin\text\*
+  SetOutPath "$INSTDIR\text\en"
+  File ..\bin\text\en\*
+  
+  SetOutPath "$INSTDIR\text\ru"
+  File ..\bin\text\ru\*
   
   SetOutPath "$INSTDIR\user"
   File "..\bin\user\Brad Pitt.dat"

@@ -1,4 +1,5 @@
 ﻿#include <QToolBar>
+#include <QToolButton>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStatusBar>
@@ -18,6 +19,7 @@
 #include "../fileeditor/src/fileeditor.h"
 #include "../fileeditor/src/geosearch.h"
 #include "../planets/src/planets.h"
+#include "../details/src/details.h"
 #include "mainwindow.h"
 
 
@@ -135,7 +137,6 @@ void AstroFileInfo :: setupSettingsEditor ( AppSettingsEditor* ed )
  }
 
 
-
 /* =========================== ASTRO WIDGET ========================================= */
 
 AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
@@ -163,10 +164,10 @@ AstroWidget :: AstroWidget(QWidget *parent) : QWidget(parent)
    layout->addWidget(fileView,    0,0, 1,1, Qt::AlignLeft|Qt::AlignTop);
    layout->addWidget(fileView2nd, 0,0, 1,1, Qt::AlignRight|Qt::AlignTop);
 
+  addDockWidget(new Details, tr("Details"), true);
   addSlide(new Chart,   QIcon("style/natal.png"),   tr("Chart"));
   addSlide(new Planets, QIcon("style/planets.png"), tr("Planets"));
   addSlide(new Plain,   QIcon("style/plain.png"),   tr("Text"));
-
   addHoroscopeControls();
 
   connect(fileView,    SIGNAL(clicked()), this, SLOT(openEditor()));
@@ -212,7 +213,7 @@ void AstroWidget :: switchToSingleAspectSet()
   int itemIndex = aspectsSelector->findData(set2);
   if (set2 * set2 == set && itemIndex >= 0)
    {
-    qDebug() << "restore aspect set to single";
+    qDebug() << "AstroWidget::restore aspect set to single";
     aspectsSelector->setCurrentIndex(itemIndex);
    }
   aspectsSelector->blockSignals(false);
@@ -226,7 +227,7 @@ void AstroWidget :: switchToSynastryAspectSet()
   int itemIndex = aspectsSelector->findData(set2);
   if (itemIndex >= 0)
    {
-    qDebug() << "replace aspect set to synastry";
+    qDebug() << "AstroWidget::replace aspect set to synastry";
     aspectsSelector->setCurrentIndex(itemIndex);
    }
   aspectsSelector->blockSignals(false);
@@ -240,20 +241,22 @@ void AstroWidget :: setFiles (const AstroFileList& files)
     switchToSingleAspectSet();
 
   foreach(AstroFile* i, files)
-    if (!this->files().contains(i))                  // don't affect already assigned files
-      setupFile(i, true);
+    setupFile(i, true);
+
+  fileView->setFiles(files);
+  fileView2nd->setFiles(files);
+  if (editor) editor->setFiles(files);
+  foreach (AstroFileHandler* h, handlers)
+    h->setFiles(files);
 
   foreach(AstroFile* i, files)
     i->resumeUpdate();
 
-  fileView->setFiles(files);
-  fileView2nd->setFiles(files);
-
-  if (editor)
-    editor->setFiles(files);
-
+  fileView->resumeUpdate();
+  fileView2nd->resumeUpdate();
+  if (editor) editor->resumeUpdate();
   foreach (AstroFileHandler* h, handlers)
-    h->setFiles(files);
+    if (h->isVisible()) h->resumeUpdate();
  }
 
 void AstroWidget :: openEditor()
@@ -299,10 +302,41 @@ void AstroWidget :: addSlide(AstroFileHandler* w, const QIcon& icon, QString tit
   act->setCheckable(true);
   act->setActionGroup(actionGroup);
   if (!slides->count()) act->setChecked(true);
-
   slides->addSlide(w);
-  handlers << w;
+  attachHandler(w);
 
+  foreach (AstroFileHandler* wdg, dockHandlers)
+    connect(w, SIGNAL(planetSelected(A::PlanetId, int)), wdg, SLOT(setCurrentPlanet(A::PlanetId, int)));
+
+  foreach (QDockWidget* d, docks)
+    connect(w, SIGNAL(planetSelected(A::PlanetId, int)), d, SLOT(show()));
+ }
+
+void AstroWidget :: addDockWidget(AstroFileHandler* w, QString title, bool scrollable, QString objectName)
+ {
+  if (objectName.isEmpty()) objectName = w->metaObject()->className();
+  QDockWidget* dock = new QDockWidget(title);
+  dock->setObjectName(objectName);
+
+  if (scrollable)
+   {
+    QScrollArea* area = new QScrollArea;
+    area->setWidget(w);
+    area->setWidgetResizable(true);
+    dock->setWidget(area);
+   }
+  else
+   {
+    dock->setWidget(w);
+   }
+  docks << dock;
+  dockHandlers << w;
+  attachHandler(w);
+ }
+
+void AstroWidget :: attachHandler(AstroFileHandler* w)
+ {
+  handlers << w;
   connect(w, SIGNAL(requestHelp(QString)), this, SIGNAL(helpRequested(QString)));
  }
 
@@ -722,7 +756,7 @@ bool FilesBar :: closeTab(int index)
    }
   else if (count() == 1)
    {
-    return false;                               // avoid to close last tab (without unsaved changes)
+    return false;                               // TODO: make an empty file instead last tab
    }
 
   files.removeAt(index);
@@ -779,22 +813,26 @@ void FilesBar :: openFileAsSecond(QString name)
 
 MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
  {
+  HelpWidget* help   = new HelpWidget("text/" + A::usedLanguage(), this);
+
   filesBar           = new FilesBar(this);
   astroWidget        = new AstroWidget(this);
   databaseDockWidget = new QDockWidget(this);
   astroDatabase      = new AstroDatabase();
-  help               = new HelpWidget(this);
-  toolBar            = new QToolBar(tr("File"),   this);
+  toolBar            = new QToolBar(tr("File"),     this);
   toolBar2           = new QToolBar(tr("Options"),  this);
+  helpToolBar        = new QToolBar(tr("Hint"),  this);
+  panelsMenu         = new QMenu;
 
   toolBar            -> setObjectName("toolBar");
   toolBar2           -> setObjectName("toolBar2");
-  help               -> setAlignment(Qt::AlignCenter);
-  help               -> hide();
+  helpToolBar        -> setObjectName("helpToolBar");
+  helpToolBar        -> addWidget(help);
   databaseDockWidget -> setObjectName("dbDockWidget");
   databaseDockWidget -> setWidget(astroDatabase);
   databaseDockWidget -> setWindowTitle(tr("Database"));
   databaseDockWidget -> hide();
+  help               -> setFixedHeight(70);
   this               -> setIconSize(QSize(48,48));
   this               -> setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
   this               -> setWindowTitle(QApplication::applicationName());
@@ -802,28 +840,37 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
 
 
   QWidget* wdg = new QWidget(this);
-  wdg->setObjectName("centralWidget");
-  QGridLayout* layout = new QGridLayout(wdg);
+   wdg->setObjectName("centralWidget");
+   wdg->setContextMenuPolicy(Qt::CustomContextMenu);
+  QVBoxLayout* layout = new QVBoxLayout(wdg);
    layout->setSpacing(0);
-   layout->setContentsMargins(0,0,0,0);
-   layout->addWidget(filesBar,    0,0, 1,1, Qt::AlignLeft);
-   layout->addWidget(astroWidget, 1,0, 1,1);
-   layout->addWidget(help,        1,0, 1,1, Qt::AlignBottom);
+   layout->setMargin(0);
+   layout->addWidget(filesBar, 0, Qt::AlignLeft);
+   layout->addWidget(astroWidget);
 
   setCentralWidget(wdg);
   addToolBarActions();
   addToolBar(Qt::TopToolBarArea, toolBar);
   addToolBar(Qt::TopToolBarArea, astroWidget->getToolBar());
   addToolBar(Qt::TopToolBarArea, toolBar2);
+  addToolBar(Qt::TopToolBarArea, helpToolBar);
   addDockWidget(Qt::LeftDockWidgetArea, databaseDockWidget);
+
+  foreach(QDockWidget* w, astroWidget->getDockPanels())
+   {
+    addDockWidget(Qt::RightDockWidgetArea, w);
+    w->hide();
+    createActionForPanel(w);
+   }
+
   foreach(QWidget* w, astroWidget->getHoroscopeControls())
     statusBar()->addPermanentWidget(w);
 
+  connect(wdg,           SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenu(QPoint)));
   connect(filesBar,      SIGNAL(currentChanged(int)),          this,     SLOT(currentTabChanged()));
   connect(astroDatabase, SIGNAL(openFile(QString)),            filesBar, SLOT(openFile(QString)));
   connect(astroDatabase, SIGNAL(openFileInNewTab(QString)),    filesBar, SLOT(openFileInNewTab(QString)));
   connect(astroDatabase, SIGNAL(openFileAsSecond(QString)),    filesBar, SLOT(openFileAsSecond(QString)));
-  //connect(astroDatabase, SIGNAL(fileRemoved(QString)),         filesBar, SLOT(deleteFile(QString)));
   connect(astroWidget,   SIGNAL(appendFileRequested()),        filesBar, SLOT(openFileAsSecond()));
   connect(astroWidget,   SIGNAL(helpRequested(QString)),       help,     SLOT(searchFor(QString)));
   connect(astroWidget,   SIGNAL(swapFilesRequested(int,int)),  filesBar, SLOT(swapCurrentFiles(int,int)));
@@ -834,39 +881,55 @@ MainWindow :: MainWindow(QWidget *parent) : QMainWindow(parent), Customizable()
   filesBar->addNewFile();
  }
 
+void MainWindow        :: contextMenu         ( QPoint p )
+ {
+  QPoint pos = ((QWidget*)sender())->mapToGlobal(p);
+  panelsMenu->exec(pos);
+ }
+
 void MainWindow        :: addToolBarActions   ( )
  {
-  toolBar     -> addAction(QIcon("style/file.png"),  tr("New"),   filesBar, SLOT(addNewFile()));
-  toolBar     -> addAction(QIcon("style/save.png"),  tr("Save"),  this, SLOT(saveFile()));
-  toolBar     -> addAction(QIcon("style/database.png"), tr("Open"));
-  //toolBar     -> addAction(QIcon("style/print.png"), tr("Экспорт"));
-  toolBar     -> addAction(QIcon("style/edit.png"),  tr("Edit"), astroWidget, SLOT(openEditor()));
+  toolBar  -> addAction(QIcon("style/file.png"),  tr("New"),  filesBar,    SLOT(addNewFile()));
+  toolBar  -> addAction(QIcon("style/save.png"),  tr("Save"), this,        SLOT(saveFile()));
+  toolBar  -> addAction(QIcon("style/edit.png"),  tr("Edit"), astroWidget, SLOT(openEditor()));
+  //toolBar  -> addAction(QIcon("style/print.png"), tr("Экспорт"));
 
-  toolBar     -> actions()[0]->setShortcut(QKeySequence("CTRL+N"));
-  toolBar     -> actions()[1]->setShortcut(QKeySequence("CTRL+S"));
-  //toolBar     -> actions()[3]->setShortcut(QKeySequence("CTRL+P"));
-  toolBar     -> actions()[3]->setShortcut(QKeySequence("F2"));
+  toolBar  -> actions()[0]->setShortcut(QKeySequence("CTRL+N"));
+  toolBar  -> actions()[1]->setShortcut(QKeySequence("CTRL+S"));
+  toolBar  -> actions()[2]->setShortcut(QKeySequence("F2"));
+  //toolBar  -> actions()[3]->setShortcut(QKeySequence("CTRL+P"));
 
-  toolBar     -> actions()[0]->setStatusTip(tr("New data") + "\n Ctrl+N");
-  toolBar     -> actions()[1]->setStatusTip(tr("Save data") + "\n Ctrl+S");
-  toolBar     -> actions()[2]->setStatusTip(tr("Open data") + "\n Ctrl+O");
-  //toolBar     -> actions()[3]->setStatusTip(tr("Печать или экспорт \n Ctrl+P"));
-  toolBar     -> actions()[3]->setStatusTip(tr("Edit data...") + "\n F2");
+  toolBar  -> actions()[0]->setStatusTip(tr("New data") + "\n Ctrl+N");
+  toolBar  -> actions()[1]->setStatusTip(tr("Save data") + "\n Ctrl+S");
+  toolBar  -> actions()[2]->setStatusTip(tr("Edit data...") + "\n F2");
+  //toolBar  -> actions()[3]->setStatusTip(tr("Печать или экспорт \n Ctrl+P"));
 
-  toolBar2    -> addAction(QIcon("style/tools.png"),  tr("Options"),       this, SLOT(showSettingsEditor()));
-  toolBar2    -> addAction(QIcon("style/help.png"),   tr("Info +/-"));
-  //toolBar2    -> addAction(QIcon("style/coffee.png"), tr("Справка"));
-  toolBar2    -> addAction(QIcon("style/info.png"),   tr("About"), this, SLOT(showAbout()));
+  QToolButton* b = new QToolButton;           // panels toggle button
+  b -> setText(tr("Panels"));
+  b -> setIcon(QIcon("style/panels.png"));
+  b -> setToolButtonStyle(toolButtonStyle());
+  b -> setMenu(panelsMenu);
+  b -> setPopupMode(QToolButton::InstantPopup);
 
-  databaseToggle = toolBar->actions()[2];
-  databaseToggle->setShortcut(QKeySequence("CTRL+O"));
-  databaseToggle->setCheckable(true);
-  connect(databaseDockWidget, SIGNAL(visibilityChanged(bool)), databaseToggle,     SLOT(setChecked(bool)));
-  connect(databaseToggle,     SIGNAL(triggered(bool)),         databaseDockWidget, SLOT(setVisible(bool)));
+  toolBar2 -> addWidget(b);
+  toolBar2 -> addAction(QIcon("style/tools.png"),  tr("Options"), this, SLOT(showSettingsEditor()));
+  toolBar2 -> addAction(QIcon("style/info.png"),   tr("About"),   this, SLOT(showAbout()));
+  //toolBar2 -> addAction(QIcon("style/coffee.png"), tr("Справка"));
 
-  helpToggle = toolBar2->actions()[1];
-  helpToggle->setCheckable(true);
-  connect(helpToggle, SIGNAL(toggled(bool)), help, SLOT(setVisible(bool)));
+  QAction* dbToggle = createActionForPanel(databaseDockWidget/*, QIcon("style/database.png")*/);
+  dbToggle -> setShortcut(QKeySequence("CTRL+O"));
+  dbToggle -> setStatusTip(tr("Toggle database") + "\n Ctrl+O");
+
+  createActionForPanel(helpToolBar/*, QIcon("style/help.png")*/);
+ }
+
+QAction* MainWindow    :: createActionForPanel(QWidget* w)
+ {
+  QAction* a = panelsMenu->addAction(/*icon, */w->windowTitle());
+  a->setCheckable(true);
+  connect(a, SIGNAL(triggered(bool)),         w, SLOT(setVisible(bool)));
+  connect(w, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
+  return a;
  }
 
 void MainWindow        :: currentTabChanged()
@@ -881,7 +944,6 @@ AppSettings MainWindow :: defaultSettings     ( )
   s << astroWidget->defaultSettings();
   s.setValue ( "Window/Geometry",         0 );
   s.setValue ( "Window/State",            0 );
-  s.setValue ( "help",                false );
   s.setValue ( "askToSave",           false );
   return s;
  }
@@ -892,7 +954,6 @@ AppSettings MainWindow :: currentSettings     ( )
   s << astroWidget->currentSettings();
   s.setValue ( "Window/Geometry",      this->saveGeometry() );
   s.setValue ( "Window/State",         this->saveState() );
-  s.setValue ( "help",                 helpToggle->isChecked() );
   s.setValue ( "askToSave",            askToSave );
   return s;
  }
@@ -902,14 +963,12 @@ void MainWindow        :: applySettings       ( const AppSettings& s )
   astroWidget->applySettings(s);
   this -> restoreGeometry   ( s.value ( "Window/Geometry" ).toByteArray() );
   this -> restoreState      ( s.value ( "Window/State" ).toByteArray() );
-  helpToggle->setChecked    ( s.value ( "help" ).toBool() );
   askToSave = s.value ( "askToSave" ).toBool();
  }
 
 void MainWindow        :: setupSettingsEditor ( AppSettingsEditor* ed )
  {
   ed->addControl("askToSave", tr("Ask about unsaved files"));
-  //ed->addTab(tr("Other"));
   astroWidget->setupSettingsEditor(ed);
  }
 
@@ -920,7 +979,6 @@ void MainWindow        :: closeEvent          ( QCloseEvent* ev )
     if (!filesBar->closeTab(filesBar->currentIndex()))
       return ev->ignore();
 
-  if (databaseDockWidget->isFloating()) databaseDockWidget->hide();
   saveSettings();
 
   QMainWindow::closeEvent(ev);

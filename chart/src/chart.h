@@ -85,7 +85,6 @@ class Chart : public AstroFileHandler
         void drawCuspides(int fileIndex);
         void updatePlanetsAndCusps(int fileIndex);
         void updateAspects();
-        A::AspectList calculateSynastryAspects();
 
         void fitInView();
         void createScene();
@@ -104,6 +103,9 @@ class Chart : public AstroFileHandler
 
         bool eventFilter(QObject *, QEvent *);
         void resizeEvent (QResizeEvent *ev);
+
+    signals:
+        void planetSelected(A::PlanetId, int fileIndex);
 
     public:
         Chart(QWidget *parent = 0);

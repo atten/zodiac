@@ -84,14 +84,6 @@ AstroDatabase QPushButton:pressed {
 	padding-left: 3px;
 }
 
-QMainWindow::separator:vertical {
-	border-left: 1px solid #717b88;
-}
-
-QMainWindow::separator:horizontal {
-	border-bottom: 1px solid #717b88;
-}
-
 QListWidget {
 	color: #b5bfdf;
 	alternate-background-color: #424242;
@@ -108,6 +100,7 @@ QListWidget::item:selected {
 QDockWidget {
 	font-weight: bold;
 	color: #d8e4f4;
+	
 }
 
 QDockWidget::title {
@@ -158,6 +151,13 @@ AstroWidget QLabel {
 	color: #a5afcf;
 }
 
+QScrollArea {
+	background: #202020;
+	border: 0;
+	padding: 5px;
+	min-width: 150px;
+}
+
 QToolTip {
 	border: 1px solid #383838;
 	border-radius: 2px;
@@ -200,6 +200,14 @@ QDialog#about QPushButton:pressed {
 									stop:1 rgba(40, 40, 40, 255));
 }
 
+QMainWindow::separator:vertical {
+	border-left: 1px solid #717b88;
+}
+
+QMainWindow::separator:horizontal {
+	border-bottom: 1px solid #717b88;
+}
+
 
 /* =========================== AstroFileInfo ========================================= */
 
@@ -223,23 +231,37 @@ AstroFileInfo QLabel {		/* shadow */
 
 /* =========================== HelpWidget ========================================= */
 
-HelpWidget {
-	background-color: qradialgradient(spread:pad, cx:0.5, cy:1, radius:1.028, fx:0.500045, fy:1, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(0, 0, 0, 5));
-}
-
 HelpWidget QLabel {
-	color: #BBB;
-	padding-bottom: 10px;
-	margin: 0 100px;
+	color: #CCC;
 }
 
 HelpWidget QLabel#title {
 	color: #DDD;
-	font-family: "DejaVu Sans", "Segoe UI", Tahoma;
-	font-size: 16px;
+	font-family: "Segoe UI", "DejaVu Sans", Tahoma;
+	font-size: 14px;
 	font-weight: bold;
 	padding: 0px;
 }
+
+HelpWidget QPushButton {
+	border: none;
+	text-decoration: underline;
+	padding-left: 17px;
+	margin-left: 7px;
+	color: #00C0FF;
+	background-image: url("style/rmb.png");
+	background-repeat: 0;
+}
+
+HelpWidget QPushButton:hover {
+	color: #E7E2C8;
+}
+
+HelpWidget QPushButton:pressed {
+	color: #FF0000;
+}
+
+
 
 
 /* =========================== STATUS BAR ========================================== */

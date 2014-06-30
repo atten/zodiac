@@ -4,32 +4,32 @@
 <context>
     <name>AppSettingsEditor</name>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="102"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="102"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="103"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="103"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="104"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="104"/>
         <source>Apply</source>
         <translation>Применить</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="105"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="105"/>
         <source>By default</source>
         <translation>По умолчанию</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="107"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="107"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/appsettings.cpp" line="158"/>
+        <location filename="../../astroprocessor/src/appsettings.cpp" line="158"/>
         <source>General</source>
         <translation>Основные</translation>
     </message>
@@ -37,7 +37,7 @@
 <context>
     <name>AstroFile</name>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-gui.cpp" line="17"/>
+        <location filename="../../astroprocessor/src/astro-gui.cpp" line="17"/>
         <source>Untitled %1</source>
         <translation>Безымянный %1</translation>
     </message>
@@ -45,7 +45,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="31"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="41"/>
         <source>Exaltation</source>
         <translation>Экзальтация</translation>
     </message>
@@ -62,245 +62,270 @@
         <translation type="vanished">Изгнание</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="32"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="42"/>
         <source>House</source>
         <translation>Обитель</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="33"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="43"/>
         <source>Fall</source>
         <translation>Падение</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="34"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="44"/>
         <source>Detriment</source>
         <translation>Изгнание</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="152"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="162"/>
         <source>Date: %1, %2 %3 GMT
 </source>
         <translation>Время: %1, %2, %3 GMT
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="153"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="163"/>
         <source>Location: %1N %2E</source>
         <translation>Место: %1 с.ш. %2 в.д.</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="220"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="171"/>
+        <source>Houses (%1)
+</source>
+        <translation>Дома (%1)
+</translation>
+    </message>
+    <message>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="213"/>
+        <source>Orb: %1 (max: %2)
+</source>
+        <translation>Орб: %1 (допустимый: %2)
+</translation>
+    </message>
+    <message>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="215"/>
+        <source>Applying</source>
+        <translation>Сходящийся</translation>
+    </message>
+    <message>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="215"/>
+        <source>Separating</source>
+        <translation>Расходящийся</translation>
+    </message>
+    <message>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="247"/>
         <source> ruler of %1</source>
         <translation> управ. %1</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="232"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="259"/>
         <source>Longitude: %1
 </source>
-        <translation>Долгота: %1</translation>
+        <translation>Долгота: %1
+</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="233"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="260"/>
         <source>Latitude: %1
 </source>
         <translation>Широта: %1
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="234"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="261"/>
         <source>Distance: %1a.u.
 </source>
         <translation>Расстояние: %1 a.e.
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="235"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="262"/>
         <source>Azimuth: %1
 </source>
         <translation>Азимут: %1
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="236"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="263"/>
         <source>Height: %1
 </source>
         <translation>Высота: %1
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="239"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="266"/>
         <source>Speed: %1% (%2 per day)
 </source>
         <translation>Скорость: %1% (%2/день)
 </translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="265"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="292"/>
         <source>+5: Planet is in its own sign</source>
         <translation>+5: Планета в своем знаке</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="267"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="294"/>
         <source>-5: Planet is in detriment</source>
         <translation>-5: Планета в изгнании</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="268"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="295"/>
         <source>-4: Planet is in its fall</source>
         <translation>-4: Планета в падении</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="277"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="304"/>
         <source>-5: Planet is peregrine (doesn&apos;t have an essential dignity)</source>
         <translation>-5: Планета перегрин (не имеет эссенциальных достоинств)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="299"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="326"/>
         <source>+4: Planet is direct</source>
         <translation>+4: Планета в директном движении</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="302"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="329"/>
         <source>+2: Planet is fast</source>
         <translation>+2: Планета движется быстрее своей среднесуточной скорости</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="304"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="331"/>
         <source>-2: Planet is slow</source>
         <translation>-2: Планета движется медленнее своей среднесуточной скорости</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="306"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="333"/>
         <source>-5: Planet is retrograde</source>
         <translation>-5: Планета ретроградна</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="315"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="342"/>
         <source>+2: %1 rises earlier than the Sun (oriental)</source>
         <translation>+2: %1 восточнее относительно Солнца (восходит раньше)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="317"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="344"/>
         <source>-2: %1 rises later than the Sun (occidental)</source>
         <translation>-2: %1 западнее относительно Солнца (восходит позднее)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="324"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="351"/>
         <source>+2: %1 rises later than the Sun (occidental)</source>
         <translation>+2: %1 западнее относительно Солнца (восходит позднее)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="326"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="353"/>
         <source>-2: %1 rises earlier than the Sun (occidental)</source>
         <translation>-2: %1 восточнее относительно Солнца (восходит раньше)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="344"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="371"/>
         <source>+5: Planet is neither combust nor under the beams</source>
         <translation>+5: Планета не сожжена и вне солнечных лучей</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="346"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="373"/>
         <source>+5: Planet is cazimi</source>
         <translation>+5: Планета в точном соединении с Солнцем</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="348"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="375"/>
         <source>-4: Planet is either combust or under the beams</source>
         <translation>-4: Сожжённая планета</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="354"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="381"/>
         <source>+5: Planet is in partile conjunction with Jupiter</source>
         <translation>+5: Планета в точном соединении с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="355"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="382"/>
         <source>+4: Planet is in partile trine with Jupiter</source>
         <translation>+4: Планета в точном трине с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="356"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="383"/>
         <source>+3: Planet is in partile sextile with Jupiter</source>
         <translation>+3: Планета в точном секстиле с Юпитером</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="362"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="389"/>
         <source>+5: Planet is in partile conjunction with Venus</source>
         <translation>+5: Планета в точном соединении с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="363"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="390"/>
         <source>+4: Planet is in partile trine with Venus</source>
         <translation>+4: Планета в точном трине с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="364"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="391"/>
         <source>+3: Planet is in partile sextile with Venus</source>
         <translation>+3: Планета в точном секстиле с Венерой</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="370"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="397"/>
         <source>+4: Planet is in partile conjunction with North Node</source>
         <translation>+4: Планета в точном соединении с Северным Узлом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="379"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="406"/>
         <source>-5: Planet is in partile conjunction with Mars</source>
         <translation>-5: Планета в точном соединении с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="380"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="407"/>
         <source>-4: Planet is in partile opposition with Mars</source>
         <translation>-4: Планета в точной оппозиции с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="381"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="408"/>
         <source>-3: Planet is in partile quadrature with Mars</source>
         <translation>-3: Планета в точном квадрате с Марсом</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="387"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="414"/>
         <source>-5: Planet is in partile conjunction with Saturn</source>
         <translation>-5: Планета в точном соединении с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="388"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="415"/>
         <source>-4: Planet is in partile opposition with Saturn</source>
         <translation>-4: Планета в точной оппозиции с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="389"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="416"/>
         <source>-3: Planet is in partile quadrature with Saturn</source>
         <translation>-3: Планета в точном квадрате с Сатурном</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="395"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="422"/>
         <source>+6: Planet is in conjunction with Regulus</source>
         <translation>+6: Планета в соединении со звездой Регул</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="398"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="425"/>
         <source>+5: Planet is in conjunction with Spica</source>
         <translation>+5: Планета в соединении со звездой Спика</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="401"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="428"/>
         <source>-5: Planet is in conjunction with Algol</source>
         <translation>-5: Планета в соединении со звездой Алголь</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="445"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="472"/>
         <source>%1 sign</source>
         <translation>%1 зодиак</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="457"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="484"/>
         <source>Almuten:    %1</source>
         <translation>Альмутен:  %1</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="458"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="485"/>
         <source>Doryphoros: %1</source>
         <translation>Дорифорий: %1</translation>
     </message>
@@ -309,7 +334,7 @@
         <translation type="vanished">+5: Планета в своём знаке</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="266"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="293"/>
         <source>+5: Planet is in exaltation</source>
         <translation>+5: Планета в экзальтации</translation>
     </message>
@@ -322,7 +347,7 @@
         <translation type="vanished">-4: Планета в падении</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="275"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="302"/>
         <source>+5: Planet is in mutual reception with %1</source>
         <translation>+5: Планета во взаимной рецепции с %1</translation>
     </message>
@@ -331,7 +356,7 @@
         <translation type="vanished">-3: Планета перегрин (не имеет эссенциальных достоинств)</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="293"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="320"/>
         <source>%1: Planet is placed in %2 house</source>
         <translation>%1: Планета в %2 доме</translation>
     </message>
@@ -368,12 +393,12 @@
         <translation type="vanished">-2: %1 восточнее относительно Солнца</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="332"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="359"/>
         <source>+2: Moon is waxing</source>
         <translation>+2: Луна прибывает в свете</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="334"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="361"/>
         <source>-2: Moon is waning</source>
         <translation>-2: Луна убывает в свете</translation>
     </message>
@@ -470,7 +495,7 @@
         <translation type="vanished">%1 зодиак</translation>
     </message>
     <message>
-        <location filename="../../libAstroprocessor/src/astro-output.cpp" line="456"/>
+        <location filename="../../astroprocessor/src/astro-output.cpp" line="483"/>
         <source>Auriga:     %1</source>
         <translation>Возничий:  %1</translation>
     </message>
