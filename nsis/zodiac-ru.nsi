@@ -1,5 +1,5 @@
 !define PRODUCT 'Zodiac'
-!define VERSION '0.6'
+!define VERSION '0.7.1'
 
 !include FontReg.nsh
 !include FontName.nsh
@@ -99,8 +99,11 @@ Section "Ôאיכû ןנמדנאללû" SecMain
   SetOutPath "$INSTDIR\swe"
   File ..\bin\swe\*
   
-  SetOutPath "$INSTDIR\text"
-  File ..\bin\text\*
+  SetOutPath "$INSTDIR\text\en"
+  File ..\bin\text\en\*
+  
+  SetOutPath "$INSTDIR\text\ru"
+  File ..\bin\text\ru\*
   
   SetOutPath "$INSTDIR\user"
   File "..\bin\user\Brad Pitt.dat"

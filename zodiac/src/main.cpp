@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("Zodiac");
-    a.setApplicationVersion("v0.7.0 (build 2014-05-31)");
+    a.setApplicationVersion("v0.7.1 (build 2014-06-30)");
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
     QTextCodec* codec = QTextCodec::codecForName ( "UTF-8" );
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr ( codec );
     qInstallMsgHandler (emptyOutput);
 #else
-    //qInstallMessageHandler(emptyOutput);
+    qInstallMessageHandler(emptyOutput);
 #endif
 
     QDir::setCurrent(a.applicationDirPath());
