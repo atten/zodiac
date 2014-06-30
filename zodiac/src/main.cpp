@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     if (!a.arguments().contains("nolocale"))
      {
       if (QLocale::system().name().contains("RU", Qt::CaseInsensitive))
-        lang = "en";
+        lang = "ru";
       else
         lang = "en";
 
