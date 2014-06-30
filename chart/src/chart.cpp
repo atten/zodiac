@@ -101,6 +101,12 @@ bool RotatingCircleItem :: sceneEventFilter(QGraphicsItem *watched, QEvent *even
     chart()->help(tag);
     return true;
    }
+  else if (event->type() == QEvent::GraphicsSceneMousePress)   // emit signal when item clicked
+   {
+    if (watched->data(1).isNull()) return false;
+    emit chart()->planetSelected(watched->data(1).toInt(), watched->data(2).toInt());
+    return true;
+   }
 
   return false;
  }
@@ -359,12 +365,6 @@ void Chart :: updateAspects()
    }
  }
 
-A::AspectList Chart :: calculateSynastryAspects()
- {
-  qDebug() << "Calculate synatry apects" << file(0)->getAspetSet().id;
-  return A::calculateAspects(file(0)->getAspetSet(), file(0)->horoscope().planets, file(1)->horoscope().planets);
- }
-
 void Chart :: clearScene()
  {
   qDebug() << "Clear scene";
@@ -439,6 +439,8 @@ void Chart :: drawPlanets(int fileIndex)
     //text   -> setOpacity(opacity);
     text   -> setTransformOriginPoint(text->boundingRect().center());
     text   -> setParentItem(marker);
+    text   -> setData(1, planet.id);                                       // remember PlanetId for clicking on item
+    text   -> setData(2, fileIndex);                                       // remember fileIndex
     marker -> setTransformOriginPoint (circle->boundingRect().center());
     marker -> setZValue(1);
 

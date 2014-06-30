@@ -61,20 +61,23 @@ class AstroWidget : public QWidget
         QActionGroup*     actionGroup;
         SlideWidget*      slides;
         AstroFileInfo*    fileView, *fileView2nd;
-        QList<AstroFileHandler*> handlers;
-
-        QComboBox* zodiacSelector;
-        QComboBox* hsystemSelector;
-        QComboBox* aspectsSelector;
+        QComboBox*        zodiacSelector;
+        QComboBox*        hsystemSelector;
+        QComboBox*        aspectsSelector;
         QList<QComboBox*> horoscopeControls;
+        QList<AstroFileHandler*> handlers;
+        QList<AstroFileHandler*> dockHandlers;
+        QList<QDockWidget*> docks;
 
         void setupFile (AstroFile* file, bool suspendUpdate = false);
         AstroFileList files()                          { return fileView->files(); }
         QString vectorToString (const QVector3D& v);
         QVector3D vectorFromString (const QString& str);
 
-        void addHoroscopeControls();
+        void attachHandler(AstroFileHandler* w);
         void addSlide(AstroFileHandler* w, const QIcon& icon, QString title);
+        void addDockWidget(AstroFileHandler* w, QString title, bool scrollable, QString objectName = "");
+        void addHoroscopeControls();
         void switchToSingleAspectSet();
         void switchToSynastryAspectSet();
 
@@ -98,6 +101,7 @@ class AstroWidget : public QWidget
         AstroWidget(QWidget *parent = 0);
         QToolBar* getToolBar()      { return toolBar; }
         const QList<QComboBox*>& getHoroscopeControls() { return horoscopeControls; }
+        const QList<QDockWidget*>& getDockPanels()      { return docks; }
 
         void setFiles (const AstroFileList& files);
 
@@ -193,12 +197,12 @@ class MainWindow : public QMainWindow, public Customizable
         FilesBar*      filesBar;
         AstroWidget*   astroWidget;
         AstroDatabase* astroDatabase;
-        HelpWidget*    help;
         QDockWidget*   databaseDockWidget;
         QToolBar       *toolBar, *toolBar2, *helpToolBar;
-        QAction*       databaseToggle, *helpToggle;
+        QMenu*         panelsMenu;
 
         void addToolBarActions();
+        QAction* createActionForPanel(QWidget* w/*, const QIcon &icon*/);
 
     private slots:
         void saveFile()             { filesBar->currentFiles()[0]->save(); astroDatabase->updateList(); }
@@ -206,6 +210,7 @@ class MainWindow : public QMainWindow, public Customizable
         void showSettingsEditor()   { openSettingsEditor(); }
         void showAbout();
         void gotoUrl(QString url = "");
+        void contextMenu(QPoint);
 
     protected:
         AppSettings defaultSettings ();      // 'Customizable' class implementations

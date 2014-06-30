@@ -4,65 +4,60 @@
 <context>
     <name>Planets</name>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="42"/>
+        <location filename="../../planets/src/planets.cpp" line="35"/>
         <source>Sort by:</source>
         <translation>Sort by:</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="43"/>
+        <location filename="../../planets/src/planets.cpp" line="36"/>
         <source>planet</source>
         <translation>planet</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="44"/>
+        <location filename="../../planets/src/planets.cpp" line="37"/>
         <source>house</source>
         <translation>house</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="45"/>
+        <location filename="../../planets/src/planets.cpp" line="38"/>
         <source>dignity</source>
         <translation>dignity</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="46"/>
+        <location filename="../../planets/src/planets.cpp" line="39"/>
         <source>element</source>
         <translation>element</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="49"/>
         <source>Astronomic data</source>
-        <translation>Astronomic data</translation>
+        <translation type="vanished">Astronomic data</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="50"/>
         <source>Aspects</source>
-        <translation>Aspects</translation>
+        <translation type="vanished">Aspects</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="51"/>
         <source>Affetic</source>
-        <translation>Affetic</translation>
+        <translation type="vanished">Affetic</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="58"/>
-        <location filename="../../planets/src/planets.cpp" line="59"/>
         <source>Select a planet</source>
-        <translation>Select a planet</translation>
+        <translation type="vanished">Select a planet</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="162"/>
+        <location filename="../../planets/src/planets.cpp" line="112"/>
         <source>ruler of %1</source>
         <translation>ruler of %1</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="203"/>
-        <location filename="../../planets/src/planets.cpp" line="204"/>
+        <location filename="../../planets/src/planets.cpp" line="153"/>
+        <location filename="../../planets/src/planets.cpp" line="154"/>
         <source>Almuten</source>
         <translation>Almuten</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="213"/>
-        <location filename="../../planets/src/planets.cpp" line="214"/>
+        <location filename="../../planets/src/planets.cpp" line="163"/>
+        <location filename="../../planets/src/planets.cpp" line="164"/>
         <source>Doryphoros</source>
         <translation>Doryphoros</translation>
     </message>
@@ -71,8 +66,8 @@
         <translation type="vanished">Almuten</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="208"/>
-        <location filename="../../planets/src/planets.cpp" line="209"/>
+        <location filename="../../planets/src/planets.cpp" line="158"/>
+        <location filename="../../planets/src/planets.cpp" line="159"/>
         <source>Auriga</source>
         <translation>Auriga</translation>
     </message>
@@ -94,9 +89,8 @@
         <translation type="vanished">Seperating</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="264"/>
         <source>more</source>
-        <translation>more</translation>
+        <translation type="vanished">more</translation>
     </message>
 </context>
 </TS>

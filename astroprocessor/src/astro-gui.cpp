@@ -330,6 +330,12 @@ void AstroFileHandler :: setFiles (const AstroFileList& files)
 
  }
 
+A::AspectList AstroFileHandler :: calculateSynastryAspects()
+ {
+  qDebug() << "Calculate synatry apects" << file(0)->getAspetSet().id;
+  return A::calculateAspects(file(0)->getAspetSet(), file(0)->horoscope().planets, file(1)->horoscope().planets);
+ }
+
 MembersList AstroFileHandler :: blankMembers()
  {
   MembersList ret;

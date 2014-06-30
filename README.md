@@ -27,6 +27,7 @@ Subprojects:
 * ``chart`` - library for making natal chart;
 * ``plain`` - library for making simple text view of horoscope;
 * ``planets`` - library for making planets viewer;
+* ``details`` - library for displaying planet properties;
 * ``fileeditor`` - library for editing horoscope data.
 
 
@@ -45,13 +46,7 @@ Content of subdirs:
 * ***bin/plain/***,
 * ***bin/planets/***,
 * ***bin/swe/*** - files used by Swiss Ephemeris library;
-* ***chart/***,
-* ***fileeditor/***,
-* ***plain/***,
-* ***planets/***,
-* ***astroprocessor/***,
-* ***swe/***,
-* ***zodiac/*** - subprojects
+* ***chart/***, ***fileeditor/***, ***plain/***, ***planets/***, ***details/***, ***astroprocessor/***, ***swe/***, ***zodiac/*** - subprojects
 * ***nsis/*** - files for Nullsoft Scriptable Install System
 
 
@@ -84,6 +79,7 @@ Open projects in QtCreator and build them manually in the following order:
     fileeditor/fileeditor.pro
     plain/plain.pro
     planets/planets.pro
+	planets/details.pro
     4. zodiac/zodiac.pro
 	
 	

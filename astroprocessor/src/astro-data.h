@@ -144,7 +144,7 @@ struct Planet
              houseRuler = 0; }
 
   bool operator==(const Planet & other) const { return this->id == other.id && this->eclipticPos == other.eclipticPos; }
-  bool operator!=(const Planet & other) const { return this->id != other.id; }
+  bool operator!=(const Planet & other) const { return this->id != other.id || this->eclipticPos != other.eclipticPos; }
 };
 
 //struct AspectsSet;

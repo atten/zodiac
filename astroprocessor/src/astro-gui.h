@@ -118,7 +118,7 @@ class AstroFileHandler : public QWidget, public Customizable
 
     private slots:
         void fileUpdatedSlot(AstroFile::Members);
-        void fileDestroyedSlot();//                      { f = 0;  resetFile(); }
+        void fileDestroyedSlot();
 
     protected:
         virtual void filesUpdated(MembersList members) = 0;
@@ -130,6 +130,7 @@ class AstroFileHandler : public QWidget, public Customizable
 
     public:
         AstroFileHandler(QWidget *parent = 0);
+        A::AspectList calculateSynastryAspects();
         void resumeUpdate();
         void setFiles (const AstroFileList& files);
         AstroFile* file(int index = 0)            { if (f.count() > index) return f[index]; return 0; }

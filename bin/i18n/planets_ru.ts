@@ -4,65 +4,60 @@
 <context>
     <name>Planets</name>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="42"/>
+        <location filename="../../planets/src/planets.cpp" line="35"/>
         <source>Sort by:</source>
         <translation>Сортировка:</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="43"/>
+        <location filename="../../planets/src/planets.cpp" line="36"/>
         <source>planet</source>
         <translation>планета</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="44"/>
+        <location filename="../../planets/src/planets.cpp" line="37"/>
         <source>house</source>
         <translation>дом</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="45"/>
+        <location filename="../../planets/src/planets.cpp" line="38"/>
         <source>dignity</source>
         <translation>достоинство</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="46"/>
+        <location filename="../../planets/src/planets.cpp" line="39"/>
         <source>element</source>
         <translation>стихия</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="49"/>
         <source>Astronomic data</source>
-        <translation>Астрономические данные</translation>
+        <translation type="vanished">Астрономические данные</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="50"/>
         <source>Aspects</source>
-        <translation>Аспекты</translation>
+        <translation type="vanished">Аспекты</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="51"/>
         <source>Affetic</source>
-        <translation>Аффетика</translation>
+        <translation type="vanished">Аффетика</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="58"/>
-        <location filename="../../planets/src/planets.cpp" line="59"/>
         <source>Select a planet</source>
-        <translation>Выберите планету</translation>
+        <translation type="vanished">Выберите планету</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="162"/>
+        <location filename="../../planets/src/planets.cpp" line="112"/>
         <source>ruler of %1</source>
         <translation>упр. %1 дома</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="203"/>
-        <location filename="../../planets/src/planets.cpp" line="204"/>
+        <location filename="../../planets/src/planets.cpp" line="153"/>
+        <location filename="../../planets/src/planets.cpp" line="154"/>
         <source>Almuten</source>
         <translation>Альмутен</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="213"/>
-        <location filename="../../planets/src/planets.cpp" line="214"/>
+        <location filename="../../planets/src/planets.cpp" line="163"/>
+        <location filename="../../planets/src/planets.cpp" line="164"/>
         <source>Doryphoros</source>
         <translation>Дорифорий</translation>
     </message>
@@ -79,8 +74,8 @@
         <translation type="vanished">Альмутен</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="208"/>
-        <location filename="../../planets/src/planets.cpp" line="209"/>
+        <location filename="../../planets/src/planets.cpp" line="158"/>
+        <location filename="../../planets/src/planets.cpp" line="159"/>
         <source>Auriga</source>
         <translation>Возничий</translation>
     </message>
@@ -109,9 +104,8 @@
 (%2, орб %3)</translation>
     </message>
     <message>
-        <location filename="../../planets/src/planets.cpp" line="264"/>
         <source>more</source>
-        <translation>еще</translation>
+        <translation type="vanished">еще</translation>
     </message>
 </context>
 </TS>

@@ -100,6 +100,7 @@ QListWidget::item:selected {
 QDockWidget {
 	font-weight: bold;
 	color: #d8e4f4;
+	
 }
 
 QDockWidget::title {
@@ -148,6 +149,13 @@ AstroWidget QFrame { 		/* affects all frames (QTextBrowser, QGraphicsView) on As
 AstroWidget QLabel {
 	font-weight: bold;
 	color: #a5afcf;
+}
+
+QScrollArea {
+	background: #202020;
+	border: 0;
+	padding: 5px;
+	min-width: 150px;
 }
 
 QToolTip {
@@ -253,9 +261,7 @@ HelpWidget QPushButton:pressed {
 	color: #FF0000;
 }
 
-QToolBar:only-one {
-	background: #404040;
-}
+
 
 
 /* =========================== STATUS BAR ========================================== */
